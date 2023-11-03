@@ -8,3 +8,17 @@ h1 {
   font-size: 2rem;
   text-align: center;
 }
+
+.MuiDataGrid-iconSeparator {
+  cursor: col-resize
+}
+
+#column-resize-bar {
+  position: absolute;
+  background-color: grey;
+  width: 1px;
+  height: 100%;
+  top: 0;
+  left: 50;
+  z-index: 2;
+}

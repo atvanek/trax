@@ -20,51 +20,26 @@ import {
 	GridRowEditStopReasons,
 } from '@mui/x-data-grid';
 import EditToolbar from './EditToolbar';
+import ColumnResizeBar from './ColumnResizeBar';
 
 export default function Grid({ data }: { data: RawJobData[] }) {
 	const [rows, setRows] = React.useState(data);
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
 	);
+	const [columnWidths, setColumnWidths] = React.useState<{
+		[key: string]: number | null;
+	}>({});
 
-	// const [resizing, setResizing] = React.useState(false);
-	// const [colR, setColR] = React.useState(null);
-	// const [width, setWidth] = React.useState(50);
+	React.useEffect(() => {
+		const defaultColumnWidths: { [key: string]: null | number } = {};
+		columns.forEach((column) => {
+			defaultColumnWidths[column.field] =
+				defaultColumnWidths[column.field] || null;
+		});
+		setColumnWidths(defaultColumnWidths);
+	}, []);
 
-	// const handleListenForResizeStart = (e) => {
-	// 	if (e.target?.classList?.contains('MuiDataGrid-iconSeparator')) {
-	// 		console.log('resize start');
-	// 		const column = e.target.parentNode.parentNode;
-	// 		setResizing(true);
-	// 		setColR(column.getBoundingClientRect().right);
-	// 	}
-	// };
-	// const handleListenForResizeEnd = (e) => {
-	// 	console.log(resizing);
-	// 	if (!resizing) return;
-	// 	console.log('resize end');
-	// 	setResizing(false);
-	// 	setColR(null);
-	// };
-
-	// const handleListenForResize = (e) => {
-	// 	if (!resizing) return;
-	// 	const diff = e.clientX - colR;
-	// 	setWidth((prev) => prev + diff);
-	// };
-
-	// React.useEffect(() => {
-	// 	addEventListener('mousedown', handleListenForResizeStart);
-	// 	addEventListener('mousemove', handleListenForResize);
-	// 	addEventListener('mouseup', handleListenForResizeEnd);
-	// 	return () => {
-	// 		removeEventListener('mousedown', handleListenForResizeStart);
-	// 		removeEventListener('mousemove', handleListenForResize);
-	// 		removeEventListener('mouseup', handleListenForResizeEnd);
-	// 	};
-	// }, [handleListenForResizeEnd, handleListenForResize]);
-
-	//
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
 		event
@@ -97,7 +72,7 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 		// 	setRows(rows.filter((row) => row.id !== id));
 		// }
 	};
-
+	console.log(columnWidths);
 	const processRowUpdate = (newRow: GridRowModel) => {
 		// const updatedRow = { ...newRow, isNew: false };
 		// setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
@@ -108,16 +83,13 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 		setRowModesModel(newRowModesModel);
 	};
 
+	const columnsWithWidth = columns.map((column) => ({
+		...column,
+		width: columnWidths[column.field],
+	})) as GridColDef[];
+
 	const columnsWithEdit: GridColDef[] = [
-		...columns,
-		// {
-		// 	field: 'resize',
-		// 	headerName: 'Resize',
-		// 	editable: true,
-		// 	minWidth: 80,
-		// 	maxWidth: 200,
-		// 	// width: width,
-		// },
+		...columnsWithWidth,
 		{
 			field: 'actions',
 			type: 'actions',
@@ -170,38 +142,41 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 	];
 
 	return (
-		<Box
-			sx={{
-				height: 500,
-				width: '100%',
-				'& .actions': {
-					color: 'text.secondary',
-				},
-				'& .textPrimary': {
-					color: 'text.primary',
-				},
-			}}>
-			<DataGrid
-				sx={{ height: 'auto' }}
-				rows={rows}
-				columns={columnsWithEdit}
-				editMode='row'
-				rowModesModel={rowModesModel}
-				onRowModesModelChange={handleRowModesModelChange}
-				onRowEditStop={handleRowEditStop}
-				// processRowUpdate={processRowUpdate}
-				slots={{
-					toolbar: EditToolbar,
-				}}
-				slotProps={{
-					toolbar: { setRows, setRowModesModel },
-				}}
-				initialState={{
-					sorting: {
-						sortModel: [{ field: 'date', sort: 'asc' }],
+		<>
+			<Box
+				sx={{
+					height: 500,
+					width: '100%',
+					'& .actions': {
+						color: 'text.secondary',
 					},
-				}}
-			/>
-		</Box>
+					'& .textPrimary': {
+						color: 'text.primary',
+					},
+				}}>
+				<ColumnResizeBar setColumnWidths={setColumnWidths} />
+				<DataGrid
+					sx={{ height: 'auto' }}
+					rows={rows}
+					columns={columnsWithEdit}
+					editMode='row'
+					rowModesModel={rowModesModel}
+					onRowModesModelChange={handleRowModesModelChange}
+					onRowEditStop={handleRowEditStop}
+					// processRowUpdate={processRowUpdate}
+					slots={{
+						toolbar: EditToolbar,
+					}}
+					slotProps={{
+						toolbar: { setRows, setRowModesModel },
+					}}
+					initialState={{
+						sorting: {
+							sortModel: [{ field: 'date', sort: 'asc' }],
+						},
+					}}
+				/>
+			</Box>
+		</>
 	);
 }

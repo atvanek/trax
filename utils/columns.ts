@@ -22,7 +22,6 @@ const columns: GridColDef[] = [
 		field: 'compensation',
 		headerName: 'Compensation',
 		editable: true,
-		minWidth: 175,
 	},
 	{
 		field: 'location',
@@ -40,7 +39,6 @@ const columns: GridColDef[] = [
 		field: 'jobURL',
 		headerName: 'Job Posting URL',
 		editable: true,
-		minWidth: 175,
 	},
 ];
 

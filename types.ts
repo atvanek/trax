@@ -9,11 +9,9 @@ export interface TableJobData {
 	status: Status;
 	jobURL: string;
 }
-
 export interface RawJobData extends TableJobData {
 	id: number;
 }
-
 export interface HeadCell {
 	disablePadding: boolean;
 	id: keyof TableJobData;
