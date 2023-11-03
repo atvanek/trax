@@ -1,5 +1,5 @@
 export interface TableJobData {
-	date: string;
+	date: Date;
 	company: string;
 	jobTitle: string;
 	compensation: string;

@@ -2,9 +2,10 @@
 
 @tailwind base;
 @tailwind components;
-@tailwind utilities;
+/* @tailwind utilities; */
 
 
 h1 {
   font-size: 2rem;
+  text-align: center;
 }

@@ -1,4 +1,5 @@
-import { RawJobData, Status } from '@/types';
+import { RawJobData } from '@/types';
+import statuses from '@/utils/statuses';
 
 const mockData: RawJobData[] = [];
 
@@ -6,29 +7,13 @@ for (let i = 0; i < 50; i++) {
 	const year = 2023;
 	const month = Math.floor(Math.random() * 12) + 1; // Random month (1-12)
 	const day = Math.floor(Math.random() * 31) + 1; // Random day (1-31)
-	const date = `${month}/${day}/${year}`;
+	const date = new Date(year, month - 1, day);
 	const company = `Company ${i + 1}`;
 	const jobTitle = `Job Title ${i + 1}`;
 	const compensation = generateRandomCompensation();
 	const location = 'remote';
 	const jobURL = 'www.linkedin.com';
 	const id = generateUniqueID(mockData);
-
-	const statuses: Status[] = [
-		'ready to apply',
-		'applied',
-		'followed-up',
-		'phone-screen',
-		'technical',
-		'final round/onsite',
-		'offer',
-		'negotiation',
-		'signed',
-		'rejected',
-		'declined',
-		'lost contact',
-		'no-response',
-	];
 
 	const status = statuses[Math.floor(Math.random() * statuses.length)];
 
