@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
 import './globals.css';
 import ThemeRegistry from '@/theme/ThemeRegistry';
+import Nav from './components/Nav';
 
 export const metadata: Metadata = {
 	title: 'Trax',
@@ -16,7 +16,10 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<ThemeRegistry>
-				<body>{children}</body>
+				<body>
+					<Nav />
+					{children}
+				</body>
 			</ThemeRegistry>
 		</html>
 	);

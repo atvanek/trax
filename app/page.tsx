@@ -1,11 +1,11 @@
 import mockData from '../utils/mockData';
-import DataGridDemo from './components/table/DataGridDemo';
+import Grid from './components/table/Grid';
 
 export default function Home() {
 	return (
 		<main className='flex min-h-screen flex-col items-center justify-between p-24'>
 			<h1>Trax</h1>
-			<DataGridDemo data={mockData} />
+			<Grid data={mockData} />
 		</main>
 	);
 }

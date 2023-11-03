@@ -21,11 +21,12 @@ import {
 } from '@mui/x-data-grid';
 import EditToolbar from './EditToolbar';
 
-export default function DataGridDemo({ data }: { data: RawJobData[] }) {
+export default function Grid({ data }: { data: RawJobData[] }) {
 	const [rows, setRows] = React.useState(data);
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
 	);
+
 	// const [resizing, setResizing] = React.useState(false);
 	// const [colR, setColR] = React.useState(null);
 	// const [width, setWidth] = React.useState(50);
@@ -181,6 +182,7 @@ export default function DataGridDemo({ data }: { data: RawJobData[] }) {
 				},
 			}}>
 			<DataGrid
+				sx={{ height: 'auto' }}
 				rows={rows}
 				columns={columnsWithEdit}
 				editMode='row'
