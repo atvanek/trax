@@ -1,4 +1,4 @@
-import mockData from './components/table/mockData';
+import mockData from '../utils/mockData';
 import DataGridDemo from './components/table/DataGridDemo';
 
 export default function Home() {

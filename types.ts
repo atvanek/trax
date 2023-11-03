@@ -1,3 +1,5 @@
+import { GridRowsProp, GridRowModesModel } from '@mui/x-data-grid';
+
 export interface TableJobData {
 	date: Date;
 	company: string;
@@ -35,18 +37,9 @@ export type Status =
 
 export type Order = 'asc' | 'desc';
 
-export interface EnhancedTableProps {
-	numSelected: number;
-	onRequestSort: (
-		event: React.MouseEvent<unknown>,
-		property: keyof TableJobData
+export interface EditToolbarProps {
+	setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
+	setRowModesModel: (
+		newModel: (oldModel: GridRowModesModel) => GridRowModesModel
 	) => void;
-	onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
-	order: Order;
-	orderBy: string;
-	rowCount: number;
-}
-
-export interface EnhancedTableToolbarProps {
-	numSelected: number;
 }

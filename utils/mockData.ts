@@ -52,6 +52,4 @@ function generateRandomCompensation() {
 	}
 }
 
-console.log(mockData);
-
 export default mockData;
