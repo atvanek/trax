@@ -21,7 +21,7 @@ const headCells: readonly HeadCell[] = [
 	},
 	{
 		id: 'compensation',
-		numeric: true,
+		numeric: false,
 		disablePadding: false,
 		label: 'Compensation',
 	},
@@ -30,6 +30,12 @@ const headCells: readonly HeadCell[] = [
 		numeric: false,
 		disablePadding: false,
 		label: 'Location',
+	},
+	{
+		id: 'status',
+		numeric: false,
+		disablePadding: false,
+		label: 'Status',
 	},
 	{
 		id: 'jobURL',

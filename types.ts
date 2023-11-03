@@ -2,8 +2,9 @@ export interface TableJobData {
 	date: string;
 	company: string;
 	jobTitle: string;
-	compensation: number;
+	compensation: string;
 	location: string;
+	status: Status;
 	jobURL: string;
 }
 
@@ -17,6 +18,20 @@ export interface HeadCell {
 	label: string;
 	numeric: boolean;
 }
+export type Status =
+	| 'ready to apply'
+	| 'applied'
+	| 'followed-up'
+	| 'phone-screen'
+	| 'technical'
+	| 'final round/onsite'
+	| 'offer'
+	| 'negotiation'
+	| 'signed'
+	| 'rejected'
+	| 'declined'
+	| 'lost contact'
+	| 'no-response';
 
 export type Order = 'asc' | 'desc';
 

@@ -91,7 +91,7 @@ export default function EnhancedTable({ data }: { data: RawJobData[] }) {
 				page * rowsPerPage,
 				page * rowsPerPage + rowsPerPage
 			),
-		[order, orderBy, page, rowsPerPage]
+		[order, orderBy, page, rowsPerPage, rows]
 	);
 
 	const createCells = (
