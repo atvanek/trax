@@ -1,7 +1,7 @@
 import { GridColDef } from '@mui/x-data-grid';
 import statuses from '@/utils/statuses';
 
-const columns: GridColDef[] = [
+export const columns: GridColDef[] = [
 	{
 		field: 'date',
 		headerName: 'Date',
@@ -22,6 +22,7 @@ const columns: GridColDef[] = [
 		field: 'compensation',
 		headerName: 'Compensation',
 		editable: true,
+		width: 175,
 	},
 	{
 		field: 'location',
@@ -42,4 +43,10 @@ const columns: GridColDef[] = [
 	},
 ];
 
-export default columns;
+export const defaultColumnWidths = () => {
+	const defaultWidths: { [key: string]: null | number } = {};
+	columns.forEach((column) => {
+		defaultWidths[column.field] = column.width || null;
+	});
+	return defaultWidths;
+};

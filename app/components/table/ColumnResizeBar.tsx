@@ -9,6 +9,7 @@ export default function ColumnResizeBar({
 	const [resizing, setResizing] = React.useState<boolean>(false);
 	const [currentColumnRight, setCurrentColumnRight] = React.useState<number>(0);
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
+	const [barTop, setBarTop] = React.useState(0);
 	const [resizeX, setResizeX] = React.useState<number>(0);
 
 	const handleListenForResizeStart = React.useCallback(
@@ -34,6 +35,7 @@ export default function ColumnResizeBar({
 			setResizing(true);
 			setCurrentColumnRight(column.getBoundingClientRect().right);
 			setResizeX(e.clientX);
+			setBarTop(column.getBoundingClientRect().top);
 			setCurrentField(field || null);
 			if (field) {
 				setCurrentField(field || null);
@@ -94,6 +96,7 @@ export default function ColumnResizeBar({
 			id='column-resize-bar'
 			style={{
 				display: resizing ? 'inline' : 'none',
+				top: barTop,
 				left: resizeX,
 				zIndex: 2,
 			}}></div>
