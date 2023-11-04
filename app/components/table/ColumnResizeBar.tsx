@@ -9,19 +9,33 @@ export default function ColumnResizeBar({
 	const [resizing, setResizing] = React.useState<boolean>(false);
 	const [currentColumnRight, setCurrentColumnRight] = React.useState<number>(0);
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
+	const [barTop, setBarTop] = React.useState(0);
 	const [resizeX, setResizeX] = React.useState<number>(0);
 
-	const handleListenForResizeStart = (e: MouseEvent) => {
-		if (
-			e.target instanceof SVGElement &&
-			e.target?.classList?.contains('MuiDataGrid-iconSeparator')
-		) {
+	const handleListenForResizeStart = React.useCallback(
+		(e: MouseEvent) => {
+			let column: HTMLElement;
+			if (
+				e.target instanceof SVGElement &&
+				e.target?.classList?.contains('MuiDataGrid-iconSeparator')
+			) {
+				column = e.target.parentNode?.parentNode as HTMLElement;
+			} else if (
+				e.target instanceof SVGPathElement &&
+				e.target.parentNode instanceof SVGElement &&
+				e.target.parentNode.classList.contains('MuiDataGrid-iconSeparator')
+			) {
+				column = e.target.parentNode?.parentNode?.parentNode as HTMLElement;
+			} else {
+				return;
+			}
+			// else if (  e.target.parentNode instanceof SVGElement)
 			console.log('resize start');
-			const column = e.target.parentNode?.parentNode as HTMLElement;
 			const { field } = column.dataset;
 			setResizing(true);
 			setCurrentColumnRight(column.getBoundingClientRect().right);
 			setResizeX(e.clientX);
+			setBarTop(column.getBoundingClientRect().top);
 			setCurrentField(field || null);
 			if (field) {
 				setCurrentField(field || null);
@@ -32,29 +46,36 @@ export default function ColumnResizeBar({
 					};
 				});
 			}
-		}
-	};
+		},
+		[setColumnWidths]
+	);
 
-	const handleListenForResize = (e: MouseEvent) => {
-		if (!resizing) return;
-		setResizeX(e.clientX);
-	};
+	const handleListenForResize = React.useCallback(
+		(e: MouseEvent) => {
+			if (!resizing) return;
+			setResizeX(e.clientX);
+		},
+		[resizing]
+	);
 
-	const handleListenForResizeEnd = (e: MouseEvent) => {
-		if (!resizing) return;
-		console.log('resize end');
-		const diff = e.clientX - currentColumnRight;
-		if (currentField) {
-			setColumnWidths((prev) => {
-				return {
-					...prev,
-					[currentField]: (prev[currentField] || 0) + diff,
-				};
-			});
-		}
-		setResizing(false);
-		setCurrentColumnRight(0);
-	};
+	const handleListenForResizeEnd = React.useCallback(
+		(e: MouseEvent) => {
+			if (!resizing) return;
+			console.log('resize end');
+			const diff = e.clientX - currentColumnRight;
+			if (currentField) {
+				setColumnWidths((prev) => {
+					return {
+						...prev,
+						[currentField]: (prev[currentField] || 0) + diff,
+					};
+				});
+			}
+			setResizing(false);
+			setCurrentColumnRight(0);
+		},
+		[currentColumnRight, currentField, resizing, setColumnWidths]
+	);
 
 	React.useEffect(() => {
 		addEventListener('mousedown', handleListenForResizeStart);
@@ -65,12 +86,17 @@ export default function ColumnResizeBar({
 			removeEventListener('mousemove', handleListenForResize);
 			removeEventListener('mouseup', handleListenForResizeEnd);
 		};
-	}, [handleListenForResizeEnd, handleListenForResize]);
+	}, [
+		handleListenForResizeStart,
+		handleListenForResizeEnd,
+		handleListenForResize,
+	]);
 	return (
 		<div
 			id='column-resize-bar'
 			style={{
 				display: resizing ? 'inline' : 'none',
+				top: barTop,
 				left: resizeX,
 				zIndex: 2,
 			}}></div>

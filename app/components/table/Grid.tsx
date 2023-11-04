@@ -7,7 +7,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import columns from '../../../utils/columns';
+import { columns, defaultColumnWidths } from '../../../utils/columns';
 import {
 	GridRowModesModel,
 	GridRowModes,
@@ -29,16 +29,7 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 	);
 	const [columnWidths, setColumnWidths] = React.useState<{
 		[key: string]: number | null;
-	}>({});
-
-	React.useEffect(() => {
-		const defaultColumnWidths: { [key: string]: null | number } = {};
-		columns.forEach((column) => {
-			defaultColumnWidths[column.field] =
-				defaultColumnWidths[column.field] || null;
-		});
-		setColumnWidths(defaultColumnWidths);
-	}, []);
+	}>(defaultColumnWidths());
 
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
@@ -72,7 +63,6 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 		// 	setRows(rows.filter((row) => row.id !== id));
 		// }
 	};
-	console.log(columnWidths);
 	const processRowUpdate = (newRow: GridRowModel) => {
 		// const updatedRow = { ...newRow, isNew: false };
 		// setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
