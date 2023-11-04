@@ -72,7 +72,6 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 		// 	setRows(rows.filter((row) => row.id !== id));
 		// }
 	};
-	console.log(columnWidths);
 	const processRowUpdate = (newRow: GridRowModel) => {
 		// const updatedRow = { ...newRow, isNew: false };
 		// setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
