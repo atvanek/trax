@@ -31,14 +31,14 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 		[key: string]: number | null;
 	}>({});
 
-	React.useEffect(() => {
-		const defaultColumnWidths: { [key: string]: null | number } = {};
-		columns.forEach((column) => {
-			defaultColumnWidths[column.field] =
-				defaultColumnWidths[column.field] || null;
-		});
-		setColumnWidths(defaultColumnWidths);
-	}, []);
+	// React.useEffect(() => {
+	// 	const defaultColumnWidths: { [key: string]: null | number } = {};
+	// 	columns.forEach((column) => {
+	// 		defaultColumnWidths[column.field] =
+	// 			defaultColumnWidths[column.field] || null;
+	// 	});
+	// 	setColumnWidths(defaultColumnWidths);
+	// }, []);
 
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
