@@ -29,8 +29,6 @@ export default function ColumnResizeBar({
 			} else {
 				return;
 			}
-			// else if (  e.target.parentNode instanceof SVGElement)
-			console.log('resize start');
 			const { field } = column.dataset;
 			setResizing(true);
 			setCurrentColumnRight(column.getBoundingClientRect().right);
@@ -61,7 +59,6 @@ export default function ColumnResizeBar({
 	const handleListenForResizeEnd = React.useCallback(
 		(e: MouseEvent) => {
 			if (!resizing) return;
-			console.log('resize end');
 			const diff = e.clientX - currentColumnRight;
 			if (currentField) {
 				setColumnWidths((prev) => {
