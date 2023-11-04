@@ -14,6 +14,7 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
+import Link from 'next/link';
 
 const pages = ['Products', 'Pricing', 'Blog'];
 const settings = ['Profile', 'Account', 'Preferences', 'Logout'];
@@ -129,7 +130,7 @@ export default function Nav() {
 					<Box sx={{ flexGrow: 0 }}>
 						<Tooltip title='Open settings'>
 							<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-								{/* <Avatar alt='Remy Sharp' src='/static/images/avatar/2.jpg' /> */}
+								<Avatar alt='Remy Sharp' src='/static/images/avatar/2.jpg' />
 							</IconButton>
 						</Tooltip>
 						<Menu
@@ -147,11 +148,19 @@ export default function Nav() {
 							}}
 							open={Boolean(anchorElUser)}
 							onClose={handleCloseUserMenu}>
-							{settings.map((setting) => (
-								<MenuItem key={setting} onClick={handleCloseUserMenu}>
-									<Typography textAlign='center'>{setting}</Typography>
-								</MenuItem>
-							))}
+							{settings.map((setting) =>
+								setting === 'Logout' ? (
+									<Link href={'api/auth/logout'} key={setting}>
+										<MenuItem>
+											<Typography textAlign='center'>{setting}</Typography>
+										</MenuItem>
+									</Link>
+								) : (
+									<MenuItem key={setting} onClick={handleCloseUserMenu}>
+										<Typography textAlign='center'>{setting}</Typography>
+									</MenuItem>
+								)
+							)}
 						</Menu>
 					</Box>
 				</Toolbar>
