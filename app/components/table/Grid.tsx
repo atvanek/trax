@@ -63,11 +63,11 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 		// 	setRows(rows.filter((row) => row.id !== id));
 		// }
 	};
-	const processRowUpdate = (newRow: GridRowModel) => {
-		// const updatedRow = { ...newRow, isNew: false };
-		// setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-		// return updatedRow;
-	};
+	// const processRowUpdate = (newRow: GridRowModel) => {
+	// 	const updatedRow = { ...newRow, isNew: false };
+	// 	setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
+	// 	return updatedRow;
+	// };
 
 	const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
 		setRowModesModel(newRowModesModel);

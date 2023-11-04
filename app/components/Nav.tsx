@@ -16,7 +16,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import Link from 'next/link';
 
-const pages = ['Products', 'Pricing', 'Blog'];
+const pages = ['About', 'Documentation', 'Contact'];
 const settings = ['Profile', 'Account', 'Preferences', 'Logout'];
 
 export default function Nav() {
