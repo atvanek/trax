@@ -36,7 +36,6 @@ export default function Table({
 	const [columnWidths, setColumnWidths] = React.useState<{
 		[key: string]: number | null;
 	}>(defaultColumnWidths());
-	const [loading, setLoading] = React.useState(true);
 	const [viewAll, setViewAll] = React.useState(false);
 
 	React.useLayoutEffect(() => {

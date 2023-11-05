@@ -18,8 +18,8 @@ export default function WithUILoading({
 
 	return (
 		<>
-			{fallback({ ...fallbackProps, loaded: loaded })}
-			{component({ ...componentProps, setLoaded: setLoaded })}
+			{fallback({ ...fallbackProps, loaded })}
+			{component({ ...componentProps, setLoaded })}
 		</>
 	);
 }
