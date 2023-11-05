@@ -29,9 +29,7 @@ export default function TabsContainer({ tabs }: { tabs: JSX.Element[] }) {
 					aria-label='tabs'
 					variant='fullWidth'>
 					{tabs.map((tab, index) => {
-						return (
-							<Tab key={tab.key} label={tab.key} {...a11yProps(index)} />
-						);
+						return <Tab key={tab.key} label={tab.key} {...a11yProps(index)} />;
 					})}
 				</Tabs>
 			</Box>
