@@ -41,3 +41,9 @@ export interface EditToolbarProps {
 		newModel: (oldModel: GridRowModesModel) => GridRowModesModel
 	) => void;
 }
+
+export interface TabPanelProps {
+	children?: React.ReactNode;
+	index: number;
+	value: number;
+}
