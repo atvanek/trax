@@ -18,10 +18,7 @@ export default function RootLayout({
 		<html lang='en'>
 			<ThemeRegistry>
 				<UserProvider>
-					<body>
-						<Nav />
-						{children}
-					</body>
+					<body>{children}</body>
 				</UserProvider>
 			</ThemeRegistry>
 		</html>

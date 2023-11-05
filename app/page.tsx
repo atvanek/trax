@@ -7,8 +7,11 @@ export default async function Home() {
 	if (user) return redirect('/dashboard');
 	return (
 		<main className='flex min-h-screen flex-col items-center justify-center p-32'>
+			<h1>Trax</h1>
 			<p>
-				Please <Link href='/api/auth/login'>login</Link>
+				<Link href='/api/auth/login' className='text-indigo-600'>
+					Login
+				</Link>
 			</p>
 		</main>
 	);

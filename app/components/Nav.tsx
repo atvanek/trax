@@ -15,11 +15,12 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import Link from 'next/link';
+import { Claims } from '@auth0/nextjs-auth0';
 
 const pages = ['About', 'Documentation', 'Contact'];
 const settings = ['Profile', 'Account', 'Preferences', 'Logout'];
 
-export default function Nav() {
+export default function Nav({ user }: { user: Claims }) {
 	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
 		null
 	);
@@ -126,11 +127,11 @@ export default function Nav() {
 							</Button>
 						))}
 					</Box>
-
+					<Typography sx={{ mx: 2 }}>Welcome, {user.name}</Typography>
 					<Box sx={{ flexGrow: 0 }}>
 						<Tooltip title='Open settings'>
 							<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-								<Avatar alt='Remy Sharp' />
+								<Avatar alt='User Image' src={user.picture} />
 							</IconButton>
 						</Tooltip>
 						<Menu

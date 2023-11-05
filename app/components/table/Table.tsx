@@ -36,7 +36,7 @@ export default function Table({
 	const [columnWidths, setColumnWidths] = React.useState<{
 		[key: string]: number | null;
 	}>(defaultColumnWidths());
-	const [viewAll, setViewAll] = React.useState(false);
+	// const [viewAll, setViewAll] = React.useState(false);
 
 	React.useLayoutEffect(() => {
 		setLoaded(true);
@@ -145,7 +145,6 @@ export default function Table({
 		<div>
 			<Box
 				sx={{
-					height: 500,
 					width: '100%',
 					'& .actions': {
 						color: 'text.secondary',
@@ -156,16 +155,14 @@ export default function Table({
 				}}>
 				<ColumnResizeBar setColumnWidths={setColumnWidths} />
 				<DataGrid
-					sx={{ height: 90 + 'vh' }}
+					sx={{ height: '80vh' }}
 					rows={rows}
 					columns={columnsWithEdit}
 					editMode='row'
 					rowModesModel={rowModesModel}
 					onRowModesModelChange={handleRowModesModelChange}
 					onRowEditStop={handleRowEditStop}
-					columnBuffer={2}
-					columnThreshold={2}
-					autoPageSize={!viewAll}
+					autoPageSize
 					// onPaginationModelChange={({ pageSize }) =>
 					// 	pageSize === rows.length ? setViewAll(true) : setViewAll(false)
 					// }

@@ -4,7 +4,8 @@ import WithUILoading from '../components/containers/WithUILoading';
 import Table from '../components/table/Table';
 import mockData from '@/utils/mockData';
 import Spinner from '../components/Spinner';
-import TabsContainer from '../components/containers/TabsContainer';
+import TabsContainer from '../components/tabs/TabsContainer';
+import Nav from '../components/Nav';
 export default async function Dashboard() {
 	const { user } = (await getSession()) || {};
 	const tabs = [
@@ -18,5 +19,12 @@ export default async function Dashboard() {
 		<div key='Status View'>Status View</div>,
 		<div key='Metrics'>Metrics</div>,
 	];
-	return user ? <TabsContainer tabs={tabs} /> : redirect('/');
+	return user ? (
+		<>
+			<Nav user={user} />
+			<TabsContainer tabs={tabs} />
+		</>
+	) : (
+		redirect('/')
+	);
 }

@@ -26,11 +26,11 @@ export default function TabsContainer({ tabs }: { tabs: JSX.Element[] }) {
 				<Tabs
 					value={value}
 					onChange={handleChange}
-					aria-label='basic tabs example'
+					aria-label='tabs'
 					variant='fullWidth'>
 					{tabs.map((tab, index) => {
 						return (
-							<Tab key={tab.props.key} label={tab.key} {...a11yProps(index)} />
+							<Tab key={tab.key} label={tab.key} {...a11yProps(index)} />
 						);
 					})}
 				</Tabs>
