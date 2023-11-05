@@ -114,7 +114,7 @@ export default function Nav() {
 							color: 'inherit',
 							textDecoration: 'none',
 						}}>
-						LOGO
+						TRAX
 					</Typography>
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 						{pages.map((page) => (
@@ -130,7 +130,7 @@ export default function Nav() {
 					<Box sx={{ flexGrow: 0 }}>
 						<Tooltip title='Open settings'>
 							<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-								<Avatar alt='Remy Sharp' src='/static/images/avatar/2.jpg' />
+								<Avatar alt='Remy Sharp' />
 							</IconButton>
 						</Tooltip>
 						<Menu

@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { RawJobData } from '@/types';
-import Box from '@mui/material/Box';
+import { Box } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
@@ -22,7 +22,13 @@ import {
 import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
 
-export default function Grid({ data }: { data: RawJobData[] }) {
+export default function Table({
+	data,
+	setLoaded,
+}: {
+	data: RawJobData[];
+	setLoaded: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
 	const [rows, setRows] = React.useState(data);
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
@@ -30,7 +36,12 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 	const [columnWidths, setColumnWidths] = React.useState<{
 		[key: string]: number | null;
 	}>(defaultColumnWidths());
+	const [loading, setLoading] = React.useState(true);
+	const [viewAll, setViewAll] = React.useState(false);
 
+	React.useLayoutEffect(() => {
+		setLoaded(true);
+	}, []);
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
 		event
@@ -132,7 +143,7 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 	];
 
 	return (
-		<>
+		<div>
 			<Box
 				sx={{
 					height: 500,
@@ -146,14 +157,26 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 				}}>
 				<ColumnResizeBar setColumnWidths={setColumnWidths} />
 				<DataGrid
-					sx={{ height: 'auto' }}
+					sx={{ height: 90 + 'vh' }}
 					rows={rows}
 					columns={columnsWithEdit}
 					editMode='row'
 					rowModesModel={rowModesModel}
 					onRowModesModelChange={handleRowModesModelChange}
 					onRowEditStop={handleRowEditStop}
+					columnBuffer={2}
+					columnThreshold={2}
+					autoPageSize={!viewAll}
+					// onPaginationModelChange={({ pageSize }) =>
+					// 	pageSize === rows.length ? setViewAll(true) : setViewAll(false)
+					// }
 					// processRowUpdate={processRowUpdate}
+					pageSizeOptions={[
+						10,
+						25,
+						50,
+						{ value: rows.length, label: 'View All' },
+					]}
 					slots={{
 						toolbar: EditToolbar,
 					}}
@@ -167,6 +190,6 @@ export default function Grid({ data }: { data: RawJobData[] }) {
 					}}
 				/>
 			</Box>
-		</>
+		</div>
 	);
 }
