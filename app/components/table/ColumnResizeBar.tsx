@@ -1,3 +1,4 @@
+import { useTheme } from '@mui/material/styles';
 import React from 'react';
 import { Dispatch, SetStateAction } from 'react';
 
@@ -14,6 +15,9 @@ export default function ColumnResizeBar({
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
 	const [barTop, setBarTop] = React.useState(0);
 	const [resizeX, setResizeX] = React.useState<number>(0);
+
+	const theme = useTheme();
+	console.log(theme);
 
 	const handleListenForResizeStart = React.useCallback(
 		(e: MouseEvent) => {
@@ -100,6 +104,10 @@ export default function ColumnResizeBar({
 				top: barTop,
 				left: resizeX,
 				zIndex: 2,
+				position: 'absolute',
+				width: '1px',
+				backgroundColor: theme.palette.primary.main,
+				height: '100%',
 			}}></div>
 	);
 }

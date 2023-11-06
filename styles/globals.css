@@ -12,13 +12,3 @@ h1 {
 .MuiDataGrid-iconSeparator {
   cursor: col-resize
 }
-
-#column-resize-bar {
-  position: absolute;
-  background-color: grey;
-  width: 1px;
-  height: 100%;
-  top: 1;
-  left: 50;
-  z-index: 2;
-}
