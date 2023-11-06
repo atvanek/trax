@@ -1,5 +1,3 @@
-'use client';
-
 import type { Metadata } from 'next';
 import '../styles/globals.css';
 import ThemeRegistry from '@/theme/ThemeRegistry';
