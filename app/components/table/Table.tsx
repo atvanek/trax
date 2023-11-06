@@ -177,7 +177,7 @@ export default function Table({
 	];
 
 	return (
-		<div>
+		<>
 			<Box
 				sx={{
 					width: '100%',
@@ -194,7 +194,8 @@ export default function Table({
 					setResizing={setResizing}
 				/>
 				<DataGrid
-					sx={{ height: '80vh', pointerEvents: resizing ? 'none' : 'auto' }}
+					autoHeight
+					sx={{ pointerEvents: resizing ? 'none' : 'auto' }}
 					rows={rows}
 					columns={columnsWithEdit}
 					editMode='row'
@@ -224,6 +225,6 @@ export default function Table({
 					}}
 				/>
 			</Box>
-		</div>
+		</>
 	);
 }
