@@ -253,9 +253,14 @@ export default function Table({
 					</DialogContentText>
 				</DialogContent>
 				<DialogActions>
-					<Button onClick={handleDeleteClick}>Delete</Button>
-					<Button autoFocus onClick={() => setDeleteConfirmOpen(false)}>
+					<Button
+						color='primary'
+						autoFocus
+						onClick={() => setDeleteConfirmOpen(false)}>
 						Cancel
+					</Button>
+					<Button variant='contained' color='error' onClick={handleDeleteClick}>
+						Delete
 					</Button>
 				</DialogActions>
 			</Dialog>
