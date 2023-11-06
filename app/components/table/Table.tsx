@@ -2,7 +2,15 @@
 
 import * as React from 'react';
 import { RawJobData } from '@/types';
-import { Box } from '@mui/material';
+import {
+	Box,
+	Dialog,
+	DialogContent,
+	DialogContentText,
+	DialogTitle,
+	DialogActions,
+	Button,
+} from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/SaveOutlined';
 import CancelIcon from '@mui/icons-material/CloseOutlined';
@@ -22,6 +30,7 @@ import {
 } from '@mui/x-data-grid';
 import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
+import { setDefaultResultOrder } from 'dns/promises';
 
 export default function Table({
 	data,
@@ -45,6 +54,9 @@ export default function Table({
 	const [cellModesModel, setCellModesModel] =
 		React.useState<GridCellModesModel>({});
 	const [resizing, setResizing] = React.useState<boolean>(false);
+	const [deleteConfirmOpen, setDeleteConfirmOpen] =
+		React.useState<boolean>(false);
+	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null);
 
 	//notifies container that table is rendered
 	React.useLayoutEffect(() => {
@@ -69,10 +81,13 @@ export default function Table({
 		setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
 	};
 
-	const handleDeleteClick = (id: GridRowId) => () => {
-		//popup confirmation
+	// const handleConfirmDelete = () => {
+	// 	handleDeleteClick();
+	// };
+	const handleDeleteClick = () => {
 		//delete row from database
-		setRows(rows.filter((row) => row.id !== id));
+		setRows(rows.filter((row) => row.id !== deleteId));
+		setDeleteConfirmOpen(false);
 	};
 
 	const handleCancelClick = (id: GridRowId) => () => {
@@ -130,6 +145,11 @@ export default function Table({
 		width: columnWidths[column.field],
 	})) as GridColDef[];
 
+	const handleRequestDelete = (id: GridRowId): void => {
+		setDeleteId(id);
+		setDeleteConfirmOpen(true);
+	};
+
 	const columnsWithEdit: GridColDef[] = [
 		...columnsWithWidth,
 		{
@@ -167,7 +187,7 @@ export default function Table({
 					<GridActionsCellItem
 						icon={<DeleteIcon />}
 						label='Delete'
-						onClick={handleDeleteClick(id)}
+						onClick={() => handleRequestDelete(id)}
 						color='inherit'
 						key={'delete-' + id}
 					/>,
@@ -225,6 +245,20 @@ export default function Table({
 					}}
 				/>
 			</Box>
+			<Dialog open={deleteConfirmOpen}>
+				<DialogTitle>Delete job listing?</DialogTitle>
+				<DialogContent>
+					<DialogContentText>
+						All job details will be permanently lost.
+					</DialogContentText>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={handleDeleteClick}>Delete</Button>
+					<Button autoFocus onClick={() => setDeleteConfirmOpen(false)}>
+						Cancel
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</>
 	);
 }

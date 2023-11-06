@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import useLoaded from '../../hooks/useLoaded';
+import useLoaded from '../../../hooks/useLoaded';
 
 export default function WithUILoading({
 	component,
