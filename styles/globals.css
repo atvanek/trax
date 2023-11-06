@@ -18,7 +18,8 @@ h1 {
   background-color: grey;
   width: 1px;
   height: 100%;
-  top: 0;
+  top: 1;
   left: 50;
   z-index: 2;
 }
+

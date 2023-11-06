@@ -41,6 +41,18 @@ export const columns: GridColDef[] = [
 		headerName: 'Job Posting URL',
 		editable: true,
 	},
+	{
+		field: 'contactName',
+		headerName: 'Contact Name',
+		editable: true,
+		type: 'string',
+	},
+	{
+		field: 'notes',
+		headerName: 'Notes',
+		editable: true,
+		type: 'string',
+	},
 ];
 
 export const defaultColumnWidths = () => {

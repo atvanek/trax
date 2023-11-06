@@ -3,7 +3,6 @@
 import * as React from 'react';
 import { RawJobData } from '@/types';
 import { Box } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
@@ -16,8 +15,11 @@ import {
 	GridActionsCellItem,
 	GridEventListener,
 	GridRowId,
-	GridRowModel,
 	GridRowEditStopReasons,
+	GridSortModel,
+	GridCellEditStopReasons,
+	GridCellModesModel,
+	GridCellParams,
 } from '@mui/x-data-grid';
 import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
@@ -29,29 +31,38 @@ export default function Table({
 	data: RawJobData[];
 	setLoaded: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-	const [rows, setRows] = React.useState(data);
+	const [rows, setRows] = React.useState(
+		data.map((row) => ({ ...row, isNew: false }))
+	);
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
 	);
+	const [sortModel, setSortModel] = React.useState<GridSortModel>([
+		{ field: 'date', sort: 'asc' },
+	]);
 	const [columnWidths, setColumnWidths] = React.useState<{
 		[key: string]: number | null;
 	}>(defaultColumnWidths());
-	// const [viewAll, setViewAll] = React.useState(false);
+	const [cellModesModel, setCellModesModel] =
+		React.useState<GridCellModesModel>({});
 
+	//notifies container that table is rendered
 	React.useLayoutEffect(() => {
 		setLoaded(true);
-	}, []);
+	}, [setLoaded]);
+
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
 		event
 	) => {
+		console.log('row stop edit');
 		if (params.reason === GridRowEditStopReasons.rowFocusOut) {
 			event.defaultMuiPrevented = true;
 		}
-	};
-
-	const handleEditClick = (id: GridRowId) => () => {
-		setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } });
+		setRowModesModel({
+			...rowModesModel,
+			[params.id]: { mode: GridRowModes.View },
+		});
 	};
 
 	const handleSaveClick = (id: GridRowId) => () => {
@@ -67,21 +78,50 @@ export default function Table({
 			...rowModesModel,
 			[id]: { mode: GridRowModes.View, ignoreModifications: true },
 		});
-
-		// const editedRow = rows.find((row) => row.id === id);
-		// if (editedRow!.isNew) {
-		// 	setRows(rows.filter((row) => row.id !== id));
-		// }
+		const currentRow = rows.find((row) => row.id === id);
+		if (currentRow?.isNew) {
+			setRows(rows.filter((row) => row.id !== id));
+		}
 	};
-	// const processRowUpdate = (newRow: GridRowModel) => {
-	// 	const updatedRow = { ...newRow, isNew: false };
-	// 	setRows(rows.map((row) => (row.id === newRow.id ? updatedRow : row)));
-	// 	return updatedRow;
-	// };
 
 	const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
 		setRowModesModel(newRowModesModel);
 	};
+
+	const handleSortModelChange = (newSortModel: GridSortModel) => {
+		setSortModel(newSortModel);
+	};
+
+	const handleCellClick = React.useCallback(
+		(params: GridCellParams, event: React.MouseEvent) => {
+			if (!params.isEditable) {
+				return;
+			}
+
+			// Ignore portal
+			if (!event.currentTarget.contains(event.target as Element)) {
+				return;
+			}
+
+			setRowModesModel({
+				...rowModesModel,
+				[params.id]: { mode: GridRowModes.Edit },
+			});
+		},
+		[rowModesModel]
+	);
+
+	const handleCellModesModelChange = React.useCallback(
+		(newModel: GridCellModesModel) => {
+			setCellModesModel(newModel);
+		},
+		[]
+	);
+
+	// const processRowUpdate = (newRow, oldRow) => {
+	// 	console.log(newRow);
+	// 	console.log(oldRow);
+	// };
 
 	const columnsWithWidth = columns.map((column) => ({
 		...column,
@@ -122,14 +162,6 @@ export default function Table({
 				}
 				return [
 					<GridActionsCellItem
-						icon={<EditIcon />}
-						label='Edit'
-						className='textPrimary'
-						onClick={handleEditClick(id)}
-						color='inherit'
-						key={'edit-' + id}
-					/>,
-					<GridActionsCellItem
 						icon={<DeleteIcon />}
 						label='Delete'
 						onClick={handleDeleteClick(id)}
@@ -159,10 +191,17 @@ export default function Table({
 					rows={rows}
 					columns={columnsWithEdit}
 					editMode='row'
+					density='compact'
 					rowModesModel={rowModesModel}
+					disableRowSelectionOnClick
 					onRowModesModelChange={handleRowModesModelChange}
 					onRowEditStop={handleRowEditStop}
 					autoPageSize
+					cellModesModel={cellModesModel}
+					onCellModesModelChange={handleCellModesModelChange}
+					onCellClick={handleCellClick}
+					sortModel={sortModel}
+					onSortModelChange={handleSortModelChange}
 					// onPaginationModelChange={({ pageSize }) =>
 					// 	pageSize === rows.length ? setViewAll(true) : setViewAll(false)
 					// }
@@ -177,12 +216,14 @@ export default function Table({
 						toolbar: EditToolbar,
 					}}
 					slotProps={{
-						toolbar: { setRows, setRowModesModel },
+						toolbar: {
+							setRows,
+							setRowModesModel,
+							setSortModel,
+						},
 					}}
 					initialState={{
-						sorting: {
-							sortModel: [{ field: 'date', sort: 'asc' }],
-						},
+						sorting: { sortModel },
 					}}
 				/>
 			</Box>

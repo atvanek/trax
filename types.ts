@@ -1,4 +1,8 @@
-import { GridRowsProp, GridRowModesModel } from '@mui/x-data-grid';
+import {
+	GridRowsProp,
+	GridRowModesModel,
+	GridSortModel,
+} from '@mui/x-data-grid';
 
 export interface TableJobData {
 	date: Date;
@@ -8,6 +12,8 @@ export interface TableJobData {
 	location: string;
 	status: Status;
 	jobURL: string;
+	contactName: string;
+	notes: string;
 }
 export interface RawJobData extends TableJobData {
 	id: number;
@@ -40,6 +46,7 @@ export interface EditToolbarProps {
 	setRowModesModel: (
 		newModel: (oldModel: GridRowModesModel) => GridRowModesModel
 	) => void;
+	setSortModel: (value: React.SetStateAction<GridSortModel>) => void;
 }
 
 export interface TabPanelProps {
