@@ -16,6 +16,7 @@ import MenuItem from '@mui/material/MenuItem';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
 import Link from 'next/link';
 import { Claims } from '@auth0/nextjs-auth0';
+import ColorModeSwitch from './ColorModeSwitch';
 
 const pages = ['About', 'Documentation', 'Contact'];
 const settings = ['Profile', 'Account', 'Preferences', 'Logout'];
@@ -127,6 +128,7 @@ export default function Nav({ user }: { user: Claims }) {
 							</Button>
 						))}
 					</Box>
+					<ColorModeSwitch />
 					<Typography sx={{ mx: 2 }}>Welcome, {user.name}</Typography>
 					<Box sx={{ flexGrow: 0 }}>
 						<Tooltip title='Open settings'>

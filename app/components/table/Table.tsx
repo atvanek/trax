@@ -138,6 +138,7 @@ export default function Table({
 			headerName: 'Actions',
 			width: 100,
 			cellClassName: 'actions',
+			headerClassName: 'table-header',
 			getActions: ({ id }) => {
 				const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 

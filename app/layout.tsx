@@ -1,7 +1,8 @@
+'use client';
+
 import type { Metadata } from 'next';
 import '../styles/globals.css';
 import ThemeRegistry from '@/theme/ThemeRegistry';
-import Nav from './components/Nav';
 import { UserProvider } from '@auth0/nextjs-auth0/client';
 
 export const metadata: Metadata = {

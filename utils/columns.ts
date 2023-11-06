@@ -53,7 +53,7 @@ export const columns: GridColDef[] = [
 		editable: true,
 		type: 'string',
 	},
-];
+].map((column) => ({ ...column, headerClassName: 'table-header' }));
 
 export const defaultColumnWidths = () => {
 	const defaultWidths: { [key: string]: null | number } = {};
