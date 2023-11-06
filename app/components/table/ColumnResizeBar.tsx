@@ -3,10 +3,13 @@ import { Dispatch, SetStateAction } from 'react';
 
 export default function ColumnResizeBar({
 	setColumnWidths,
+	resizing,
+	setResizing,
 }: {
 	setColumnWidths: Dispatch<SetStateAction<{ [key: string]: number | null }>>;
+	resizing: boolean;
+	setResizing: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-	const [resizing, setResizing] = React.useState<boolean>(false);
 	const [currentColumnRight, setCurrentColumnRight] = React.useState<number>(0);
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
 	const [barTop, setBarTop] = React.useState(0);
@@ -45,7 +48,7 @@ export default function ColumnResizeBar({
 				});
 			}
 		},
-		[setColumnWidths]
+		[setColumnWidths, setResizing]
 	);
 
 	const handleListenForResize = React.useCallback(
@@ -72,7 +75,7 @@ export default function ColumnResizeBar({
 			setResizing(false);
 			setCurrentColumnRight(0);
 		},
-		[currentColumnRight, currentField, resizing, setColumnWidths]
+		[currentColumnRight, currentField, setColumnWidths, resizing, setResizing]
 	);
 
 	React.useEffect(() => {

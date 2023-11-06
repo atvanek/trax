@@ -4,8 +4,8 @@ import * as React from 'react';
 import { RawJobData } from '@/types';
 import { Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import SaveIcon from '@mui/icons-material/Save';
-import CancelIcon from '@mui/icons-material/Close';
+import SaveIcon from '@mui/icons-material/SaveOutlined';
+import CancelIcon from '@mui/icons-material/CloseOutlined';
 import { columns, defaultColumnWidths } from '../../../utils/columns';
 import {
 	GridRowModesModel,
@@ -17,7 +17,6 @@ import {
 	GridRowId,
 	GridRowEditStopReasons,
 	GridSortModel,
-	GridCellEditStopReasons,
 	GridCellModesModel,
 	GridCellParams,
 } from '@mui/x-data-grid';
@@ -45,6 +44,7 @@ export default function Table({
 	}>(defaultColumnWidths());
 	const [cellModesModel, setCellModesModel] =
 		React.useState<GridCellModesModel>({});
+	const [resizing, setResizing] = React.useState<boolean>(false);
 
 	//notifies container that table is rendered
 	React.useLayoutEffect(() => {
@@ -55,7 +55,6 @@ export default function Table({
 		params,
 		event
 	) => {
-		console.log('row stop edit');
 		if (params.reason === GridRowEditStopReasons.rowFocusOut) {
 			event.defaultMuiPrevented = true;
 		}
@@ -66,10 +65,13 @@ export default function Table({
 	};
 
 	const handleSaveClick = (id: GridRowId) => () => {
+		//save row to database
 		setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
 	};
 
 	const handleDeleteClick = (id: GridRowId) => () => {
+		//popup confirmation
+		//delete row from database
 		setRows(rows.filter((row) => row.id !== id));
 	};
 
@@ -185,9 +187,13 @@ export default function Table({
 						color: 'text.primary',
 					},
 				}}>
-				<ColumnResizeBar setColumnWidths={setColumnWidths} />
+				<ColumnResizeBar
+					setColumnWidths={setColumnWidths}
+					resizing={resizing}
+					setResizing={setResizing}
+				/>
 				<DataGrid
-					sx={{ height: '80vh' }}
+					sx={{ height: '80vh', pointerEvents: resizing ? 'none' : 'auto' }}
 					rows={rows}
 					columns={columnsWithEdit}
 					editMode='row'
@@ -196,22 +202,12 @@ export default function Table({
 					disableRowSelectionOnClick
 					onRowModesModelChange={handleRowModesModelChange}
 					onRowEditStop={handleRowEditStop}
-					autoPageSize
 					cellModesModel={cellModesModel}
 					onCellModesModelChange={handleCellModesModelChange}
 					onCellClick={handleCellClick}
 					sortModel={sortModel}
 					onSortModelChange={handleSortModelChange}
-					// onPaginationModelChange={({ pageSize }) =>
-					// 	pageSize === rows.length ? setViewAll(true) : setViewAll(false)
-					// }
-					// processRowUpdate={processRowUpdate}
-					pageSizeOptions={[
-						10,
-						25,
-						50,
-						{ value: rows.length, label: 'View All' },
-					]}
+					pageSizeOptions={[25, 50, 100]}
 					slots={{
 						toolbar: EditToolbar,
 					}}
