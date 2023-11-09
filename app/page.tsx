@@ -19,9 +19,7 @@ export default async function Home() {
 				<a href='https://giphy.com/gifs/transparent-WJZGlfRLpuv9cs6vAr'></a>
 			</p>
 			<p>
-				<Link href='/api/auth/login' className='text-indigo-600'>
-					Login
-				</Link>
+				<Link href='/api/auth/login'>Login</Link>
 			</p>
 		</main>
 	);

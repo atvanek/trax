@@ -30,7 +30,6 @@ import {
 } from '@mui/x-data-grid';
 import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
-import { setDefaultResultOrder } from 'dns/promises';
 
 export default function Table({
 	data,
@@ -76,30 +75,33 @@ export default function Table({
 		});
 	};
 
-	const handleSaveClick = (id: GridRowId) => () => {
-		//save row to database
-		setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-	};
+	const handleSaveClick = React.useCallback(
+		(id: GridRowId) => () => {
+			//save row to database
+			setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+		},
+		[rowModesModel]
+	);
 
-	// const handleConfirmDelete = () => {
-	// 	handleDeleteClick();
-	// };
 	const handleDeleteClick = () => {
 		//delete row from database
 		setRows(rows.filter((row) => row.id !== deleteId));
 		setDeleteConfirmOpen(false);
 	};
 
-	const handleCancelClick = (id: GridRowId) => () => {
-		setRowModesModel({
-			...rowModesModel,
-			[id]: { mode: GridRowModes.View, ignoreModifications: true },
-		});
-		const currentRow = rows.find((row) => row.id === id);
-		if (currentRow?.isNew) {
-			setRows(rows.filter((row) => row.id !== id));
-		}
-	};
+	const handleCancelClick = React.useCallback(
+		(id: GridRowId) => () => {
+			setRowModesModel({
+				...rowModesModel,
+				[id]: { mode: GridRowModes.View, ignoreModifications: true },
+			});
+			const currentRow = rows.find((row) => row.id === id);
+			if (currentRow?.isNew) {
+				setRows(rows.filter((row) => row.id !== id));
+			}
+		},
+		[rowModesModel, rows]
+	);
 
 	const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
 		setRowModesModel(newRowModesModel);
@@ -135,11 +137,6 @@ export default function Table({
 		[]
 	);
 
-	// const processRowUpdate = (newRow, oldRow) => {
-	// 	console.log(newRow);
-	// 	console.log(oldRow);
-	// };
-
 	const columnsWithWidth = columns.map((column) => ({
 		...column,
 		width: columnWidths[column.field],
@@ -150,51 +147,53 @@ export default function Table({
 		setDeleteConfirmOpen(true);
 	};
 
-	const columnsWithEdit: GridColDef[] = [
-		...columnsWithWidth,
-		{
-			field: 'actions',
-			type: 'actions',
-			headerName: 'Actions',
-			width: 100,
-			cellClassName: 'actions',
-			headerClassName: 'table-header',
-			getActions: ({ id }) => {
-				const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
+	const columnsWithEdit: GridColDef[] = React.useMemo(() => {
+		return [
+			...columnsWithWidth,
+			{
+				field: 'actions',
+				type: 'actions',
+				headerName: 'Actions',
+				width: 100,
+				cellClassName: 'actions',
+				headerClassName: 'table-header',
+				getActions: ({ id }) => {
+					const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
 
-				if (isInEditMode) {
+					if (isInEditMode) {
+						return [
+							<GridActionsCellItem
+								icon={<SaveIcon />}
+								label='Save'
+								sx={{
+									color: 'primary.main',
+								}}
+								onClick={handleSaveClick(id)}
+								key={'save-' + id}
+							/>,
+							<GridActionsCellItem
+								icon={<CancelIcon />}
+								label='Cancel'
+								className='textPrimary'
+								onClick={handleCancelClick(id)}
+								color='inherit'
+								key={'cancel-' + id}
+							/>,
+						];
+					}
 					return [
 						<GridActionsCellItem
-							icon={<SaveIcon />}
-							label='Save'
-							sx={{
-								color: 'primary.main',
-							}}
-							onClick={handleSaveClick(id)}
-							key={'save-' + id}
-						/>,
-						<GridActionsCellItem
-							icon={<CancelIcon />}
-							label='Cancel'
-							className='textPrimary'
-							onClick={handleCancelClick(id)}
+							icon={<DeleteIcon />}
+							label='Delete'
+							onClick={() => handleRequestDelete(id)}
 							color='inherit'
-							key={'cancel-' + id}
+							key={'delete-' + id}
 						/>,
 					];
-				}
-				return [
-					<GridActionsCellItem
-						icon={<DeleteIcon />}
-						label='Delete'
-						onClick={() => handleRequestDelete(id)}
-						color='inherit'
-						key={'delete-' + id}
-					/>,
-				];
+				},
 			},
-		},
-	];
+		];
+	}, [columnsWithWidth, handleCancelClick, handleSaveClick, rowModesModel]);
 
 	return (
 		<>
@@ -215,7 +214,9 @@ export default function Table({
 				/>
 				<DataGrid
 					autoHeight
-					sx={{ pointerEvents: resizing ? 'none' : 'auto' }}
+					sx={{
+						pointerEvents: resizing ? 'none' : 'auto',
+					}}
 					rows={rows}
 					columns={columnsWithEdit}
 					editMode='row'

@@ -1,5 +1,13 @@
-import { GridColDef } from '@mui/x-data-grid';
 import statuses from '@/utils/statuses';
+import NotesEditor from '@/app/components/table/cells/NotesEditor';
+import NotesCell from '@/app/components/table/cells/NotesCell';
+import {
+	GridColDef,
+	GridRenderEditCellParams,
+	GridRenderCellParams,
+} from '@mui/x-data-grid';
+import LinkCell from '@/app/components/table/cells/LinkCell';
+import { Rating } from '@mui/material';
 
 export const columns: GridColDef[] = [
 	{
@@ -37,9 +45,17 @@ export const columns: GridColDef[] = [
 		valueOptions: statuses,
 	},
 	{
+		field: 'rating',
+		headerName: 'Rating',
+		renderCell: (params: GridRenderCellParams) => (
+			<Rating precision={0.5} size='small' />
+		),
+	},
+	{
 		field: 'jobURL',
 		headerName: 'Job Posting URL',
 		editable: true,
+		renderCell: (params: GridRenderCellParams) => <LinkCell {...params} />,
 	},
 	{
 		field: 'contactName',
@@ -52,6 +68,10 @@ export const columns: GridColDef[] = [
 		headerName: 'Notes',
 		editable: true,
 		type: 'string',
+		renderCell: (params: GridRenderCellParams) => <NotesCell {...params} />,
+		renderEditCell: (params: GridRenderEditCellParams) => (
+			<NotesEditor {...params} />
+		),
 	},
 ].map((column) => ({ ...column, headerClassName: 'table-header' }));
 

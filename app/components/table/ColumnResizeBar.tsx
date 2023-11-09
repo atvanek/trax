@@ -1,6 +1,5 @@
 import { useTheme } from '@mui/material/styles';
-import React from 'react';
-import { Dispatch, SetStateAction } from 'react';
+import React, { Dispatch, SetStateAction } from 'react';
 
 export default function ColumnResizeBar({
 	setColumnWidths,
@@ -17,7 +16,6 @@ export default function ColumnResizeBar({
 	const [resizeX, setResizeX] = React.useState<number>(0);
 
 	const theme = useTheme();
-	console.log(theme);
 
 	const handleListenForResizeStart = React.useCallback(
 		(e: MouseEvent) => {
