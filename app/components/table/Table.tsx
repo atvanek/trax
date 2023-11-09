@@ -1,16 +1,8 @@
 'use client';
 
-import * as React from 'react';
+import React from 'react';
 import { RawJobData } from '@/types';
-import {
-	Box,
-	Dialog,
-	DialogContent,
-	DialogContentText,
-	DialogTitle,
-	DialogActions,
-	Button,
-} from '@mui/material';
+import { Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/SaveOutlined';
 import CancelIcon from '@mui/icons-material/CloseOutlined';
@@ -18,7 +10,6 @@ import { columns, defaultColumnWidths } from '../../../utils/columns';
 import {
 	GridRowModesModel,
 	GridRowModes,
-	DataGrid,
 	GridColDef,
 	GridActionsCellItem,
 	GridEventListener,
@@ -30,10 +21,8 @@ import {
 } from '@mui/x-data-grid';
 import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
-import { useTheme } from '@mui/material/styles';
-import { mangoFusionPalette } from '@mui/x-charts';
-import statuses from '@/utils/statuses';
 import StyledTable from './StyledDataGrid';
+import DeleteConfirm from '../DeleteConfirm';
 
 export default function Table({
 	data,
@@ -42,12 +31,8 @@ export default function Table({
 	data: RawJobData[];
 	setLoaded: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-	const theme = useTheme();
-
-	const colors = mangoFusionPalette(theme.palette.mode);
-
 	const [rows, setRows] = React.useState(
-		data.map((row, index) => ({ ...row, isNew: false }))
+		data.map((row) => ({ ...row, isNew: false }))
 	);
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
@@ -252,28 +237,13 @@ export default function Table({
 					initialState={{
 						sorting: { sortModel },
 					}}
-		
 				/>
 			</Box>
-			<Dialog open={deleteConfirmOpen}>
-				<DialogTitle>Delete job listing?</DialogTitle>
-				<DialogContent>
-					<DialogContentText>
-						All job details will be permanently lost.
-					</DialogContentText>
-				</DialogContent>
-				<DialogActions>
-					<Button
-						color='primary'
-						autoFocus
-						onClick={() => setDeleteConfirmOpen(false)}>
-						Cancel
-					</Button>
-					<Button variant='contained' color='error' onClick={handleDeleteClick}>
-						Delete
-					</Button>
-				</DialogActions>
-			</Dialog>
+			<DeleteConfirm
+				deleteConfirmOpen={deleteConfirmOpen}
+				setDeleteConfirmOpen={setDeleteConfirmOpen}
+				handleDeleteClick={handleDeleteClick}
+			/>
 		</>
 	);
 }
