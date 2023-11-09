@@ -7,12 +7,12 @@ export default function CustomTabPanel(props: TabPanelProps) {
 	return (
 		<div
 			className='h-full'
+			hidden={value !== index}
 			role='tabpanel'
 			id={`simple-tabpanel-${index}`}
 			aria-labelledby={`simple-tab-${index}`}
-			style={{ display: value === index ? 'block' : 'none' }}
 			{...other}>
-			<Box>{children}</Box>
+			{value === index && <Box>{children}</Box>}
 		</div>
 	);
 }
