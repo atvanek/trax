@@ -14,7 +14,7 @@ export default function ColorModeSwitch() {
 			padding: 0,
 			transform: 'translateX(6px)',
 			'&.Mui-checked': {
-				color: '#fff',
+				color: 'black',
 				transform: 'translateX(22px)',
 				'& .MuiSwitch-thumb:before': {
 					backgroundImage: `url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 20 20"><path fill="${encodeURIComponent(

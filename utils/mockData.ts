@@ -15,6 +15,7 @@ for (let i = 0; i < 50; i++) {
 	const jobURL = 'www.linkedin.com';
 	const contactName = 'John Doe';
 	const notes = 'This is a sample note about this job'
+	const rating = Math.floor(Math.random() * 5) + 1
 	const id = generateUniqueID(mockData);
 
 	const status = statuses[Math.floor(Math.random() * statuses.length)];
@@ -26,6 +27,7 @@ for (let i = 0; i < 50; i++) {
 		compensation,
 		location,
 		status,
+		rating,
 		jobURL,
 		contactName,
 		notes,

@@ -5,5 +5,16 @@ export default function theme(mode: 'light' | 'dark') {
 		palette: {
 			mode,
 		},
+		components: {
+			MuiInputBase: {
+				styleOverrides: {
+					root: {
+						'input[type="date"]::-webkit-calendar-picker-indicator': {
+							filter: mode === 'dark' ? 'invert(100%)' : '',
+						},
+					},
+				},
+			},
+		},
 	});
 }

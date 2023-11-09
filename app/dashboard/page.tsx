@@ -6,6 +6,7 @@ import mockData from '@/utils/mockData';
 import Spinner from '../components/Spinner';
 import TabsContainer from '../components/tabs/TabsContainer';
 import Nav from '../components/Nav';
+import AnimatedPieChart from '../components/metrics/AnimatedPieChart';
 export default async function Dashboard() {
 	const { user } = (await getSession()) || {};
 	const tabs = [
@@ -16,8 +17,7 @@ export default async function Dashboard() {
 			fallbackProps={null}
 			key='Table View'
 		/>,
-		<div key='Status View'>Status View</div>,
-		<div key='Metrics'>Metrics</div>,
+		<AnimatedPieChart key='Metrics' />,
 	];
 	return user ? (
 		<>

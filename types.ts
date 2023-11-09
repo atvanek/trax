@@ -11,6 +11,7 @@ export interface TableJobData {
 	compensation: string;
 	location: string;
 	status: Status;
+	rating: number;
 	jobURL: string;
 	contactName: string;
 	notes: string;
