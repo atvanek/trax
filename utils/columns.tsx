@@ -48,7 +48,7 @@ export const columns: GridColDef[] = [
 		field: 'rating',
 		headerName: 'Rating',
 		renderCell: (params: GridRenderCellParams) => (
-			<Rating precision={0.5} size='small' />
+			<Rating precision={0.5} size='small' value={params.value} />
 		),
 	},
 	{

@@ -3,8 +3,9 @@ import { createTheme } from '@mui/material/styles';
 export default function theme(mode: 'light' | 'dark') {
 	return createTheme({
 		palette: {
-			mode,
+			mode: mode,
 		},
+
 		components: {
 			MuiInputBase: {
 				styleOverrides: {
@@ -12,6 +13,13 @@ export default function theme(mode: 'light' | 'dark') {
 						'input[type="date"]::-webkit-calendar-picker-indicator': {
 							filter: mode === 'dark' ? 'invert(100%)' : '',
 						},
+					},
+				},
+			},
+			MuiSelect: {
+				styleOverrides: {
+					select: {
+						fontSize: '0.875rem',
 					},
 				},
 			},

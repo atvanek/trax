@@ -30,6 +30,10 @@ import {
 } from '@mui/x-data-grid';
 import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
+import { useTheme } from '@mui/material/styles';
+import { mangoFusionPalette } from '@mui/x-charts';
+import statuses from '@/utils/statuses';
+import StyledTable from './StyledDataGrid';
 
 export default function Table({
 	data,
@@ -38,8 +42,12 @@ export default function Table({
 	data: RawJobData[];
 	setLoaded: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
+	const theme = useTheme();
+
+	const colors = mangoFusionPalette(theme.palette.mode);
+
 	const [rows, setRows] = React.useState(
-		data.map((row) => ({ ...row, isNew: false }))
+		data.map((row, index) => ({ ...row, isNew: false }))
 	);
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
@@ -212,7 +220,7 @@ export default function Table({
 					resizing={resizing}
 					setResizing={setResizing}
 				/>
-				<DataGrid
+				<StyledTable
 					autoHeight
 					sx={{
 						pointerEvents: resizing ? 'none' : 'auto',
@@ -244,6 +252,7 @@ export default function Table({
 					initialState={{
 						sorting: { sortModel },
 					}}
+		
 				/>
 			</Box>
 			<Dialog open={deleteConfirmOpen}>

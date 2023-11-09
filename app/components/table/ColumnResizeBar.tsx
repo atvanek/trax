@@ -102,10 +102,9 @@ export default function ColumnResizeBar({
 				display: resizing ? 'inline' : 'none',
 				top: barTop,
 				left: resizeX,
-				zIndex: 3,
 				position: 'absolute',
 				width: '1px',
-				backgroundColor: theme.palette.primary.main,
+				backgroundColor: theme.palette.secondary.main,
 				height: '100%',
 			}}></div>
 	);
