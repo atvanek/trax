@@ -1,0 +1,24 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Inter+Tight&family=Inter:wght@400;700&display=swap'); */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+h1 {
+  font-size: 2rem;
+  text-align: center;
+}
+
+.MuiDataGrid-iconSeparator {
+  cursor: col-resize
+}
+
+
+rect.MuiChartsLegend-mark {
+  transition: .3s;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+}
