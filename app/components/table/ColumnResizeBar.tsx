@@ -38,7 +38,8 @@ export default function ColumnResizeBar({
 			setResizing(true);
 			setCurrentColumnRight(column.getBoundingClientRect().right);
 			setResizeX(e.clientX);
-			setBarTop(column.getBoundingClientRect().top);
+			console.log(column.getBoundingClientRect());
+			setBarTop(column.getBoundingClientRect().height + 2);
 			setCurrentField(field || null);
 			if (field) {
 				setCurrentField(field || null);
