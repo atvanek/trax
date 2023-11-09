@@ -22,7 +22,11 @@ export default function TabsContainer({ tabs }: { tabs: JSX.Element[] }) {
 
 	return (
 		<Box sx={{ width: '100%', height: '100%' }}>
-			<Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+			<Box
+				sx={{
+					borderBottom: 1,
+					borderColor: 'divider',
+				}}>
 				<Tabs
 					value={value}
 					onChange={handleChange}
