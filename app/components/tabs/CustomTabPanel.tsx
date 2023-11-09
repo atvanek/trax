@@ -12,8 +12,9 @@ export default function CustomTabPanel(props: TabPanelProps) {
 			style={{
 				position: 'absolute',
 				width: '100%',
+				height: '100%',
 				visibility: value === index ? 'visible' : 'hidden',
-				backgroundColor: theme.palette.primary.contrastText,
+				backgroundColor: theme.palette.background.paper,
 			}}
 			role='tabpanel'
 			id={`simple-tabpanel-${index}`}
