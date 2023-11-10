@@ -7,6 +7,7 @@ import Spinner from '../components/Spinner';
 import TabsContainer from '../components/tabs/TabsContainer';
 import Nav from '../components/Nav';
 import AnimatedPieChart from '../components/metrics/AnimatedPieChart';
+import { PieChart, ListAlt } from '@mui/icons-material';
 export default async function Dashboard() {
 	const { user } = (await getSession()) || {};
 	const tabs = [
@@ -19,10 +20,11 @@ export default async function Dashboard() {
 		/>,
 		<AnimatedPieChart key='Metrics' />,
 	];
+	const icons = [<ListAlt key={0} />, <PieChart key={1} />];
 	return user ? (
 		<>
 			<Nav user={user} />
-			<TabsContainer tabs={tabs} />
+			<TabsContainer tabs={tabs} icons={icons} />
 		</>
 	) : (
 		redirect('/')

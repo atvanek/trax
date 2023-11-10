@@ -45,7 +45,9 @@ export default function NotesEditor(params: GridRenderEditCellParams) {
 						/>
 					</DialogContent>
 					<DialogActions>
-						<Button onClick={handleSave}>Save</Button>
+						<Button variant='contained' onClick={handleSave}>
+							Save
+						</Button>
 						<Button onClick={handleCancel}>Cancel</Button>
 					</DialogActions>
 				</Dialog>

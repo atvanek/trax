@@ -2,6 +2,7 @@ import { EditToolbarProps } from '@/types';
 import { GridToolbarContainer, GridRowModes } from '@mui/x-data-grid';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { GridToolbarExport } from '@mui/x-data-grid';
 
 export default function EditToolbar(props: EditToolbarProps) {
 	const { setRows, setRowModesModel, setSortModel } = props;
@@ -17,10 +18,11 @@ export default function EditToolbar(props: EditToolbarProps) {
 	};
 
 	return (
-		<GridToolbarContainer>
+		<GridToolbarContainer sx={{ justifyContent: 'space-between', px: 1 }}>
 			<Button color='primary' startIcon={<AddIcon />} onClick={handleClick}>
 				Add Job
 			</Button>
+			<GridToolbarExport />
 		</GridToolbarContainer>
 	);
 }

@@ -6,6 +6,7 @@ import {
 	DialogActions,
 	Button,
 } from '@mui/material';
+
 export default function DeleteConfirm({
 	deleteConfirmOpen,
 	setDeleteConfirmOpen,

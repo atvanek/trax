@@ -1,9 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import Tabs from '@mui/material/Tabs';
-import Tab from '@mui/material/Tab';
-import Box from '@mui/material/Box';
+import { Tab, Tabs, Box } from '@mui/material';
 import CustomTabPanel from './CustomTabPanel';
 
 function a11yProps(index: number) {
@@ -13,7 +11,13 @@ function a11yProps(index: number) {
 	};
 }
 
-export default function TabsContainer({ tabs }: { tabs: JSX.Element[] }) {
+export default function TabsContainer({
+	tabs,
+	icons,
+}: {
+	tabs: JSX.Element[];
+	icons: JSX.Element[];
+}) {
 	const [value, setValue] = React.useState(0);
 
 	const handleChange = (event: React.SyntheticEvent, newValue: number) => {
@@ -33,7 +37,15 @@ export default function TabsContainer({ tabs }: { tabs: JSX.Element[] }) {
 					aria-label='tabs'
 					variant='fullWidth'>
 					{tabs.map((tab, index) => {
-						return <Tab key={tab.key} label={tab.key} {...a11yProps(index)} />;
+						return (
+							<Tab
+								key={tab.key}
+								label={tab.key}
+								icon={icons[index]}
+								iconPosition='start'
+								{...a11yProps(index)}
+							/>
+						);
 					})}
 				</Tabs>
 			</Box>

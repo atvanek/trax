@@ -49,7 +49,7 @@ export default function AnimatedPieChart() {
 	};
 
 	return (
-		<div className='h-full flex items-center py-20 justify-center'>
+		<div className='h-full flex items-center py-6 justify-center mx-20'>
 			<PieChart
 				series={[
 					{
@@ -67,7 +67,7 @@ export default function AnimatedPieChart() {
 				padding={5}
 				colors={mangoFusionPalette}
 			/>
-			<div className='flex flex-col'>
+			<div className='flex flex-col min-w-max'>
 				{statuses.map((status, index) => (
 					<FormControlLabel
 						onChange={handleCheck}
