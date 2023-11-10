@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Job, Row } from '@/types';
+import { Row } from '@/types';
 import { Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/SaveOutlined';
@@ -24,17 +24,16 @@ import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
 import StyledTable from './StyledDataGrid';
 import DeleteConfirm from '../DeleteConfirm';
+import { IJob } from '@/db/models/job';
 
 export default function Table({
 	data,
 	setMounted,
 }: {
-	data: Job[];
+	data: Row[];
 	setMounted: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-	const [rows, setRows] = React.useState<Row[]>(
-		data.map((row) => ({ ...row, isNew: false }))
-	);
+	const [rows, setRows] = React.useState<Row[]>(data);
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
 	);
@@ -77,10 +76,50 @@ export default function Table({
 		[rowModesModel]
 	);
 
+	const handleProcessRowUpdate = (
+		updatedRow: GridRowModel,
+		originalRow: GridRowModel
+	) => {
+		const { isNew, __v, _id, ...updatedJob } = updatedRow;
+		const job = updatedJob as IJob;
+
+		//optimistic render
+		const newRow = { ...updatedRow, isNew: false } as IJob;
+		setRows((prevRows) =>
+			prevRows.map((row) => (row.id === newRow.id ? newRow : row))
+		);
+		fetch('/api/jobs', {
+			method: 'POST',
+			body: JSON.stringify(job),
+		})
+			.then((res) => res.json())
+			.then((rows: Row[]) => {
+				const newRows = rows.map((row) => ({
+					...row,
+					date: new Date(row.date),
+				})) as Row[];
+				setRows(newRows);
+			});
+
+		return updatedRow;
+	};
+
 	const handleDeleteClick = () => {
 		//delete row from database
 		setRows(rows.filter((row) => row.id !== deleteId));
 		setDeleteConfirmOpen(false);
+		fetch('/api/jobs', {
+			method: 'DELETE',
+			body: JSON.stringify({ id: deleteId }),
+		})
+			.then((res) => res.json())
+			.then((rows: Row[]) => {
+				const newRows = rows.map((row) => ({
+					...row,
+					date: new Date(row.date),
+				})) as Row[];
+				setRows(newRows);
+			});
 	};
 
 	const handleCancelClick = React.useCallback(
@@ -101,9 +140,12 @@ export default function Table({
 		setRowModesModel(newRowModesModel);
 	};
 
-	const handleSortModelChange = (newSortModel: GridSortModel) => {
-		setSortModel(newSortModel);
-	};
+	const handleSortModelChange = React.useCallback(
+		(newSortModel: GridSortModel) => {
+			setSortModel(newSortModel);
+		},
+		[]
+	);
 
 	const handleCellClick = React.useCallback(
 		(params: GridCellParams, event: React.MouseEvent) => {
@@ -188,22 +230,7 @@ export default function Table({
 			},
 		];
 	}, [columnsWithWidth, handleCancelClick, handleSaveClick, rowModesModel]);
-	const handleProcessRowUpdate = (
-		updatedRow: GridRowModel,
-		originalRow: GridRowModel
-	) => {
-		const { isNew, __v, _id, ...updatedJob } = updatedRow;
 
-		fetch('/api/jobs', {
-			method: 'POST',
-			body: JSON.stringify(updatedJob),
-		});
-		const newRow = { ...updatedRow, isNew: false } as Row;
-		setRows((prevRows) =>
-			prevRows.map((row) => (row.id === newRow.id ? newRow : row))
-		);
-		return updatedRow;
-	};
 	return (
 		<>
 			<Box

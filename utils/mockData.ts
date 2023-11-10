@@ -1,7 +1,6 @@
-import { RawJobData } from '@/types';
 import statuses from '@/utils/statuses';
 
-const mockData: RawJobData[] = [];
+const mockData = [];
 
 for (let i = 0; i < 50; i++) {
 	const year = 2023;
@@ -35,7 +34,7 @@ for (let i = 0; i < 50; i++) {
 	});
 }
 
-function generateUniqueID(existingRows: RawJobData[]) {
+function generateUniqueID(existingRows) {
 	let uniqueID: number;
 	do {
 		uniqueID = Math.floor(10000 + Math.random() * 90000); // Generate a random 5-digit number

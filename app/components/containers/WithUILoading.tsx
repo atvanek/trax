@@ -15,7 +15,6 @@ export default function WithUILoading({
 	fallbackProps: any;
 }) {
 	const { mounted, setMounted } = useMounted();
-
 	return (
 		<>
 			{fallback({ ...fallbackProps, mounted })}

@@ -1,6 +1,20 @@
-import { Schema, model, models, InferSchemaType, Model } from 'mongoose';
+import { Schema, model, models, Document } from 'mongoose';
 
-const JobSchema = new Schema({
+export interface IJob extends Document {
+	userId: string;
+	date: Date;
+	company: string;
+	jobTitle: string;
+	compensation: string;
+	location: string;
+	jobStatus: string;
+	rating: number;
+	jobURL: string;
+	contactName: string;
+	notes: string;
+	id: string;
+}
+const jobSchema = new Schema<IJob>({
 	userId: String,
 	date: Date,
 	company: String,
@@ -15,6 +29,4 @@ const JobSchema = new Schema({
 	id: String,
 });
 
-export type Job = InferSchemaType<typeof JobSchema>;
-
-export default models.Job || model<Job>('Job', JobSchema);
+export default models.Job || model<IJob>('Job', jobSchema);

@@ -7,7 +7,7 @@ import { GridToolbarExport } from '@mui/x-data-grid';
 export default function EditToolbar(props: EditToolbarProps) {
 	const { setRows, setRowModesModel, setSortModel } = props;
 
-	const handleClick = () => {
+	const handleAdd = () => {
 		setSortModel([{ field: 'date', sort: 'asc' }]);
 		const id = crypto.randomUUID();
 		setRows((oldRows) => [...oldRows, { id, isNew: true }]);
@@ -19,7 +19,7 @@ export default function EditToolbar(props: EditToolbarProps) {
 
 	return (
 		<GridToolbarContainer sx={{ justifyContent: 'space-between', px: 1 }}>
-			<Button color='primary' startIcon={<AddIcon />} onClick={handleClick}>
+			<Button color='primary' startIcon={<AddIcon />} onClick={handleAdd}>
 				Add Job
 			</Button>
 			<GridToolbarExport />

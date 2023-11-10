@@ -1,3 +1,5 @@
+import { IJob } from './db/models/job';
+
 import {
 	GridRowsProp,
 	GridRowModesModel,
@@ -18,7 +20,7 @@ export interface Job {
 	id: string;
 }
 
-export interface Row extends Job {
+export interface Row extends IJob {
 	isNew: boolean;
 }
 
