@@ -1,10 +1,7 @@
-import 'server-only';
-
 import { getSession } from '@auth0/nextjs-auth0';
 import { redirect } from 'next/navigation';
 import WithUILoading from '../components/containers/WithUILoading';
 import Table from '../components/table/Table';
-// import mockData from '@/utils/mockData';
 import Spinner from '../components/Spinner';
 import TabsContainer from '../components/tabs/TabsContainer';
 import Nav from '../components/Nav';
@@ -14,33 +11,32 @@ import dbConnect from '@/db/dbConnect';
 import userModel from '@/db/models/user';
 import jobModel from '@/db/models/job';
 import { User } from '../../db/models/user';
-import { Job } from '../../db/models/job';
 
 export default async function Dashboard() {
-	//get user from server session
+	// Get user from server session
 	const { user } = (await getSession()) || {};
 
-	//redirect if not authorized
+	// Redirect if not authorized
 	if (!user) {
 		return redirect('/');
 	}
 
-	//check if user exists in mongo cluster
+	// Check if user exists in the MongoDB cluster
 	const getUser = async (email: string): Promise<string | null | undefined> => {
 		await dbConnect();
 		const user: User | null | undefined = await userModel.findOne({ email });
 		return user?.userId;
 	};
 
-	//add new user to mongo cluster
-	const addUser = async (email: string): Promise<User> => {
+	// Add new user to MongoDB cluster
+	const addUser = async (email: string) => {
 		await dbConnect();
-		const addedUser: User = await userModel.create({ email, userId: user.sub });
+		const addedUser = await userModel.create({ email, userId: user.sub });
 		console.log('added user', addedUser);
 		return addedUser;
 	};
 
-	//get all jobs
+	// Get all jobs
 	const getJobs = async (userId: string) => {
 		await dbConnect();
 		const jobs = await jobModel.find({ userId });
@@ -54,7 +50,7 @@ export default async function Dashboard() {
 	const data = await getJobs(userId);
 
 	const filteredData = data.map((job) => {
-		const { _id, __v, ...filtered } = job._doc;
+		const { _id, __v, ...filtered } = job.toObject(); // Use toObject() to get raw data
 		return filtered;
 	});
 
@@ -69,6 +65,7 @@ export default async function Dashboard() {
 		<AnimatedPieChart key='Metrics' />,
 	];
 	const icons = [<ListAlt key={0} />, <PieChart key={1} />];
+
 	return (
 		<>
 			<Nav user={user} />
