@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import useLoaded from '../../../hooks/useLoaded';
+import useMounted from '@/hooks/useMounted';
 
 export default function WithUILoading({
 	component,
@@ -14,12 +14,12 @@ export default function WithUILoading({
 	componentProps: any;
 	fallbackProps: any;
 }) {
-	const { loaded, setLoaded } = useLoaded();
+	const { mounted, setMounted } = useMounted();
 
 	return (
 		<>
-			{fallback({ ...fallbackProps, loaded })}
-			{component({ ...componentProps, setLoaded })}
+			{fallback({ ...fallbackProps, mounted })}
+			{component({ ...componentProps, setMounted })}
 		</>
 	);
 }

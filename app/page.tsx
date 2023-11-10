@@ -1,6 +1,6 @@
-import Link from 'next/link';
 import { getSession } from '@auth0/nextjs-auth0';
 import { redirect } from 'next/navigation';
+import LoginButton from './components/LoginButton';
 
 export default async function Home() {
 	const { user } = (await getSession()) || {};
@@ -18,9 +18,7 @@ export default async function Home() {
 			<p>
 				<a href='https://giphy.com/gifs/transparent-WJZGlfRLpuv9cs6vAr'></a>
 			</p>
-			<p>
-				<Link href='/api/auth/login'>Login</Link>
-			</p>
+			<LoginButton />
 		</main>
 	);
 }

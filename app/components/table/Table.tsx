@@ -26,10 +26,10 @@ import DeleteConfirm from '../DeleteConfirm';
 
 export default function Table({
 	data,
-	setLoaded,
+	setMounted,
 }: {
 	data: RawJobData[];
-	setLoaded: React.Dispatch<React.SetStateAction<boolean>>;
+	setMounted: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
 	const [rows, setRows] = React.useState(
 		data.map((row) => ({ ...row, isNew: false }))
@@ -52,8 +52,8 @@ export default function Table({
 
 	//notifies container that table is rendered
 	React.useLayoutEffect(() => {
-		setLoaded(true);
-	}, [setLoaded]);
+		setMounted(true);
+	}, [setMounted]);
 
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
