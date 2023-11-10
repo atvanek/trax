@@ -56,7 +56,6 @@ export default function Table({
 		setMounted(true);
 	}, [setMounted]);
 
-	console.log(data);
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
 		event
