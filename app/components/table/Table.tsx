@@ -68,6 +68,16 @@ export default function Table({
 		});
 	};
 
+	React.useEffect(() => {
+		const headers = document.querySelector('.MuiDataGrid-columnHeaders');
+		const div = document.createElement('div');
+		div.setAttribute('draggable', 'true');
+		if (headers) {
+			div.appendChild(headers);
+			const panel = document.querySelector('.MuiDataGrid-main');
+			panel?.insertBefore(div, panel.firstChild);
+		}
+	});
 	const handleSaveClick = React.useCallback(
 		(id: GridRowId) => () => {
 			//save row to database
