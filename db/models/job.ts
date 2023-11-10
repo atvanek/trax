@@ -1,4 +1,4 @@
-import { Schema, model, models } from 'mongoose';
+import { Schema, model, models, InferSchemaType } from 'mongoose';
 
 const JobSchema = new Schema({
 	userId: String,
@@ -14,5 +14,7 @@ const JobSchema = new Schema({
 	notes: String,
 	id: String,
 });
+
+export type Job = InferSchemaType<typeof JobSchema>;
 
 export default models.Job || model('Job', JobSchema);

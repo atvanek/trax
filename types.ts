@@ -4,7 +4,7 @@ import {
 	GridSortModel,
 } from '@mui/x-data-grid';
 
-export interface TableJobData {
+export interface Job {
 	date: Date;
 	company: string;
 	jobTitle: string;
@@ -15,16 +15,20 @@ export interface TableJobData {
 	jobURL: string;
 	contactName: string;
 	notes: string;
+	id: string;
 }
-export interface RawJobData extends TableJobData {
-	id: number;
+
+export interface Row extends Job {
+	isNew: boolean;
 }
+
 export interface HeadCell {
 	disablePadding: boolean;
-	id: keyof TableJobData;
+	id: keyof Job;
 	label: string;
 	numeric: boolean;
 }
+
 export type Status =
 	| 'ready to apply'
 	| 'applied'

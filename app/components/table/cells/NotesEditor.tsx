@@ -21,7 +21,7 @@ export default function NotesEditor(params: GridRenderEditCellParams) {
 	const handleSave = () => {
 		setOpen(false);
 		api.setEditCellValue({ id, field, value });
-		api.stopRowEditMode({ id: row.id, field });
+		api.stopRowEditMode({ id: row.id });
 	};
 	const handleCancel = () => {
 		setOpen(false);

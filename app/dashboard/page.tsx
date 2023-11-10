@@ -13,6 +13,8 @@ import { PieChart, ListAlt } from '@mui/icons-material';
 import dbConnect from '@/db/dbConnect';
 import userModel from '@/db/models/user';
 import jobModel from '@/db/models/job';
+import { User } from '../../db/models/user';
+import { Job } from '../../db/models/job';
 
 export default async function Dashboard() {
 	//get user from server session
@@ -24,16 +26,16 @@ export default async function Dashboard() {
 	}
 
 	//check if user exists in mongo cluster
-	const getUser = async (email: string) => {
+	const getUser = async (email: string): Promise<string | null | undefined> => {
 		await dbConnect();
-		const user = await userModel.findOne({ email });
+		const user: User | null | undefined = await userModel.findOne({ email });
 		return user?.userId;
 	};
 
 	//add new user to mongo cluster
-	const addUser = async (email: string) => {
+	const addUser = async (email: string): Promise<User> => {
 		await dbConnect();
-		const addedUser = await userModel.create({ email, userId: user.sub });
+		const addedUser: User = await userModel.create({ email, userId: user.sub });
 		console.log('added user', addedUser);
 		return addedUser;
 	};
@@ -46,14 +48,21 @@ export default async function Dashboard() {
 		return jobs;
 	};
 
-	const userId = (await getUser(user.email)) || (await addUser(user.email));
+	const userId =
+		(await getUser(user.email)) || (await addUser(user.email)).userId;
 
 	const data = await getJobs(userId);
+
+	const filteredData = data.map((job) => {
+		const { _id, __v, ...filtered } = job._doc;
+		return filtered;
+	});
+
 	const tabs = [
 		<WithUILoading
 			fallback={Spinner}
 			component={Table}
-			componentProps={{ data }}
+			componentProps={{ data: filteredData }}
 			fallbackProps={null}
 			key='Table View'
 		/>,

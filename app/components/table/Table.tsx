@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { RawJobData } from '@/types';
+import { Job, Row } from '@/types';
 import { Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/SaveOutlined';
@@ -29,10 +29,10 @@ export default function Table({
 	data,
 	setMounted,
 }: {
-	data: RawJobData[];
+	data: Job[];
 	setMounted: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-	const [rows, setRows] = React.useState(
+	const [rows, setRows] = React.useState<Row[]>(
 		data.map((row) => ({ ...row, isNew: false }))
 	);
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
@@ -192,13 +192,17 @@ export default function Table({
 		updatedRow: GridRowModel,
 		originalRow: GridRowModel
 	) => {
-		console.log(updatedRow);
-		const { isNew, ...updatedJob } = updatedRow;
-		console.log(updatedJob);
+		const { isNew, __v, _id, ...updatedJob } = updatedRow;
+
 		fetch('/api/jobs', {
 			method: 'POST',
 			body: JSON.stringify(updatedJob),
 		});
+		const newRow = { ...updatedRow, isNew: false } as Row;
+		setRows((prevRows) =>
+			prevRows.map((row) => (row.id === newRow.id ? newRow : row))
+		);
+		return updatedRow;
 	};
 	return (
 		<>

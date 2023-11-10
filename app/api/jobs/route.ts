@@ -23,7 +23,8 @@ export const POST = async (req: Request) => {
 		},
 		{ upsert: true, new: true }
 	);
-	console.log(result);
+
+	console.log('result of updating job', result);
 
 	return NextResponse.json('nice');
 };
