@@ -35,7 +35,8 @@ export default function StyledTable(props: any) {
 				if (statuses.includes(params.value)) {
 					return getCellClassName(params.value);
 				} else return '';
-			}}
+			}
+			}
 		/>
 	);
 }

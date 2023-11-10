@@ -38,7 +38,7 @@ export const columns: GridColDef[] = [
 		editable: true,
 	},
 	{
-		field: 'status',
+		field: 'jobStatus',
 		headerName: 'Status',
 		editable: true,
 		type: 'singleSelect',

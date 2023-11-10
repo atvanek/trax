@@ -18,6 +18,7 @@ import {
 	GridSortModel,
 	GridCellModesModel,
 	GridCellParams,
+	GridRowModel,
 } from '@mui/x-data-grid';
 import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
@@ -55,6 +56,7 @@ export default function Table({
 		setMounted(true);
 	}, [setMounted]);
 
+	console.log(data);
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
 		event
@@ -187,7 +189,18 @@ export default function Table({
 			},
 		];
 	}, [columnsWithWidth, handleCancelClick, handleSaveClick, rowModesModel]);
-
+	const handleProcessRowUpdate = (
+		updatedRow: GridRowModel,
+		originalRow: GridRowModel
+	) => {
+		console.log(updatedRow);
+		const { isNew, ...updatedJob } = updatedRow;
+		console.log(updatedJob);
+		fetch('/api/jobs', {
+			method: 'POST',
+			body: JSON.stringify(updatedJob),
+		});
+	};
 	return (
 		<>
 			<Box
@@ -210,6 +223,7 @@ export default function Table({
 					sx={{
 						pointerEvents: resizing ? 'none' : 'auto',
 					}}
+					processRowUpdate={handleProcessRowUpdate}
 					rows={rows}
 					columns={columnsWithEdit}
 					editMode='row'
