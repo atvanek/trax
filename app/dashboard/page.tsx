@@ -14,7 +14,6 @@ import dbConnect from '@/db/dbConnect';
 import userModel from '@/db/models/user';
 
 export default async function Dashboard() {
-	
 	//get user from server session
 	const { user } = (await getSession()) || {};
 
@@ -38,16 +37,25 @@ export default async function Dashboard() {
 		return addedUser;
 	};
 
+	//get all jobs
+	const getJobs = async (email: string) => {
+		await dbConnect();
+		const user = await userModel.findOne({ email });
+		return user.jobs;
+	};
+
 	const newUser = await isNewUser(user.email);
 	console.log('user is new user:', newUser);
 	if (newUser) {
 		addUser(user.email);
 	}
+
+	const data = await getJobs(user.email);
 	const tabs = [
 		<WithUILoading
 			fallback={Spinner}
 			component={Table}
-			componentProps={{ data: mockData }}
+			componentProps={{ data }}
 			fallbackProps={null}
 			key='Table View'
 		/>,
