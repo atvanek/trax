@@ -8,6 +8,7 @@ import {
 } from '@mui/x-data-grid';
 import LinkCell from '@/app/components/table/cells/LinkCell';
 import { Rating } from '@mui/material';
+import { GridValueGetterParams } from '@mui/x-data-grid';
 
 export const columns: GridColDef[] = [
 	{
@@ -15,6 +16,10 @@ export const columns: GridColDef[] = [
 		headerName: 'Date',
 		editable: true,
 		type: 'date',
+		valueGetter: (params: GridValueGetterParams) => {
+			console.log(typeof params.value);
+			return params?.value && new Date(params.value);
+		},
 	},
 	{
 		field: 'company',

@@ -13,10 +13,10 @@ export default function EditToolbar(props: EditToolbarProps) {
 		if (!editing) {
 			setSortModel([{ field: 'date', sort: 'asc' }]);
 			const id = crypto.randomUUID();
-			setRows((oldRows) => [...oldRows, { id, isNew: true }]);
+			setRows((oldRows) => [{ id, isNew: true }, ...oldRows]);
 			setRowModesModel((oldModel) => ({
-				...oldModel,
 				[id]: { mode: GridRowModes.Edit, fieldToFocus: 'date' },
+				...oldModel,
 			}));
 			setEditing(true);
 		} else {

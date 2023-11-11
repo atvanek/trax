@@ -13,6 +13,7 @@ export interface IJob extends Document {
 	contactName: string;
 	notes: string;
 	id: string;
+
 }
 const jobSchema = new Schema<IJob>({
 	userId: String,
@@ -27,6 +28,7 @@ const jobSchema = new Schema<IJob>({
 	contactName: String,
 	notes: String,
 	id: String,
+
 });
 
 export default models.Job || model<IJob>('Job', jobSchema);

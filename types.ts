@@ -6,27 +6,13 @@ import {
 	GridSortModel,
 } from '@mui/x-data-grid';
 
-export interface Job {
-	date: Date;
-	company: string;
-	jobTitle: string;
-	compensation: string;
-	location: string;
-	status: Status;
-	rating: number;
-	jobURL: string;
-	contactName: string;
-	notes: string;
-	id: string;
-}
-
 export interface Row extends IJob {
 	isNew: boolean;
 }
 
 export interface HeadCell {
 	disablePadding: boolean;
-	id: keyof Job;
+	id: keyof IJob;
 	label: string;
 	numeric: boolean;
 }

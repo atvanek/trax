@@ -6,7 +6,7 @@ import { Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/SaveOutlined';
 import CancelIcon from '@mui/icons-material/CloseOutlined';
-import { columns, defaultColumnWidths } from '../../../utils/columns';
+import { columns, defaultColumnWidths } from './columns';
 import {
 	GridRowModesModel,
 	GridRowModes,
@@ -24,7 +24,6 @@ import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
 import StyledTable from './StyledDataGrid';
 import DeleteConfirm from '../DeleteConfirm';
-import { IJob } from '@/db/models/job';
 
 export default function Table({
 	data,
@@ -79,29 +78,19 @@ export default function Table({
 		[rowModesModel]
 	);
 
-	const handleProcessRowUpdate = (
-		updatedRow: GridRowModel,
-		originalRow: GridRowModel
-	) => {
-		const { isNew, __v, _id, ...updatedJob } = updatedRow;
-		const job = updatedJob as IJob;
-
+	const handleProcessRowUpdate = (updatedRow: Row) => {
 		//optimistic render
-		const newRow = { ...updatedRow, isNew: false } as IJob;
+		const newRow = { ...updatedRow, isNew: false } as Row;
 		setRows((prevRows) =>
 			prevRows.map((row) => (row.id === newRow.id ? newRow : row))
 		);
-		fetch('/api/jobs', {
+		fetch('/api/job', {
 			method: 'POST',
-			body: JSON.stringify(job),
+			body: JSON.stringify(newRow),
 		})
 			.then((res) => res.json())
 			.then((rows: Row[]) => {
-				const newRows = rows.map((row) => ({
-					...row,
-					date: new Date(row.date),
-				})) as Row[];
-				setRows(newRows);
+				setRows(rows);
 			});
 
 		return updatedRow;

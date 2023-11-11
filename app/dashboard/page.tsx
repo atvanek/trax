@@ -10,7 +10,7 @@ import { PieChart, ListAlt } from '@mui/icons-material';
 import dbConnect from '@/db/dbConnect';
 import userModel, { IUser } from '@/db/models/user';
 import jobModel, { IJob } from '@/db/models/job';
-import { Row } from '@/types';
+import createRows from '@/utils/createRows';
 
 export default async function Dashboard() {
 	// Get user from server session
@@ -52,19 +52,11 @@ export default async function Dashboard() {
 
 	const data = await getJobs(userId);
 
-	//prepare data for client grid
-	const rows: Row[] = data.map((job) => {
-		//filter out unneeded field and convert document to POJO
-		const { _id, __v, ...filteredData } = job.toObject();
-		//add isNew property for cancelling new rows
-		return { ...filteredData, isNew: false };
-	});
-
 	const tabs = [
 		<WithUILoading
 			fallback={Spinner}
 			component={Table}
-			componentProps={{ data: rows }}
+			componentProps={{ data: createRows(data) }}
 			fallbackProps={null}
 			key='Table View'
 		/>,
