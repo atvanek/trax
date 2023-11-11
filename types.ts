@@ -54,6 +54,8 @@ export interface EditToolbarProps {
 		newModel: (oldModel: GridRowModesModel) => GridRowModesModel
 	) => void;
 	setSortModel: (value: React.SetStateAction<GridSortModel>) => void;
+	editing: boolean;
+	setEditing: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 export interface TabPanelProps {

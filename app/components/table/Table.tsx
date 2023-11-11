@@ -49,6 +49,7 @@ export default function Table({
 	const [deleteConfirmOpen, setDeleteConfirmOpen] =
 		React.useState<boolean>(false);
 	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null);
+	const [editing, setEditing] = React.useState(false);
 
 	//notifies container that table is rendered
 	React.useLayoutEffect(() => {
@@ -59,6 +60,7 @@ export default function Table({
 		params,
 		event
 	) => {
+		setEditing(false);
 		if (params.reason === GridRowEditStopReasons.rowFocusOut) {
 			event.defaultMuiPrevented = true;
 		}
@@ -72,6 +74,7 @@ export default function Table({
 		(id: GridRowId) => () => {
 			//save row to database
 			setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
+			setEditing(false);
 		},
 		[rowModesModel]
 	);
@@ -157,7 +160,7 @@ export default function Table({
 			if (!event.currentTarget.contains(event.target as Element)) {
 				return;
 			}
-
+			setEditing(true);
 			setRowModesModel({
 				...rowModesModel,
 				[params.id]: { mode: GridRowModes.Edit },
@@ -276,6 +279,8 @@ export default function Table({
 							setRows,
 							setRowModesModel,
 							setSortModel,
+							editing,
+							setEditing,
 						},
 					}}
 					initialState={{

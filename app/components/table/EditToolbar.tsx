@@ -2,25 +2,35 @@ import { EditToolbarProps } from '@/types';
 import { GridToolbarContainer, GridRowModes } from '@mui/x-data-grid';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import SaveIcon from '@mui/icons-material/SaveOutlined';
 import { GridToolbarExport } from '@mui/x-data-grid';
 
 export default function EditToolbar(props: EditToolbarProps) {
-	const { setRows, setRowModesModel, setSortModel } = props;
+	const { setRows, setRowModesModel, setSortModel, editing, setEditing } =
+		props;
 
-	const handleAdd = () => {
-		setSortModel([{ field: 'date', sort: 'asc' }]);
-		const id = crypto.randomUUID();
-		setRows((oldRows) => [...oldRows, { id, isNew: true }]);
-		setRowModesModel((oldModel) => ({
-			...oldModel,
-			[id]: { mode: GridRowModes.Edit, fieldToFocus: 'date' },
-		}));
+	const handleClick = () => {
+		if (!editing) {
+			setSortModel([{ field: 'date', sort: 'asc' }]);
+			const id = crypto.randomUUID();
+			setRows((oldRows) => [...oldRows, { id, isNew: true }]);
+			setRowModesModel((oldModel) => ({
+				...oldModel,
+				[id]: { mode: GridRowModes.Edit, fieldToFocus: 'date' },
+			}));
+			setEditing(true);
+		} else {
+			setEditing(false);
+		}
 	};
 
 	return (
 		<GridToolbarContainer sx={{ justifyContent: 'space-between', px: 1 }}>
-			<Button color='primary' startIcon={<AddIcon />} onClick={handleAdd}>
-				Add Job
+			<Button
+				color='primary'
+				startIcon={editing ? <SaveIcon /> : <AddIcon />}
+				onClick={handleClick}>
+				{editing ? 'Save' : 'Add Job'}
 			</Button>
 			<GridToolbarExport />
 		</GridToolbarContainer>
