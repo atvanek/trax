@@ -4,7 +4,6 @@ import React from 'react';
 import { Row } from '@/types';
 import { Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import SaveIcon from '@mui/icons-material/SaveOutlined';
 import { columns, defaultColumnWidths } from './columns';
 import {
 	GridRowModesModel,
@@ -45,6 +44,7 @@ export default function Table({
 		React.useState<boolean>(false);
 	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null);
 	const [editing, setEditing] = React.useState(false);
+	const [dbSyncing, setDbSyncing] = React.useState(false);
 
 	//notifies container that table is rendered
 	React.useLayoutEffect(() => {
@@ -80,6 +80,7 @@ export default function Table({
 		setRows((prevRows) =>
 			prevRows.map((row) => (row.id === newRow.id ? newRow : row))
 		);
+		setDbSyncing(true);
 		fetch('/api/job', {
 			method: 'POST',
 			body: JSON.stringify(newRow),
@@ -87,6 +88,7 @@ export default function Table({
 			.then((res) => res.json())
 			.then((rows: Row[]) => {
 				setRows(rows);
+				setDbSyncing(false);
 			});
 
 		return updatedRow;
@@ -229,12 +231,8 @@ export default function Table({
 					slotProps={{
 						toolbar: {
 							setRows,
-							setRowModesModel,
 							setSortModel,
-							editing,
-							setEditing,
-							handleCancelClick,
-							handleSaveClick,
+							setRowModesModel,
 						},
 					}}
 					initialState={{
