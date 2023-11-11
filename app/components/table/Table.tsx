@@ -5,7 +5,6 @@ import { Row } from '@/types';
 import { Box } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/SaveOutlined';
-import CancelIcon from '@mui/icons-material/CloseOutlined';
 import { columns, defaultColumnWidths } from './columns';
 import {
 	GridRowModesModel,
@@ -16,9 +15,7 @@ import {
 	GridRowId,
 	GridRowEditStopReasons,
 	GridSortModel,
-	GridCellModesModel,
 	GridCellParams,
-	GridRowModel,
 } from '@mui/x-data-grid';
 import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
@@ -42,8 +39,7 @@ export default function Table({
 	const [columnWidths, setColumnWidths] = React.useState<{
 		[key: string]: number | null;
 	}>(defaultColumnWidths());
-	const [cellModesModel, setCellModesModel] =
-		React.useState<GridCellModesModel>({});
+
 	const [resizing, setResizing] = React.useState<boolean>(false);
 	const [deleteConfirmOpen, setDeleteConfirmOpen] =
 		React.useState<boolean>(false);
@@ -158,13 +154,6 @@ export default function Table({
 		[rowModesModel]
 	);
 
-	const handleCellModesModelChange = React.useCallback(
-		(newModel: GridCellModesModel) => {
-			setCellModesModel(newModel);
-		},
-		[]
-	);
-
 	const columnsWithWidth = columns.map((column) => ({
 		...column,
 		width: columnWidths[column.field],
@@ -177,38 +166,13 @@ export default function Table({
 
 	const columnsWithEdit: GridColDef[] = React.useMemo(() => {
 		return [
-			...columnsWithWidth,
 			{
 				field: 'actions',
 				type: 'actions',
-				headerName: 'Actions',
-				width: 100,
+				width: 50,
 				cellClassName: 'actions',
 				headerClassName: 'table-header',
 				getActions: ({ id }) => {
-					const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit;
-
-					if (isInEditMode) {
-						return [
-							<GridActionsCellItem
-								icon={<SaveIcon />}
-								label='Save'
-								sx={{
-									color: 'primary.main',
-								}}
-								onClick={handleSaveClick(id)}
-								key={'save-' + id}
-							/>,
-							<GridActionsCellItem
-								icon={<CancelIcon />}
-								label='Cancel'
-								className='textPrimary'
-								onClick={handleCancelClick(id)}
-								color='inherit'
-								key={'cancel-' + id}
-							/>,
-						];
-					}
 					return [
 						<GridActionsCellItem
 							icon={<DeleteIcon />}
@@ -220,8 +184,9 @@ export default function Table({
 					];
 				},
 			},
+			...columnsWithWidth,
 		];
-	}, [columnsWithWidth, handleCancelClick, handleSaveClick, rowModesModel]);
+	}, [columnsWithWidth]);
 
 	return (
 		<>
@@ -254,8 +219,6 @@ export default function Table({
 					disableRowSelectionOnClick
 					onRowModesModelChange={handleRowModesModelChange}
 					onRowEditStop={handleRowEditStop}
-					cellModesModel={cellModesModel}
-					onCellModesModelChange={handleCellModesModelChange}
 					onCellClick={handleCellClick}
 					sortModel={sortModel}
 					onSortModelChange={handleSortModelChange}
@@ -270,6 +233,8 @@ export default function Table({
 							setSortModel,
 							editing,
 							setEditing,
+							handleCancelClick,
+							handleSaveClick,
 						},
 					}}
 					initialState={{

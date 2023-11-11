@@ -7,7 +7,6 @@ import {
 	GridRenderCellParams,
 } from '@mui/x-data-grid';
 import LinkCell from '@/app/components/table/cells/LinkCell';
-import { Rating } from '@mui/material';
 import { GridValueGetterParams } from '@mui/x-data-grid';
 
 export const columns: GridColDef[] = [
@@ -17,7 +16,6 @@ export const columns: GridColDef[] = [
 		editable: true,
 		type: 'date',
 		valueGetter: (params: GridValueGetterParams) => {
-			console.log(typeof params.value);
 			return params?.value && new Date(params.value);
 		},
 	},
@@ -48,13 +46,6 @@ export const columns: GridColDef[] = [
 		editable: true,
 		type: 'singleSelect',
 		valueOptions: statuses,
-	},
-	{
-		field: 'rating',
-		headerName: 'Rating',
-		renderCell: (params: GridRenderCellParams) => (
-			<Rating precision={0.5} size='small' value={params.value} />
-		),
 	},
 	{
 		field: 'jobURL',
