@@ -5,6 +5,7 @@ import userModel, { IUser } from '@/db/models/user';
 import jobModel, { IJob } from '@/db/models/job';
 import DashboardContainer from '../components/containers/DashboardContainer';
 
+
 export default async function Dashboard() {
 	// Get user from server session
 	const { user } = (await getSession()) || {};

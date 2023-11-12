@@ -1,14 +1,15 @@
 import { useTheme } from '@mui/material/styles';
 import React, { Dispatch, SetStateAction } from 'react';
+import { GridColDef } from '@mui/x-data-grid';
 
 export default function ColumnResizeBar({
-	setColumnWidths,
 	resizing,
 	setResizing,
+	setColumns,
 }: {
-	setColumnWidths: Dispatch<SetStateAction<{ [key: string]: number | null }>>;
 	resizing: boolean;
 	setResizing: React.Dispatch<React.SetStateAction<boolean>>;
+	setColumns: React.Dispatch<React.SetStateAction<GridColDef[]>>;
 }) {
 	const [currentColumnRight, setCurrentColumnRight] = React.useState<number>(0);
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
@@ -19,6 +20,7 @@ export default function ColumnResizeBar({
 
 	const handleListenForResizeStart = React.useCallback(
 		(e: MouseEvent) => {
+			//grab currently selected column header based on what element is clicked
 			let column: HTMLElement;
 			if (
 				e.target instanceof SVGElement &&
@@ -36,22 +38,27 @@ export default function ColumnResizeBar({
 			}
 			const { field } = column.dataset;
 			setResizing(true);
-			setCurrentColumnRight(column.getBoundingClientRect().right);
+			const columnRight = e.clientX;
+			console.log('current column right', currentColumnRight);
+			setCurrentColumnRight(columnRight);
+			//x position of current column
 			setResizeX(e.clientX);
-			console.log(column.getBoundingClientRect());
+			const { width } = column.getBoundingClientRect();
 			setBarTop(column.getBoundingClientRect().height + 2);
-			setCurrentField(field || null);
 			if (field) {
-				setCurrentField(field || null);
-				setColumnWidths((prev) => {
-					return {
-						...prev,
-						[field]: column.getBoundingClientRect().width,
-					};
+				setCurrentField(field);
+				setColumns((prevColumns) => {
+					return prevColumns.map((prevColumn) => {
+						if (prevColumn.field === field) {
+							return { ...prevColumn, width };
+						} else {
+							return prevColumn;
+						}
+					});
 				});
 			}
 		},
-		[setColumnWidths, setResizing]
+		[currentColumnRight, setColumns, setResizing]
 	);
 
 	const handleListenForResize = React.useCallback(
@@ -65,20 +72,25 @@ export default function ColumnResizeBar({
 	const handleListenForResizeEnd = React.useCallback(
 		(e: MouseEvent) => {
 			if (!resizing) return;
-			console.log('resize end');
+
 			const diff = e.clientX - currentColumnRight;
+			console.log(diff);
+			console.log(currentField);
 			if (currentField) {
-				setColumnWidths((prev) => {
-					return {
-						...prev,
-						[currentField]: (prev[currentField] || 0) + diff,
-					};
+				setColumns((prevColumns) => {
+					return prevColumns.map((prevColumn) => {
+						if (prevColumn.field === currentField) {
+							return { ...prevColumn, width: (prevColumn.width || 0) + diff };
+						} else {
+							return prevColumn;
+						}
+					});
 				});
 			}
 			setResizing(false);
 			setCurrentColumnRight(0);
 		},
-		[currentColumnRight, currentField, setColumnWidths, resizing, setResizing]
+		[currentField, resizing, setColumns, setResizing, currentColumnRight]
 	);
 
 	React.useEffect(() => {

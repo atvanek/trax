@@ -17,7 +17,7 @@ export default function DashboardContainer({
 	stringifiedData: string;
 	user: Claims;
 }) {
-  const [rows, setRows] = React.useState<Row[]>(JSON.parse(stringifiedData));
+	const [rows, setRows] = React.useState<Row[]>(JSON.parse(stringifiedData));
 	const tabs = [
 		<WithUILoading
 			fallback={Spinner}

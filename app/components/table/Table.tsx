@@ -3,8 +3,8 @@
 import React from 'react';
 import { Row } from '@/types';
 import { Box } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
-import { columns, defaultColumnWidths } from './columns';
+
+import { defaultColumns, defaultColumnWidths } from './columns';
 import {
 	GridRowModesModel,
 	GridRowModes,
@@ -20,6 +20,7 @@ import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
 import StyledTable from './StyledDataGrid';
 import DeleteConfirm from '../DeleteConfirm';
+import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 
 export default function Table({
 	rows,
@@ -36,26 +37,125 @@ export default function Table({
 	const [sortModel, setSortModel] = React.useState<GridSortModel>([
 		{ field: 'date', sort: 'asc' },
 	]);
-	const [columnWidths, setColumnWidths] = React.useState<{
-		[key: string]: number | null;
-	}>(defaultColumnWidths());
 
 	const [resizing, setResizing] = React.useState<boolean>(false);
 	const [deleteConfirmOpen, setDeleteConfirmOpen] =
 		React.useState<boolean>(false);
 	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null);
-	const [editing, setEditing] = React.useState(false);
+	const [columnsDraggable, setColumnsDraggable] = React.useState(false);
 
 	//notifies container that table is rendered
 	React.useLayoutEffect(() => {
 		setMounted(true);
 	}, [setMounted]);
 
+	const columnsWithEdit: GridColDef[] = React.useMemo(() => {
+		return [
+			{
+				field: 'actions',
+				type: 'actions',
+				width: 50,
+				cellClassName: 'actions',
+				headerClassName: 'table-header',
+				getActions: ({ id }) => {
+					return [
+						<GridActionsCellItem
+							icon={<DeleteIcon />}
+							label='Delete'
+							onClick={() => handleRequestDelete(id)}
+							color='inherit'
+							key={'delete-' + id}
+						/>,
+					];
+				},
+			},
+			...defaultColumns,
+		];
+	}, []);
+
+	const [columns, setColumns] = React.useState(columnsWithEdit);
+
+	const handleReorderColumns = React.useCallback(
+		(e: DragEvent, index: number) => {
+			if (index === 0) return;
+			const data = e.dataTransfer?.getData('text/plain');
+
+			const draggedColumn = columns.find(
+				(column) => column.headerName === data
+			);
+			const restOfColumns = columns.filter(
+				(column) => column.headerName !== data
+			);
+			const newColumns = [
+				...restOfColumns.slice(0, index),
+				draggedColumn,
+				...restOfColumns.slice(index),
+			] as GridColDef[];
+			setColumns(newColumns);
+		},
+		[columns]
+	);
+
+	const addDragEventHandlers = React.useCallback(
+		(
+			headers: NodeListOf<HTMLDivElement>,
+			seperators: NodeListOf<SVGElement>
+		) => {
+			seperators.forEach((seperator, index) => {
+				seperator.setAttribute('droppable', 'true');
+				seperator.addEventListener('dragover', (event) => {
+					event.preventDefault();
+				});
+
+				seperator.addEventListener('drop', (e) => {
+					handleReorderColumns(e, index);
+				});
+			});
+
+			headers.forEach((header, index) => {
+				header.setAttribute('draggable', 'true');
+
+				header.addEventListener('dragstart', (e) => {
+					const target = e.target as HTMLDivElement;
+					e.dataTransfer?.setData('text/plain', target.innerText);
+				});
+
+				header.addEventListener('dragenter', (event) => {
+					event.preventDefault();
+				});
+
+				header.addEventListener('dragover', (event) => {
+					event.preventDefault();
+				});
+			});
+
+			setColumnsDraggable(true);
+		},
+		[handleReorderColumns]
+	);
+
+	const makeColumnsDraggable = React.useCallback(() => {
+		const headers: NodeListOf<HTMLDivElement> = document.querySelectorAll(
+			'.MuiDataGrid-columnHeaderDraggableContainer'
+		);
+		const seperators: NodeListOf<SVGElement> = document.querySelectorAll(
+			'.MuiDataGrid-iconSeparator'
+		);
+
+		if (headers.length && seperators.length) {
+			addDragEventHandlers(headers, seperators);
+		}
+	}, [addDragEventHandlers]);
+
+	if (!columnsDraggable) {
+		console.log('making columns');
+		makeColumnsDraggable();
+	}
+
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
 		event
 	) => {
-		setEditing(false);
 		if (params.reason === GridRowEditStopReasons.rowFocusOut) {
 			event.defaultMuiPrevented = true;
 		}
@@ -64,15 +164,6 @@ export default function Table({
 			[params.id]: { mode: GridRowModes.View },
 		});
 	};
-
-	const handleSaveClick = React.useCallback(
-		(id: GridRowId) => () => {
-			//save row to database
-			setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-			setEditing(false);
-		},
-		[rowModesModel]
-	);
 
 	const handleProcessRowUpdate = (updatedRow: Row) => {
 		//optimistic render
@@ -110,19 +201,19 @@ export default function Table({
 			});
 	};
 
-	const handleCancelClick = React.useCallback(
-		(id: GridRowId) => () => {
-			setRowModesModel({
-				...rowModesModel,
-				[id]: { mode: GridRowModes.View, ignoreModifications: true },
-			});
-			const currentRow = rows.find((row) => row.id === id);
-			if (currentRow?.isNew) {
-				setRows(rows.filter((row) => row.id !== id));
-			}
-		},
-		[rowModesModel, rows, setRows]
-	);
+	// const handleCancelClick = React.useCallback(
+	// 	(id: GridRowId) => () => {
+	// 		setRowModesModel({
+	// 			...rowModesModel,
+	// 			[id]: { mode: GridRowModes.View, ignoreModifications: true },
+	// 		});
+	// 		const currentRow = rows.find((row) => row.id === id);
+	// 		if (currentRow?.isNew) {
+	// 			setRows(rows.filter((row) => row.id !== id));
+	// 		}
+	// 	},
+	// 	[rowModesModel, rows, setRows]
+	// );
 
 	const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
 		setRowModesModel(newRowModesModel);
@@ -135,59 +226,27 @@ export default function Table({
 		[]
 	);
 
-	const handleCellClick = React.useCallback(
-		(params: GridCellParams, event: React.MouseEvent) => {
-			console.log(params);
-			if (!params.isEditable) {
-				return;
-			}
+	const handleCellClick = (params: GridCellParams, event: React.MouseEvent) => {
+		console.log(params);
+		if (!params.isEditable) {
+			return;
+		}
 
-			// Ignore portal
-			if (!event.currentTarget.contains(event.target as Element)) {
-				return;
-			}
-			setEditing(true);
-			setRowModesModel({
-				...rowModesModel,
-				[params.id]: { mode: GridRowModes.Edit },
-			});
-		},
-		[rowModesModel]
-	);
+		// Ignore portal
+		if (!event.currentTarget.contains(event.target as Element)) {
+			return;
+		}
 
-	const columnsWithWidth = columns.map((column) => ({
-		...column,
-		width: columnWidths[column.field],
-	})) as GridColDef[];
+		setRowModesModel({
+			...rowModesModel,
+			[params.id]: { mode: GridRowModes.Edit },
+		});
+	};
 
 	const handleRequestDelete = (id: GridRowId): void => {
 		setDeleteId(id);
 		setDeleteConfirmOpen(true);
 	};
-
-	const columnsWithEdit: GridColDef[] = React.useMemo(() => {
-		return [
-			{
-				field: 'actions',
-				type: 'actions',
-				width: 50,
-				cellClassName: 'actions',
-				headerClassName: 'table-header',
-				getActions: ({ id }) => {
-					return [
-						<GridActionsCellItem
-							icon={<DeleteIcon />}
-							label='Delete'
-							onClick={() => handleRequestDelete(id)}
-							color='inherit'
-							key={'delete-' + id}
-						/>,
-					];
-				},
-			},
-			...columnsWithWidth,
-		];
-	}, [columnsWithWidth]);
 
 	return (
 		<>
@@ -202,10 +261,11 @@ export default function Table({
 					},
 				}}>
 				<ColumnResizeBar
-					setColumnWidths={setColumnWidths}
+					setColumns={setColumns}
 					resizing={resizing}
 					setResizing={setResizing}
 				/>
+
 				<StyledTable
 					autoHeight
 					sx={{
@@ -213,7 +273,7 @@ export default function Table({
 					}}
 					processRowUpdate={handleProcessRowUpdate}
 					rows={rows}
-					columns={columnsWithEdit}
+					columns={columns}
 					editMode='row'
 					density='compact'
 					rowModesModel={rowModesModel}
