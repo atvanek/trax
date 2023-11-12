@@ -40,7 +40,6 @@ export interface EditToolbarProps {
 		newModel: (oldModel: GridRowModesModel) => GridRowModesModel
 	) => void;
 	setSortModel: (value: React.SetStateAction<GridSortModel>) => void;
-
 }
 
 export interface TabPanelProps {
@@ -48,3 +47,10 @@ export interface TabPanelProps {
 	index: number;
 	value: number;
 }
+
+export type ChartData = {
+	id: number;
+	value: number;
+	label: Status;
+	color: string;
+};

@@ -22,13 +22,14 @@ import StyledTable from './StyledDataGrid';
 import DeleteConfirm from '../DeleteConfirm';
 
 export default function Table({
-	data,
+	rows,
+	setRows,
 	setMounted,
 }: {
-	data: Row[];
+	rows: Row[];
+	setRows: React.Dispatch<React.SetStateAction<Row[]>>;
 	setMounted: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-	const [rows, setRows] = React.useState<Row[]>(data);
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
 	);
@@ -44,7 +45,6 @@ export default function Table({
 		React.useState<boolean>(false);
 	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null);
 	const [editing, setEditing] = React.useState(false);
-	const [dbSyncing, setDbSyncing] = React.useState(false);
 
 	//notifies container that table is rendered
 	React.useLayoutEffect(() => {
@@ -80,7 +80,6 @@ export default function Table({
 		setRows((prevRows) =>
 			prevRows.map((row) => (row.id === newRow.id ? newRow : row))
 		);
-		setDbSyncing(true);
 		fetch('/api/job', {
 			method: 'POST',
 			body: JSON.stringify(newRow),
@@ -88,7 +87,6 @@ export default function Table({
 			.then((res) => res.json())
 			.then((rows: Row[]) => {
 				setRows(rows);
-				setDbSyncing(false);
 			});
 
 		return updatedRow;
@@ -123,7 +121,7 @@ export default function Table({
 				setRows(rows.filter((row) => row.id !== id));
 			}
 		},
-		[rowModesModel, rows]
+		[rowModesModel, rows, setRows]
 	);
 
 	const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
@@ -139,6 +137,7 @@ export default function Table({
 
 	const handleCellClick = React.useCallback(
 		(params: GridCellParams, event: React.MouseEvent) => {
+			console.log(params);
 			if (!params.isEditable) {
 				return;
 			}

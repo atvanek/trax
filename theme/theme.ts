@@ -58,8 +58,12 @@ export default function theme(mode: 'light' | 'dark') {
 				},
 			},
 			MuiSelect: {
-				
-			}
+				styleOverrides: {
+					select: {
+						fontSize: '.875rem',
+					},
+				},
+			},
 		},
 	});
 }

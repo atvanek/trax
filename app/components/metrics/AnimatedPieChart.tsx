@@ -2,50 +2,52 @@
 
 import React from 'react';
 import { PieChart, mangoFusionPalette } from '@mui/x-charts';
-import mockData from '@/utils/mockData';
 import statuses from '@/utils/statuses';
 import { useTheme } from '@mui/material/styles';
 import { Checkbox, FormControlLabel } from '@mui/material';
-import { Status } from '@/types';
+import { Row, ChartData } from '@/types';
 
-export default function AnimatedPieChart() {
+export default function AnimatedPieChart({ data }: { data: Row[] }) {
 	const theme = useTheme();
-	const colors = mangoFusionPalette(theme.palette.mode);
-
-	const getPercentage = React.useCallback((status: Status) => {
-		return (
-			(mockData.filter((job) => job.status === status).length /
-				mockData.length) *
-			100
-		);
-	}, []);
+	const colors = React.useMemo(
+		() => mangoFusionPalette(theme.palette.mode),
+		[theme.palette.mode]
+	);
 
 	const defaultData = React.useMemo(() => {
 		return statuses.map((status, index) => ({
 			id: index,
-			value: getPercentage(status),
+			value:
+				(data.filter((job) => job.jobStatus === status).length / data.length) *
+				100,
 			label: status,
 			color: colors[index % colors.length],
 		}));
-	}, [colors, getPercentage]);
+	}, [data, colors]);
 
-	const [data, setData] = React.useState(defaultData);
+	const [chartData, setChartData] = React.useState<ChartData[]>(defaultData);
+
+	React.useEffect(() => {
+		setChartData(defaultData);
+	}, [data, defaultData]);
 
 	const handleCheck = (
 		e: React.SyntheticEvent<Element, Event>,
 		checked: boolean
 	) => {
 		const { value } = e.target as HTMLInputElement;
-		if (!checked) {
-			const newData = data.filter((status) => status.label !== value);
-			setData(newData);
-		} else {
-			const status = defaultData.find((status) => status.label === value);
-			if (status) {
-				const newData = [...data, status];
-				setData(newData);
+
+		setChartData((prevChartData) => {
+			if (!checked) {
+				return prevChartData.filter((status) => status.label !== value);
+			} else {
+				const status = defaultData.find((status) => status.label === value);
+				if (status) {
+					return [...prevChartData, status] as ChartData[];
+				}
 			}
-		}
+			return prevChartData;
+		});
 	};
 
 	return (
@@ -53,7 +55,7 @@ export default function AnimatedPieChart() {
 			<PieChart
 				series={[
 					{
-						data,
+						data: chartData,
 						highlightScope: { faded: 'global', highlighted: 'item' },
 						faded: { innerRadius: 30, additionalRadius: -30, color: 'gray' },
 					},

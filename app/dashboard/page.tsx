@@ -1,16 +1,9 @@
 import { getSession } from '@auth0/nextjs-auth0';
 import { redirect } from 'next/navigation';
-import WithUILoading from '../components/containers/WithUILoading';
-import Table from '../components/table/Table';
-import Spinner from '../components/Spinner';
-import TabsContainer from '../components/tabs/TabsContainer';
-import Nav from '../components/Nav';
-import AnimatedPieChart from '../components/metrics/AnimatedPieChart';
-import { PieChart, ListAlt } from '@mui/icons-material';
 import dbConnect from '@/db/dbConnect';
 import userModel, { IUser } from '@/db/models/user';
 import jobModel, { IJob } from '@/db/models/job';
-import createRows from '@/utils/createRows';
+import DashboardContainer from '../components/containers/DashboardContainer';
 
 export default async function Dashboard() {
 	// Get user from server session
@@ -52,22 +45,7 @@ export default async function Dashboard() {
 
 	const data = await getJobs(userId);
 
-	const tabs = [
-		<WithUILoading
-			fallback={Spinner}
-			component={Table}
-			componentProps={{ data: createRows(data) }}
-			fallbackProps={null}
-			key='Table View'
-		/>,
-		<AnimatedPieChart key='Metrics' />,
-	];
-	const icons = [<ListAlt key={0} />, <PieChart key={1} />];
-
 	return (
-		<>
-			<Nav user={user} />
-			<TabsContainer tabs={tabs} icons={icons} />
-		</>
+		<DashboardContainer stringifiedData={JSON.stringify(data)} user={user} />
 	);
 }
