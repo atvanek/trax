@@ -18,6 +18,7 @@ import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
 import StyledTable from './StyledDataGrid';
 import DeleteConfirm from '../DeleteConfirm';
+import { get } from 'mongoose';
 
 export default function Table({
 	rows,
@@ -55,17 +56,26 @@ export default function Table({
 		defaultColumns(handleRequestDelete)
 	);
 
+	const getColumnHeaderName = (seperator: SVGElement): string => {
+		const seperatorContainer = seperator.parentNode as HTMLDivElement; //type SVG container
+		const headerContainer = seperatorContainer.parentNode as HTMLDivElement; //type header container
+		const columnField = headerContainer.innerText; //header field name
+		return columnField;
+	};
+
 	//redefines columns based on new order
 	const handleReorderColumns = React.useCallback(
-		(e: DragEvent, index: number) => {
-			if (index === 0) return; //actions column must always be first
+		(e: DragEvent) => {
 			const draggedField = localStorage.getItem('draggedField');
-			const target = e.currentTarget as SVGElement; //type SVG
-			const targetContainer = target.parentNode as HTMLDivElement; //type SVG container
-			const headerContainer = targetContainer.parentNode as HTMLDivElement; //type header container
-			const draggedOverField = headerContainer.innerText; //header inner text is the field name of dropped element
-			if (draggedField === draggedOverField) return; //return early if dropping onto column of same field name to avoid flickering
-
+			const seperator = e.target as SVGElement;
+			const draggedOverField = getColumnHeaderName(seperator);
+			if (draggedField === draggedOverField) return;
+			const seperatorsOrder = localStorage.getItem('seperatorsOrder') as string; //should deal with localStorage being empty
+			const seperatorsOrderParsed = JSON.parse(seperatorsOrder);
+			const index = seperatorsOrderParsed.indexOf(draggedOverField);
+			console.log(seperatorsOrder);
+			if (index === 0) return; //actions column must always be first
+			console.log(index);
 			const draggedColumn = columns.find(
 				(column) => column.headerName === draggedField
 			);
@@ -77,6 +87,12 @@ export default function Table({
 				draggedColumn,
 				...restOfColumns.slice(index),
 			] as GridColDef[];
+			const newSeperatorsOrder = newColumns.map((column) => column.headerName);
+			console.log('NEW', newSeperatorsOrder);
+			localStorage.setItem(
+				'seperatorsOrder',
+				JSON.stringify(newSeperatorsOrder)
+			);
 			setColumns(newColumns);
 		},
 		[columns]
@@ -88,18 +104,27 @@ export default function Table({
 			headers: NodeListOf<HTMLDivElement>,
 			seperators: NodeListOf<SVGElement>
 		) => {
-			seperators.forEach((seperator, index) => {
+			const seperatorsOrder: string[] = []; //initial order to persist in localStorage
+
+			seperators.forEach((seperator) => {
+				const targetContainer = seperator.parentNode as HTMLDivElement; //type SVG container
+				const headerContainer = targetContainer.parentNode as HTMLDivElement; //type header container
+				const draggedOverField = headerContainer.innerText; //header inner text is the field name of dropped element
+				seperatorsOrder.push(draggedOverField);
 				seperator.setAttribute('droppable', 'true');
 				seperator.addEventListener('dragover', (event) => {
 					event.preventDefault();
 				});
+
 				seperator.addEventListener('dragenter', (event) => {
-					handleReorderColumns(event, index); //reorders columns as user drags to new position
+					handleReorderColumns(event); //reorders columns as user drags to new position
 				});
 				seperator.addEventListener('drop', (event) => {
-					handleReorderColumns(event, index); //reorders columns on drop
+					handleReorderColumns(event); //reorders columns on drop
 				});
 			});
+
+			localStorage.setItem('seperatorsOrder', JSON.stringify(seperatorsOrder)); //save to localStorage
 
 			headers.forEach((header) => {
 				header.setAttribute('draggable', 'true');
