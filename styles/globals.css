@@ -10,15 +10,10 @@ h1 {
 }
 
 .MuiDataGrid-iconSeparator {
-  cursor: col-resize
+  cursor: col-resize;
 }
 
+.dragged-over {
 
-rect.MuiChartsLegend-mark {
-  transition: .3s;
-
-  &:hover {
-    cursor: pointer;
-  }
-
+  color: red !important
 }

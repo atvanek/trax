@@ -58,14 +58,19 @@ export default function Table({
 	//redefines columns based on new order
 	const handleReorderColumns = React.useCallback(
 		(e: DragEvent, index: number) => {
-			if (index === 0) return; //actions column must be first
-			const data = e.dataTransfer?.getData('text/plain');
+			if (index === 0) return; //actions column must always be first
+			const draggedField = localStorage.getItem('draggedField');
+			const target = e.currentTarget as SVGElement; //type SVG
+			const targetContainer = target.parentNode as HTMLDivElement; //type SVG container
+			const headerContainer = targetContainer.parentNode as HTMLDivElement; //type header container
+			const draggedOverField = headerContainer.innerText; //header inner text is the field name of dropped element
+			if (draggedField === draggedOverField) return; //return early if dropping onto column of same field name to avoid flickering
 
 			const draggedColumn = columns.find(
-				(column) => column.headerName === data
+				(column) => column.headerName === draggedField
 			);
 			const restOfColumns = columns.filter(
-				(column) => column.headerName !== data
+				(column) => column.headerName !== draggedField
 			);
 			const newColumns = [
 				...restOfColumns.slice(0, index),
@@ -88,18 +93,20 @@ export default function Table({
 				seperator.addEventListener('dragover', (event) => {
 					event.preventDefault();
 				});
-
-				seperator.addEventListener('drop', (e) => {
-					handleReorderColumns(e, index);
+				seperator.addEventListener('dragenter', (event) => {
+					handleReorderColumns(event, index); //reorders columns as user drags to new position
+				});
+				seperator.addEventListener('drop', (event) => {
+					handleReorderColumns(event, index); //reorders columns on drop
 				});
 			});
 
-			headers.forEach((header, index) => {
+			headers.forEach((header) => {
 				header.setAttribute('draggable', 'true');
 
 				header.addEventListener('dragstart', (e) => {
 					const target = e.target as HTMLDivElement;
-					e.dataTransfer?.setData('text/plain', target.innerText);
+					localStorage.setItem('draggedField', target.innerText); //persist dragged item field to use on dragenter event
 				});
 
 				header.addEventListener('dragenter', (event) => {

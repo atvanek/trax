@@ -21,6 +21,7 @@ export default function ColumnResizeBar({
 
 	const handleListenForResizeStart = (e: MouseEvent) => {
 		const seperator = e.currentTarget as SVGElement;
+		console.log(seperator);
 		const seperatorContainer = seperator.parentNode as HTMLDivElement;
 		let column = seperatorContainer.parentNode as HTMLDivElement; //capture column header container for x and width properties
 		setResizing(true); //resizing event is now occuring

@@ -24,6 +24,7 @@ export default function theme(mode: 'light' | 'dark') {
 							hover: '#763DF014',
 							selected: '#763DF014',
 							focus: '#BB9EF81F',
+		
 						},
 						error: {
 							main: '#DC1E1E',
@@ -48,6 +49,15 @@ export default function theme(mode: 'light' | 'dark') {
 				  }),
 		},
 		components: {
+			MuiDataGrid: {
+				styleOverrides: {
+					columnHeader: {
+						':hover': {
+							cursor: 'grab',
+						},
+					},
+				},
+			},
 			MuiInputBase: {
 				styleOverrides: {
 					root: {
