@@ -53,4 +53,5 @@ export type ChartData = {
 	value: number;
 	label: Status;
 	color: string;
+	visible: boolean;
 };
