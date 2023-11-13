@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 import { Tab, Tabs, Box } from '@mui/material';
-import CustomTabPanel from './CustomTabPanel';
+import TabPanel from './TabPanel';
 
 function a11yProps(index: number) {
 	return {
@@ -51,9 +51,9 @@ export default function TabsContainer({
 			</Box>
 			{tabs.map((tab, index) => {
 				return (
-					<CustomTabPanel value={value} index={index} key={index}>
+					<TabPanel value={value} index={index} key={index}>
 						{tab}
-					</CustomTabPanel>
+					</TabPanel>
 				);
 			})}
 		</Box>

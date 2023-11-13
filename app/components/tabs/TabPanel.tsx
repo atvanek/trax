@@ -2,7 +2,7 @@ import { Box } from '@mui/material';
 import { TabPanelProps } from '@/types';
 import { useTheme } from '@mui/material/styles';
 
-export default function CustomTabPanel(props: TabPanelProps) {
+export default function TabPanel(props: TabPanelProps) {
 	const { children, value, index, ...other } = props;
 	const theme = useTheme();
 

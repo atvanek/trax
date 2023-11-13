@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { ThemeProvider } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
 import theme from './theme';
 import ColorModeContext from './ColorModeContext';
 export default function ToggleColorMode({
@@ -22,10 +21,7 @@ export default function ToggleColorMode({
 
 	return (
 		<ColorModeContext.Provider value={colorMode}>
-			<ThemeProvider theme={theme(mode)}>
-				<CssBaseline />
-				{children}
-			</ThemeProvider>
+			<ThemeProvider theme={theme(mode)}>{children}</ThemeProvider>
 		</ColorModeContext.Provider>
 	);
 }

@@ -3,13 +3,11 @@
 import React from 'react';
 import { Row } from '@/types';
 import { Box } from '@mui/material';
-
-import { defaultColumns, defaultColumnWidths } from './columns';
+import defaultColumns from './defaultColumns';
 import {
 	GridRowModesModel,
 	GridRowModes,
 	GridColDef,
-	GridActionsCellItem,
 	GridEventListener,
 	GridRowId,
 	GridRowEditStopReasons,
@@ -20,7 +18,6 @@ import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
 import StyledTable from './StyledDataGrid';
 import DeleteConfirm from '../DeleteConfirm';
-import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 
 export default function Table({
 	rows,
@@ -37,47 +34,31 @@ export default function Table({
 	const [sortModel, setSortModel] = React.useState<GridSortModel>([
 		{ field: 'date', sort: 'asc' },
 	]);
-
-	const [resizing, setResizing] = React.useState<boolean>(false);
+	const [resizing, setResizing] = React.useState<boolean>(false); //column resizing event state
 	const [deleteConfirmOpen, setDeleteConfirmOpen] =
 		React.useState<boolean>(false);
-	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null);
-	const [columnsDraggable, setColumnsDraggable] = React.useState(false);
+	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null); //id of item requested to delete
+	const [columnsDraggable, setColumnsDraggable] = React.useState(false); //columns made draggable after client hydration
 
-	//notifies container that table is rendered
+	//notifies tab container that table is rendered
 	React.useLayoutEffect(() => {
 		setMounted(true);
 	}, [setMounted]);
 
-	const columnsWithEdit: GridColDef[] = React.useMemo(() => {
-		return [
-			{
-				field: 'actions',
-				type: 'actions',
-				width: 50,
-				cellClassName: 'actions',
-				headerClassName: 'table-header',
-				getActions: ({ id }) => {
-					return [
-						<GridActionsCellItem
-							icon={<DeleteIcon />}
-							label='Delete'
-							onClick={() => handleRequestDelete(id)}
-							color='inherit'
-							key={'delete-' + id}
-						/>,
-					];
-				},
-			},
-			...defaultColumns,
-		];
-	}, []);
+	//handles delete confirm pop-up
+	const handleRequestDelete = (id: GridRowId): void => {
+		setDeleteId(id);
+		setDeleteConfirmOpen(true);
+	};
 
-	const [columns, setColumns] = React.useState(columnsWithEdit);
+	const [columns, setColumns] = React.useState(
+		defaultColumns(handleRequestDelete)
+	);
 
+	//redefines columns based on new order
 	const handleReorderColumns = React.useCallback(
 		(e: DragEvent, index: number) => {
-			if (index === 0) return;
+			if (index === 0) return; //actions column must be first
 			const data = e.dataTransfer?.getData('text/plain');
 
 			const draggedColumn = columns.find(
@@ -96,6 +77,7 @@ export default function Table({
 		[columns]
 	);
 
+	//adds event handlers to all column headers and seperators
 	const addDragEventHandlers = React.useCallback(
 		(
 			headers: NodeListOf<HTMLDivElement>,
@@ -134,6 +116,7 @@ export default function Table({
 		[handleReorderColumns]
 	);
 
+	//makes all column headers draggable elements
 	const makeColumnsDraggable = React.useCallback(() => {
 		const headers: NodeListOf<HTMLDivElement> = document.querySelectorAll(
 			'.MuiDataGrid-columnHeaderDraggableContainer'
@@ -141,14 +124,14 @@ export default function Table({
 		const seperators: NodeListOf<SVGElement> = document.querySelectorAll(
 			'.MuiDataGrid-iconSeparator'
 		);
-
+		//adds event handlers if nodes have been rendered to DOM
 		if (headers.length && seperators.length) {
 			addDragEventHandlers(headers, seperators);
 		}
 	}, [addDragEventHandlers]);
 
+	//checks whether columns have been made draggable on every render
 	if (!columnsDraggable) {
-		console.log('making columns');
 		makeColumnsDraggable();
 	}
 
@@ -165,6 +148,8 @@ export default function Table({
 		});
 	};
 
+	//updates row changes optimistically and to database
+	//fetches updated data from database and updates rows
 	const handleProcessRowUpdate = (updatedRow: Row) => {
 		//optimistic render
 		const newRow = { ...updatedRow, isNew: false } as Row;
@@ -183,8 +168,9 @@ export default function Table({
 		return updatedRow;
 	};
 
+	//deletes row optimistically and in database
+	//fetches updated data from database and updates rows
 	const handleDeleteClick = () => {
-		//delete row from database
 		setRows(rows.filter((row) => row.id !== deleteId));
 		setDeleteConfirmOpen(false);
 		fetch('/api/jobs', {
@@ -241,11 +227,6 @@ export default function Table({
 			...rowModesModel,
 			[params.id]: { mode: GridRowModes.Edit },
 		});
-	};
-
-	const handleRequestDelete = (id: GridRowId): void => {
-		setDeleteId(id);
-		setDeleteConfirmOpen(true);
 	};
 
 	return (

@@ -1,10 +1,8 @@
 'use client';
 import * as React from 'react';
-import { ThemeProvider } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import NextAppDirEmotionCacheProvider from './EmotionCache';
-import theme from './theme';
 import ToggleColorMode from './ToggleColorMode';
+import { CssBaseline } from '@mui/material';
 
 export default function ThemeRegistry({
 	children,
@@ -14,8 +12,8 @@ export default function ThemeRegistry({
 	return (
 		<NextAppDirEmotionCacheProvider options={{ key: 'mui' }}>
 			<ToggleColorMode>
+				<CssBaseline />
 				{/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
-			
 				{children}
 			</ToggleColorMode>
 		</NextAppDirEmotionCacheProvider>

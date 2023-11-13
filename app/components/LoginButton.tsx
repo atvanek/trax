@@ -2,13 +2,14 @@
 
 import React from 'react';
 import { Button, Backdrop, CircularProgress } from '@mui/material';
+import useMounted from '@/hooks/useMounted';
 
 export default function LoginButton() {
 	const [loggingIn, setLoggingIn] = React.useState(false);
-	const [mounted, setMounted] = React.useState(false);
+	const { mounted, setMounted } = useMounted();
 	React.useLayoutEffect(() => {
 		setMounted(true);
-	}, []);
+	}, [setMounted]);
 	return (
 		<>
 			{mounted && (
