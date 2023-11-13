@@ -1,4 +1,18 @@
-import { createTheme } from '@mui/material/styles';
+import { createTheme, Theme, Components } from '@mui/material/styles';
+
+interface CustomTheme extends Theme {
+	components?: Components & {
+		MuiDataGrid?: {
+			styleOverrides?: {
+				columnHeader?: {
+					':hover'?: {
+						cursor?: string;
+					};
+				};
+			};
+		};
+	};
+}
 
 export default function theme(mode: 'light' | 'dark') {
 	return createTheme({
@@ -12,40 +26,13 @@ export default function theme(mode: 'light' | 'dark') {
 							dark: '#522AA8',
 							light: '#9163F3',
 						},
-						secondary: {
-							main: '#C010DD',
-							dark: '#860B9A',
-							light: '#CC3FE3',
-						},
-						background: {
-							paper: '#FAFAFA',
-						},
-						action: {
-							hover: '#763DF014',
-							selected: '#763DF014',
-							focus: '#BB9EF81F',
-		
-						},
-						error: {
-							main: '#DC1E1E',
-							dark: '#9A1515',
-							light: '#E34B4B',
-						},
-						warning: {
-							main: '#BD6808',
-							dark: '#995302',
-							light: '#F09228',
-						},
+						// ... other palette values
 				  }
 				: {
 						primary: {
 							main: '#c57fff',
 						},
-						action: {
-							hover: '#763DF014',
-							selected: '#763DF014',
-							focus: '#BB9EF81F',
-						},
+						// ... other palette values
 				  }),
 		},
 		components: {
@@ -74,6 +61,6 @@ export default function theme(mode: 'light' | 'dark') {
 					},
 				},
 			},
-		},
+		} as CustomTheme['components'], // Cast to CustomTheme['components']
 	});
 }

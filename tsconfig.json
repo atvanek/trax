@@ -6,7 +6,6 @@
 		"skipLibCheck": true,
 		"strict": true,
 		"noEmit": true,
-		"noEmitOnError": false,
 		"noImplicitAny": true,
 		"esModuleInterop": true,
 		"module": "esnext",
