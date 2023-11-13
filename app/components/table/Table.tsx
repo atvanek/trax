@@ -65,17 +65,18 @@ export default function Table({
 
 	//redefines columns based on new order
 	const handleReorderColumns = React.useCallback(
-		(e: DragEvent) => {
+		(seperator: SVGElement) => {
 			const draggedField = localStorage.getItem('draggedField');
-			const seperator = e.target as SVGElement;
 			const draggedOverField = getColumnHeaderName(seperator);
-			if (draggedField === draggedOverField) return;
+
+			if (draggedField === draggedOverField) return; //do not reorder on dropping into own seperator to avoid flickering
+
 			const seperatorsOrder = localStorage.getItem('seperatorsOrder') as string; //should deal with localStorage being empty
 			const seperatorsOrderParsed = JSON.parse(seperatorsOrder);
 			const index = seperatorsOrderParsed.indexOf(draggedOverField);
-			console.log(seperatorsOrder);
+
 			if (index === 0) return; //actions column must always be first
-			console.log(index);
+
 			const draggedColumn = columns.find(
 				(column) => column.headerName === draggedField
 			);
@@ -107,20 +108,18 @@ export default function Table({
 			const seperatorsOrder: string[] = []; //initial order to persist in localStorage
 
 			seperators.forEach((seperator) => {
-				const targetContainer = seperator.parentNode as HTMLDivElement; //type SVG container
-				const headerContainer = targetContainer.parentNode as HTMLDivElement; //type header container
-				const draggedOverField = headerContainer.innerText; //header inner text is the field name of dropped element
+				const draggedOverField = getColumnHeaderName(seperator);
 				seperatorsOrder.push(draggedOverField);
 				seperator.setAttribute('droppable', 'true');
 				seperator.addEventListener('dragover', (event) => {
 					event.preventDefault();
 				});
 
-				seperator.addEventListener('dragenter', (event) => {
-					handleReorderColumns(event); //reorders columns as user drags to new position
+				seperator.addEventListener('dragenter', function (this, event) {
+					handleReorderColumns(this); //reorders columns as user drags to new position
 				});
-				seperator.addEventListener('drop', (event) => {
-					handleReorderColumns(event); //reorders columns on drop
+				seperator.addEventListener('drop', function (this, event) {
+					handleReorderColumns(this); //reorders columns on drop
 				});
 			});
 
@@ -129,9 +128,8 @@ export default function Table({
 			headers.forEach((header) => {
 				header.setAttribute('draggable', 'true');
 
-				header.addEventListener('dragstart', (e) => {
-					const target = e.target as HTMLDivElement;
-					localStorage.setItem('draggedField', target.innerText); //persist dragged item field to use on dragenter event
+				header.addEventListener('dragstart', function (this, e) {
+					localStorage.setItem('draggedField', this.innerText); //persist dragged item field to use on dragenter event
 				});
 
 				header.addEventListener('dragenter', (event) => {
