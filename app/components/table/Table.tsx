@@ -18,7 +18,6 @@ import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
 import StyledTable from './StyledDataGrid';
 import DeleteConfirm from '../DeleteConfirm';
-import { get } from 'mongoose';
 
 export default function Table({
 	rows,
@@ -140,7 +139,7 @@ export default function Table({
 					event.preventDefault();
 				});
 			});
-
+			console.log('columns now draggable');
 			setColumnsDraggable(true);
 		},
 		[handleReorderColumns]
