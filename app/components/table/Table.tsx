@@ -88,7 +88,7 @@ export default function Table({
 				...restOfColumns.slice(index),
 			] as GridColDef[];
 			const newSeperatorsOrder = newColumns.map((column) => column.headerName);
-			console.log('NEW', newSeperatorsOrder);
+
 			localStorage.setItem(
 				'seperatorsOrder',
 				JSON.stringify(newSeperatorsOrder)
@@ -156,15 +156,18 @@ export default function Table({
 		//adds event handlers if nodes have been rendered to DOM
 		if (headers.length && seperators.length) {
 			addDragEventHandlers(headers, seperators);
+		} else {
+			//retry until dom nodes are mounted
+			setTimeout(() => {
+				makeColumnsDraggable();
+			}, 500);
 		}
 	}, [addDragEventHandlers]);
 
 	//checks whether columns have been made draggable on every render
 	React.useEffect(() => {
-		if (!columnsDraggable) {
-			makeColumnsDraggable();
-		}
-	}, [columns, columnsDraggable, makeColumnsDraggable]);
+		makeColumnsDraggable();
+	}, [makeColumnsDraggable]);
 
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
