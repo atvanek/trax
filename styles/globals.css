@@ -12,8 +12,3 @@ h1 {
 .MuiDataGrid-iconSeparator {
   cursor: col-resize;
 }
-
-.dragged-over {
-
-  color: red !important
-}
