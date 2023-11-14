@@ -63,34 +63,40 @@ export default function Table({
 	};
 
 	//redefines columns based on new order
-	const handleReorderColumns = (seperator: SVGElement) => {
-		const draggedField = localStorage.getItem('draggedField');
-		const draggedOverField = getColumnHeaderName(seperator);
+	const handleReorderColumns = React.useCallback(
+		(seperator: SVGElement) => {
+			const draggedField = localStorage.getItem('draggedField');
+			const draggedOverField = getColumnHeaderName(seperator);
 
-		if (draggedField === draggedOverField) return; //do not reorder on dropping into own seperator to avoid flickering
+			if (draggedField === draggedOverField) return; //do not reorder on dropping into own seperator to avoid flickering
 
-		const seperatorsOrder = localStorage.getItem('seperatorsOrder') as string; //should deal with localStorage being empty
-		const seperatorsOrderParsed = JSON.parse(seperatorsOrder);
-		const index = seperatorsOrderParsed.indexOf(draggedOverField);
+			const seperatorsOrder = localStorage.getItem('seperatorsOrder') as string; //should deal with localStorage being empty
+			const seperatorsOrderParsed = JSON.parse(seperatorsOrder);
+			const index = seperatorsOrderParsed.indexOf(draggedOverField);
 
-		if (index === 0) return; //actions column must always be first
+			if (index === 0) return; //actions column must always be first
 
-		const draggedColumn = columns.find(
-			(column) => column.headerName === draggedField
-		);
-		const restOfColumns = columns.filter(
-			(column) => column.headerName !== draggedField
-		);
-		const newColumns = [
-			...restOfColumns.slice(0, index),
-			draggedColumn,
-			...restOfColumns.slice(index),
-		] as GridColDef[];
-		const newSeperatorsOrder = newColumns.map((column) => column.headerName);
-		console.log('NEW', newSeperatorsOrder);
-		localStorage.setItem('seperatorsOrder', JSON.stringify(newSeperatorsOrder));
-		setColumns(newColumns);
-	};
+			const draggedColumn = columns.find(
+				(column) => column.headerName === draggedField
+			);
+			const restOfColumns = columns.filter(
+				(column) => column.headerName !== draggedField
+			);
+			const newColumns = [
+				...restOfColumns.slice(0, index),
+				draggedColumn,
+				...restOfColumns.slice(index),
+			] as GridColDef[];
+			const newSeperatorsOrder = newColumns.map((column) => column.headerName);
+			console.log('NEW', newSeperatorsOrder);
+			localStorage.setItem(
+				'seperatorsOrder',
+				JSON.stringify(newSeperatorsOrder)
+			);
+			setColumns(newColumns);
+		},
+		[columns]
+	);
 
 	//adds event handlers to all column headers and seperators
 	const addDragEventHandlers = React.useCallback(
@@ -154,9 +160,11 @@ export default function Table({
 	}, [addDragEventHandlers]);
 
 	//checks whether columns have been made draggable on every render
-	if (!columnsDraggable) {
-		makeColumnsDraggable();
-	}
+	React.useEffect(() => {
+		if (!columnsDraggable) {
+			makeColumnsDraggable();
+		}
+	}, [columns, columnsDraggable, makeColumnsDraggable]);
 
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
