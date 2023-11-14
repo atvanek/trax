@@ -154,7 +154,7 @@ export default function Table({
 			'.MuiDataGrid-iconSeparator'
 		);
 		//adds event handlers if nodes have been rendered to DOM
-		if (headers.length && seperators.length) {
+		if (headers.length && seperators.length && !columnsDraggable) {
 			addDragEventHandlers(headers, seperators);
 		} else {
 			//retry until dom nodes are mounted
@@ -162,7 +162,7 @@ export default function Table({
 				makeColumnsDraggable();
 			}, 500);
 		}
-	}, [addDragEventHandlers]);
+	}, [addDragEventHandlers, columnsDraggable]);
 
 	//checks whether columns have been made draggable on every render
 	React.useEffect(() => {
