@@ -18,7 +18,11 @@ import Link from 'next/link';
 import { Claims } from '@auth0/nextjs-auth0';
 import ColorModeSwitch from './ColorModeSwitch';
 
-const pages = ['About', 'Documentation', 'Contact'];
+const pages = [
+	{ label: 'Import', href: '/importer' },
+	{ label: 'Documentation', href: null },
+	{ label: 'Contact', href: null },
+];
 const settings = ['Profile', 'Account', 'Preferences', 'Logout'];
 
 export default function Nav({ user }: { user: Claims }) {
@@ -94,8 +98,11 @@ export default function Nav({ user }: { user: Claims }) {
 								display: { xs: 'block', md: 'none' },
 							}}>
 							{pages.map((page) => (
-								<MenuItem key={page} onClick={handleCloseNavMenu}>
-									<Typography textAlign='center'>{page}</Typography>
+								<MenuItem
+									key={page.label}
+									onClick={handleCloseNavMenu}
+									href={page.href || ''}>
+									<Typography textAlign='center'>{page.label}</Typography>
 								</MenuItem>
 							))}
 						</Menu>
@@ -121,10 +128,11 @@ export default function Nav({ user }: { user: Claims }) {
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 						{pages.map((page) => (
 							<Button
-								key={page}
+								key={page.label}
+								href={page.href || ''}
 								onClick={handleCloseNavMenu}
 								sx={{ my: 2, color: 'white', display: 'block' }}>
-								{page}
+								{page.label}
 							</Button>
 						))}
 					</Box>
