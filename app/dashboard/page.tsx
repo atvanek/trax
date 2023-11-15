@@ -4,7 +4,7 @@ import dbConnect from '@/db/dbConnect';
 import userModel, { IUser } from '@/db/models/user';
 import jobModel, { IJob } from '@/db/models/job';
 import DashboardContainer from '../components/containers/DashboardContainer';
-
+import ImporterDialog from '../components/importer/ImporterDialog';
 
 export default async function Dashboard() {
 	// Get user from server session
@@ -47,6 +47,8 @@ export default async function Dashboard() {
 	const data = await getJobs(userId);
 
 	return (
-		<DashboardContainer stringifiedData={JSON.stringify(data)} user={user} />
+		<>
+			<DashboardContainer stringifiedData={JSON.stringify(data)} user={user} />
+		</>
 	);
 }

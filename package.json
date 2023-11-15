@@ -22,7 +22,7 @@
 		"mongoose": "^8.0.0",
 		"next": "14.0.1",
 		"react": "^18",
-		"react-csv-importer": "^0.8.1",
+		"react-csv-importer": "github:atvanek/react-csv-importer#master",
 		"react-dnd": "^16.0.1",
 		"react-dnd-html5-backend": "^16.0.1",
 		"react-dom": "^18",

@@ -25,7 +25,15 @@ const pages = [
 ];
 const settings = ['Profile', 'Account', 'Preferences', 'Logout'];
 
-export default function Nav({ user }: { user: Claims }) {
+export default function Nav({
+	user,
+	importerOpen,
+	setImporterOpen,
+}: {
+	user: Claims;
+	importerOpen: boolean;
+	setImporterOpen: React.Dispatch<React.SetStateAction<boolean>>;
+}) {
 	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
 		null
 	);
@@ -97,14 +105,22 @@ export default function Nav({ user }: { user: Claims }) {
 							sx={{
 								display: { xs: 'block', md: 'none' },
 							}}>
-							{pages.map((page) => (
-								<MenuItem
-									key={page.label}
-									onClick={handleCloseNavMenu}
-									href={page.href || ''}>
-									<Typography textAlign='center'>{page.label}</Typography>
-								</MenuItem>
-							))}
+							{pages.map((page) =>
+								page.label === 'Import' ? (
+									<MenuItem
+										key={page.label}
+										onClick={() => setImporterOpen(true)}>
+										<Typography textAlign='center'>{page.label}</Typography>
+									</MenuItem>
+								) : (
+									<MenuItem
+										key={page.label}
+										onClick={handleCloseNavMenu}
+										href={page.href || ''}>
+										<Typography textAlign='center'>{page.label}</Typography>
+									</MenuItem>
+								)
+							)}
 						</Menu>
 					</Box>
 					<AnalyticsIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -126,15 +142,22 @@ export default function Nav({ user }: { user: Claims }) {
 						TRAX
 					</Typography>
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-						{pages.map((page) => (
-							<Button
-								key={page.label}
-								href={page.href || ''}
-								onClick={handleCloseNavMenu}
-								sx={{ my: 2, color: 'white', display: 'block' }}>
-								{page.label}
-							</Button>
-						))}
+						{pages.map((page) =>
+							page.label === 'Import' ? (
+								<MenuItem
+									key={page.label}
+									onClick={() => setImporterOpen(true)}>
+									<Typography textAlign='center'>{page.label}</Typography>
+								</MenuItem>
+							) : (
+								<MenuItem
+									key={page.label}
+									onClick={handleCloseNavMenu}
+									href={page.href || ''}>
+									<Typography textAlign='center'>{page.label}</Typography>
+								</MenuItem>
+							)
+						)}
 					</Box>
 					<ColorModeSwitch />
 					<Typography sx={{ mx: 2 }}>Welcome, {user.name}</Typography>

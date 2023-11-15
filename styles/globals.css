@@ -12,3 +12,9 @@ h1 {
 .MuiDataGrid-iconSeparator {
   cursor: col-resize;
 }
+
+/* 
+background-color: var(--mui-palette-grey-50); */
+.CSVImporter_FileSelector {
+  border: none !important
+}
