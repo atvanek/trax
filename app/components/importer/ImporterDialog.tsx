@@ -6,38 +6,41 @@ import { Importer, ImporterField } from 'react-csv-importer';
 import defaultColumns from '../table/defaultColumns';
 import 'react-csv-importer/dist/index.css';
 import React from 'react';
-import {
-	Dialog,
-	DialogTitle,
-	DialogContent,
-	DialogContentText,
-	Button,
-	DialogActions,
-	Paper,
-} from '@mui/material';
+import SaveDialog from './SaveDialog';
 import { useTheme } from '@mui/material/styles';
+import { IJob } from '@/db/models/job';
 export default function ImporterDialog({}: {}) {
 	// in your component code:
-	const [rows, setRows] = React.useState([]);
+	const [newRows, setNewRows] = React.useState<Omit<IJob, 'userId'>[]>([]);
 	const [loading, setLoading] = React.useState(false);
 	const [started, setStarted] = React.useState(false);
 	const [completed, setCompleted] = React.useState(false);
 	const [confirmFinish, setConfirmFinish] = React.useState(false);
-	// const handleClickAway: MouseEventHandler<HTMLElement> = (e) => {
-	// 	const target = e.target as HTMLElement;
+	const [saveStatus, setSaveStatus] = React.useState<
+		'success' | 'error' | null
+	>(null);
 
-	// 	if (target.classList.value === e.currentTarget.classList.value) {
-	// 		setImporterOpen(false);
-	// 		setRows([]);
-	// 	}
-	// };
 	const theme = useTheme();
+	const resetImporter = () => {
+		setNewRows([]);
+		setLoading(false);
+		setStarted(false);
+		setCompleted(false);
+		setConfirmFinish(false);
+		setSaveStatus(null);
+	};
+	React.useEffect(() => {
+		resetImporter();
+		return () => {
+			resetImporter();
+		};
+	}, []);
 	return (
 		<div className='m-5'>
 			{completed && (
 				<StyledTable
 					loading={loading}
-					rows={rows}
+					rows={newRows}
 					columns={defaultColumns(() => {})}
 					editMode='row'
 					density='compact'
@@ -51,12 +54,18 @@ export default function ImporterDialog({}: {}) {
 					// receives a list of parsed objects based on defined fields and user column mapping;
 					// (if this callback returns a promise, the widget will wait for it before parsing more data)
 					for (const row of rows) {
-						if (Object.values(row).every((value) => value === '')) return;
-						setRows((prev) => [...prev, { ...row, id: crypto.randomUUID() }]);
+						if (Object.values(row).every((value) => value === '')) return; //ignore empty rows
+						setNewRows((prev) => {
+							const newRowWithId = { ...row, id: crypto.randomUUID() } as Omit<
+								IJob,
+								'userId'
+							>;
+							return [...prev, newRowWithId];
+						});
 					}
 				}}
 				defaultNoHeader={false} // optional, keeps "data has headers" checkbox off by default
-				restartable={true} // optional, lets user choose to upload another file when import is complete
+				restartable={false} // optional, lets user choose to upload another file when import is complete
 				onStart={({ file, preview, fields, columnFields }) => {
 					// optional, invoked when user has mapped columns and started import
 					// prepMyAppForIncomingData();
@@ -73,8 +82,6 @@ export default function ImporterDialog({}: {}) {
 					// optional, if this is specified the user will see a "Finish" button after import is done,
 					// which will call this when clicked
 					// goToMyAppNextPage();
-					setStarted(false);
-					setCompleted(false);
 					setConfirmFinish(true);
 				}}
 				theme={theme}
@@ -98,23 +105,13 @@ export default function ImporterDialog({}: {}) {
 					/>
 				))}
 			</Importer>
-
-			<Dialog open={confirmFinish}>
-				<DialogTitle>Save Imported Data</DialogTitle>
-				<DialogContent>
-					<DialogContentText>
-						Save imported data to your job listings?
-					</DialogContentText>
-				</DialogContent>
-				<DialogActions>
-					<Button variant='contained' color='secondary'>
-						Discard
-					</Button>
-					<Button variant='contained' color='primary'>
-						Save
-					</Button>
-				</DialogActions>
-			</Dialog>
+			<SaveDialog
+				saveStatus={saveStatus}
+				confirmFinish={confirmFinish}
+				setConfirmFinish={setConfirmFinish}
+				setSaveStatus={setSaveStatus}
+				rows={newRows}
+			/>
 		</div>
 	);
 }

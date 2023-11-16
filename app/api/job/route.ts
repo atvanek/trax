@@ -28,3 +28,21 @@ export const POST = async (req: Request) => {
 
 	return NextResponse.json(createRows(rows));
 };
+
+export const DELETE = async (req: Request) => {
+	await dbConnect();
+	const { user } = (await getSession()) || {};
+
+	if (!user) {
+		return NextResponse.redirect('/');
+	}
+
+	const jobToDelete = await req.json();
+
+	const { id } = jobToDelete;
+	await jobModel.findOneAndDelete({ userId: user.sub, id });
+
+	const rows = await jobModel.find({ userId: user.sub });
+
+	return NextResponse.json(createRows(rows));
+};

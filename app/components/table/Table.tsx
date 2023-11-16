@@ -207,7 +207,7 @@ export default function Table({
 	const handleDeleteClick = () => {
 		setRows(rows.filter((row) => row.id !== deleteId));
 		setDeleteConfirmOpen(false);
-		fetch('/api/jobs', {
+		fetch('/api/job', {
 			method: 'DELETE',
 			body: JSON.stringify({ id: deleteId }),
 		})
@@ -215,7 +215,7 @@ export default function Table({
 			.then((rows: Row[]) => {
 				const newRows = rows.map((row) => ({
 					...row,
-					date: new Date(row.date),
+					date: row.date ? new Date(row.date) : new Date(),
 				})) as Row[];
 				setRows(newRows);
 			});

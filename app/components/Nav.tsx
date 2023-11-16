@@ -18,7 +18,7 @@ import { Claims } from '@auth0/nextjs-auth0';
 import ColorModeSwitch from './ColorModeSwitch';
 
 const pages = [
-	{ label: 'Import', href: 'dashboard/import' },
+	{ label: 'Import', href: '/dashboard/import' },
 	{ label: 'Documentation', href: null },
 	{ label: 'Contact', href: null },
 ];
@@ -52,22 +52,23 @@ export default function Nav({ user }: { user: Claims }) {
 			<Container maxWidth='xl'>
 				<Toolbar disableGutters>
 					<AnalyticsIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-					<Typography
-						variant='h6'
-						noWrap
-						component='a'
-						href='#app-bar-with-responsive-menu'
-						sx={{
-							mr: 2,
-							display: { xs: 'none', md: 'flex' },
-							fontFamily: 'monospace',
-							fontWeight: 700,
-							letterSpacing: '.3rem',
-							color: 'inherit',
-							textDecoration: 'none',
-						}}>
-						TRAX
-					</Typography>
+					<Link href='/dashboard'>
+						<Typography
+							variant='h6'
+							noWrap
+							component='a'
+							sx={{
+								mr: 2,
+								display: { xs: 'none', md: 'flex' },
+								fontFamily: 'monospace',
+								fontWeight: 700,
+								letterSpacing: '.3rem',
+								color: 'inherit',
+								textDecoration: 'none',
+							}}>
+							TRAX
+						</Typography>
+					</Link>
 
 					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
 						<IconButton
@@ -97,11 +98,8 @@ export default function Nav({ user }: { user: Claims }) {
 								display: { xs: 'block', md: 'none' },
 							}}>
 							{pages.map((page) => (
-								<MenuItem
-									key={page.label}
-									onClick={handleCloseNavMenu}
-									href={page.href || ''}>
-									<Link href={page.href || ''}>
+								<MenuItem key={page.label} onClick={handleCloseNavMenu}>
+									<Link href={page.href || ''} prefetch={false}>
 										<Typography textAlign='center'>{page.label}</Typography>
 									</Link>
 								</MenuItem>
@@ -113,7 +111,7 @@ export default function Nav({ user }: { user: Claims }) {
 						variant='h5'
 						noWrap
 						component='a'
-						href='#app-bar-with-responsive-menu'
+						href='/dashboard'
 						sx={{
 							mr: 2,
 							display: { xs: 'flex', md: 'none' },
@@ -129,7 +127,7 @@ export default function Nav({ user }: { user: Claims }) {
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 						{pages.map((page) => (
 							<MenuItem key={page.label} onClick={handleCloseNavMenu}>
-								<Link href={page.href || ''}>
+								<Link href={page.href || ''} prefetch={false}>
 									<Typography textAlign='center'>{page.label}</Typography>
 								</Link>
 							</MenuItem>
