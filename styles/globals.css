@@ -18,3 +18,7 @@ background-color: var(--mui-palette-grey-50); */
 .CSVImporter_FileSelector {
   border: none !important
 }
+
+.CSVImporter_FormatRawPreview__scroll {
+  height: 100% !important;
+}

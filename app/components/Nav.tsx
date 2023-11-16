@@ -19,7 +19,7 @@ import { Claims } from '@auth0/nextjs-auth0';
 import ColorModeSwitch from './ColorModeSwitch';
 
 const pages = [
-	{ label: 'Import', href: '/importer' },
+	{ label: 'Import', href: '/import' },
 	{ label: 'Documentation', href: null },
 	{ label: 'Contact', href: null },
 ];
@@ -105,22 +105,16 @@ export default function Nav({
 							sx={{
 								display: { xs: 'block', md: 'none' },
 							}}>
-							{pages.map((page) =>
-								page.label === 'Import' ? (
-									<MenuItem
-										key={page.label}
-										onClick={() => setImporterOpen(true)}>
+							{pages.map((page) => (
+								<MenuItem
+									key={page.label}
+									onClick={handleCloseNavMenu}
+									href={page.href || ''}>
+									<Link href={page.href || ''}>
 										<Typography textAlign='center'>{page.label}</Typography>
-									</MenuItem>
-								) : (
-									<MenuItem
-										key={page.label}
-										onClick={handleCloseNavMenu}
-										href={page.href || ''}>
-										<Typography textAlign='center'>{page.label}</Typography>
-									</MenuItem>
-								)
-							)}
+									</Link>
+								</MenuItem>
+							))}
 						</Menu>
 					</Box>
 					<AnalyticsIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
@@ -142,22 +136,13 @@ export default function Nav({
 						TRAX
 					</Typography>
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-						{pages.map((page) =>
-							page.label === 'Import' ? (
-								<MenuItem
-									key={page.label}
-									onClick={() => setImporterOpen(true)}>
+						{pages.map((page) => (
+							<MenuItem key={page.label} onClick={handleCloseNavMenu}>
+								<Link href={page.href || ''}>
 									<Typography textAlign='center'>{page.label}</Typography>
-								</MenuItem>
-							) : (
-								<MenuItem
-									key={page.label}
-									onClick={handleCloseNavMenu}
-									href={page.href || ''}>
-									<Typography textAlign='center'>{page.label}</Typography>
-								</MenuItem>
-							)
-						)}
+								</Link>
+							</MenuItem>
+						))}
 					</Box>
 					<ColorModeSwitch />
 					<Typography sx={{ mx: 2 }}>Welcome, {user.name}</Typography>

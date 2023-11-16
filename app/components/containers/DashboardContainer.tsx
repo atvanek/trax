@@ -40,7 +40,6 @@ export default function DashboardContainer({
 				setImporterOpen={setImporterOpen}
 			/>
 			<TabsContainer tabs={tabs} icons={icons} />
-			<ImporterDialog importerOpen={importerOpen} setImporterOpen={setImporterOpen} />
 		</>
 	);
 }
