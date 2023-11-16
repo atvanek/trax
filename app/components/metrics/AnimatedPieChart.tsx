@@ -17,7 +17,9 @@ export default function AnimatedPieChart({ data }: { data: Row[] }) {
 	const currentStatuses: Set<string> = new Set(); //all status currently present in table
 
 	data.forEach((row) => {
-		currentStatuses.add(row.jobStatus);
+		if (row.jobStatus) {
+			currentStatuses.add(row.jobStatus);
+		}
 	});
 
 	//shapes data for MUI Chart
@@ -81,7 +83,7 @@ export default function AnimatedPieChart({ data }: { data: Row[] }) {
 				{Array.from(currentStatuses).map((status, index) => (
 					<FormControlLabel
 						onChange={handleCheck}
-						key={index}
+						key={status}
 						control={
 							<Checkbox
 								defaultChecked

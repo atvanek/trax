@@ -37,17 +37,6 @@ export default function ImporterDialog({}: {}) {
 	}, []);
 	return (
 		<div className='m-5'>
-			{completed && (
-				<StyledTable
-					loading={loading}
-					rows={newRows}
-					columns={defaultColumns(() => {})}
-					editMode='row'
-					density='compact'
-					height={400}
-				/>
-			)}
-
 			<Importer
 				dataHandler={async (rows, { startIndex }) => {
 					// required, may be called several times
@@ -105,6 +94,16 @@ export default function ImporterDialog({}: {}) {
 					/>
 				))}
 			</Importer>
+			{completed && (
+				<StyledTable
+					loading={loading}
+					rows={newRows}
+					columns={defaultColumns(() => {})}
+					editMode='row'
+					density='compact'
+					height={400}
+				/>
+			)}
 			<SaveDialog
 				saveStatus={saveStatus}
 				confirmFinish={confirmFinish}

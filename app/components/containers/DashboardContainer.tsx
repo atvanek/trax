@@ -26,7 +26,7 @@ export default function DashboardContainer({
 		/>,
 		<AnimatedPieChart key='Metrics' data={rows} />,
 	];
-	const icons = [<ListAlt key={0} />, <PieChart key={1} />];
+	const icons = [<ListAlt key='listAlt' />, <PieChart key='pieChart' />];
 
 	return <TabsContainer tabs={tabs} icons={icons} />;
 }

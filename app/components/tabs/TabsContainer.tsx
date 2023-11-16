@@ -39,7 +39,7 @@ export default function TabsContainer({
 					{tabs.map((tab, index) => {
 						return (
 							<Tab
-								key={tab.key}
+								key={`${tab.key}-tab`}
 								label={tab.key}
 								icon={icons[index]}
 								iconPosition='start'
@@ -51,7 +51,7 @@ export default function TabsContainer({
 			</Box>
 			{tabs.map((tab, index) => {
 				return (
-					<TabPanel value={value} index={index} key={index}>
+					<TabPanel value={value} index={index} key={'panel' + index}>
 						{tab}
 					</TabPanel>
 				);

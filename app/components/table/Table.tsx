@@ -147,15 +147,17 @@ export default function Table({
 
 	//makes all column headers draggable elements
 	const makeColumnsDraggable = React.useCallback(() => {
-		const headers: NodeListOf<HTMLDivElement> = document.querySelectorAll(
-			'.MuiDataGrid-columnHeaderDraggableContainer'
-		);
-		const seperators: NodeListOf<SVGElement> = document.querySelectorAll(
-			'.MuiDataGrid-iconSeparator'
-		);
-		//adds event handlers if nodes have been rendered to DOM
-		if (headers.length && seperators.length && !columnsDraggable) {
-			addDragEventHandlers(headers, seperators);
+		if (document) {
+			const headers: NodeListOf<HTMLDivElement> = document.querySelectorAll(
+				'.MuiDataGrid-columnHeaderDraggableContainer'
+			);
+			const seperators: NodeListOf<SVGElement> = document.querySelectorAll(
+				'.MuiDataGrid-iconSeparator'
+			);
+			//adds event handlers if nodes have been rendered to DOM
+			if (headers.length && seperators.length && !columnsDraggable) {
+				addDragEventHandlers(headers, seperators);
+			}
 		} else {
 			//retry until dom nodes are mounted
 			setTimeout(() => {
