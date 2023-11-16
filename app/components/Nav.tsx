@@ -10,7 +10,6 @@ import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
@@ -19,21 +18,13 @@ import { Claims } from '@auth0/nextjs-auth0';
 import ColorModeSwitch from './ColorModeSwitch';
 
 const pages = [
-	{ label: 'Import', href: '/import' },
+	{ label: 'Import', href: 'dashboard/import' },
 	{ label: 'Documentation', href: null },
 	{ label: 'Contact', href: null },
 ];
 const settings = ['Profile', 'Account', 'Preferences', 'Logout'];
 
-export default function Nav({
-	user,
-	importerOpen,
-	setImporterOpen,
-}: {
-	user: Claims;
-	importerOpen: boolean;
-	setImporterOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}) {
+export default function Nav({ user }: { user: Claims }) {
 	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
 		null
 	);

@@ -33,7 +33,7 @@ export default function ImporterDialog({}: {}) {
 	// };
 	const theme = useTheme();
 	return (
-		<>
+		<div className='m-5'>
 			{completed && (
 				<StyledTable
 					loading={loading}
@@ -115,6 +115,6 @@ export default function ImporterDialog({}: {}) {
 					</Button>
 				</DialogActions>
 			</Dialog>
-		</>
+		</div>
 	);
 }
