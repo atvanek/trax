@@ -23,8 +23,8 @@ export const POST = async (req: Request) => {
 			}
 		);
 		console.log(newUserData);
-		return NextResponse.json({ ok: true, customColumns: newUserData.customColumns });
-	} catch (err) {
-		return NextResponse.json({ ok: false });
+		return NextResponse.json({ customColumns: newUserData.customColumns });
+	} catch (error) {
+		return NextResponse.json({ error });
 	}
 };

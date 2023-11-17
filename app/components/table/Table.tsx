@@ -275,20 +275,16 @@ export default function Table({
 				}
 			})
 			.then((data) => {
-				if (data.ok) {
-					setRows(data.rows);
-				} else {
-					setError(true);
-				}
+				setRows(data.rows);
 			})
 			.catch((err) => setError(true));
-
 		return updatedRow;
 	};
 
 	//deletes row optimistically and in database
 	//fetches updated data from database and updates rows
 	const handleDeleteClick = () => {
+		setError(false);
 		setRows(rows.filter((row) => row.id !== deleteId));
 		setDeleteConfirmOpen(false);
 		fetch('/api/job', {
@@ -300,17 +296,19 @@ export default function Table({
 					return res.json();
 				} else {
 					setError(true);
-					return;
 				}
 			})
-			.then((rows: Row[]) => {
-				const newRows = rows.map((row) => ({
+			.then((data: { rows: Row[] }) => {
+				const newRows = data.rows.map((row) => ({
 					...row,
 					date: row.date ? new Date(row.date) : new Date(),
 				})) as Row[];
 				setRows(newRows);
 			})
-			.catch((err) => setError(true));
+			.catch((err) => {
+				console.log(err);
+				setError(true);
+			});
 	};
 
 	const handleRowModesModelChange = (newRowModesModel: GridRowModesModel) => {
@@ -342,8 +340,8 @@ export default function Table({
 	};
 
 	React.useEffect(() => {
-		console.log(columns);
-	}, [columns]);
+		console.log(error);
+	}, [error]);
 
 	return (
 		<>

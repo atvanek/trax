@@ -54,9 +54,10 @@ export default function AddColumnDialog({
 				setTimeout(() => {
 					setError(false);
 				}, 6000)
-			);
-  }, [newColumnTitle, setColumns, setAddingColumn]);
-  
+			)
+			.finally(() => setNewColumnTitle(''));
+	}, [newColumnTitle, setColumns, setAddingColumn]);
+
 	return (
 		<Dialog open={addingColumn} onClose={() => setAddingColumn(false)}>
 			<DialogTitle>New Column</DialogTitle>
