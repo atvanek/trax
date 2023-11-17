@@ -16,6 +16,7 @@ import { ViewColumn } from '@mui/icons-material';
 import { GridToolbarExport, GridRowModes } from '@mui/x-data-grid';
 import useThrottledHandler from '@/hooks/useThrottledHandler';
 import toCamelCase from '@/utils/toCamelCase';
+import createCustomColumns from '@/utils/createCustomColumns';
 
 export default function EditToolbar(props: EditToolbarProps) {
 	const { setRows, setSortModel, setRowModesModel, setColumns } = props;
@@ -50,9 +51,7 @@ export default function EditToolbar(props: EditToolbarProps) {
 				}
 			})
 			.then((data) => {
-				const newCustomColumns = data.columns.map((column) => {
-					return { field: toCamelCase(column), headerName: column };
-				});
+				const newCustomColumns = createCustomColumns(data.customColumns);
 				setColumns((prevColumns) => {
 					return [...prevColumns, ...newCustomColumns];
 				});

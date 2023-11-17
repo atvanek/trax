@@ -8,6 +8,7 @@ const nextConfig = {
 			transform: '@mui/icons-material/{{member}}',
 		},
 	},
+	reactStrictMode: true
 };
 
 module.exports = nextConfig;
