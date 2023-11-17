@@ -43,6 +43,7 @@ export default function Table({
 		React.useState<boolean>(false);
 	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null); //id of item requested to delete
 	const [error, setError] = React.useState(false);
+	const [tableRendered, setTableRendered] = React.useState(false);
 
 	const observerRef = React.useRef<MutationObserver | null>(null);
 
@@ -181,27 +182,17 @@ export default function Table({
 
 	//add mutation observer to check when data grid has been rendered
 	React.useEffect(() => {
-		//this will be the cleanup function returned from addDragEventListeners
-		let cleanup: () => void;
 		//runs on every mutation of the document body
 		const handleElementAdded = (mutationsList: MutationRecord[]) => {
 			for (const mutation of mutationsList) {
 				if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
 					const addedNode = mutation.addedNodes[0];
-
 					// Check if the added node is the data grid
 					if (
 						addedNode instanceof Element &&
 						addedNode.classList.contains('MuiDataGrid-root')
 					) {
-						//grab all headers and column separators to add event listeners
-						const headers: NodeListOf<HTMLDivElement> =
-							addedNode.querySelectorAll(
-								'.MuiDataGrid-columnHeaderDraggableContainer'
-							);
-						const separators: NodeListOf<SVGElement> =
-							addedNode.querySelectorAll('.MuiDataGrid-iconSeparator');
-						const cleanup = addDragEventListeners(headers, separators);
+						setTableRendered(true);
 					}
 				}
 			}
@@ -219,9 +210,28 @@ export default function Table({
 		// Clean up the observer on component unmount
 		return () => {
 			observer.disconnect();
-			cleanup;
 		};
 	}, [addDragEventListeners]);
+
+	//calls addDragEventHandlers once table is rendered
+	//and runs event listener cleanup on unmount
+	React.useEffect(() => {
+		//this will be the cleanup function once table is rendered
+		let cleanup: () => void = () => {};
+		if (tableRendered) {
+			//grab all headers and column separators to add event listeners
+			const headers: NodeListOf<HTMLDivElement> = document.querySelectorAll(
+				'.MuiDataGrid-columnHeaderDraggableContainer'
+			);
+			const separators: NodeListOf<SVGElement> = document.querySelectorAll(
+				'.MuiDataGrid-iconSeparator'
+			);
+			cleanup = addDragEventListeners(headers, separators);
+		}
+		return () => {
+			cleanup;
+		};
+	});
 
 	//helper that gets header name from column seperator svg
 	const getField = (seperator: SVGElement): string => {
@@ -344,6 +354,7 @@ export default function Table({
 					},
 				}}>
 				<ColumnResizeBar
+					tableRendered={tableRendered}
 					setColumns={setColumns}
 					resizing={resizing}
 					setResizing={setResizing}
