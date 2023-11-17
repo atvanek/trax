@@ -3,13 +3,24 @@
 import React from 'react';
 import { EditToolbarProps } from '@/types';
 import { GridToolbarContainer } from '@mui/x-data-grid';
-import { Button } from '@mui/material';
+import {
+	Button,
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogTitle,
+	TextField,
+} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import { ViewColumn } from '@mui/icons-material';
 import { GridToolbarExport, GridRowModes } from '@mui/x-data-grid';
 import useThrottledHandler from '@/hooks/useThrottledHandler';
+import toCamelCase from '@/utils/toCamelCase';
 
 export default function EditToolbar(props: EditToolbarProps) {
-	const { setRows, setSortModel, setRowModesModel } = props;
+	const { setRows, setSortModel, setRowModesModel, setColumns } = props;
+	const [addingColumn, setAddingColumn] = React.useState(false);
+	const [newColumnTitle, setNewColumnTitle] = React.useState('');
 
 	const handleClick = React.useCallback(() => {
 		setSortModel([{ field: 'date', sort: 'desc' }]);
@@ -26,6 +37,28 @@ export default function EditToolbar(props: EditToolbarProps) {
 
 	const { throttledHandler } = useThrottledHandler(handleClick);
 
+	const handleAddColumn = () => {
+		fetch('/api/user/column', {
+			method: 'POST',
+			body: JSON.stringify(newColumnTitle),
+		})
+			.then((res) => {
+				if (res.ok) {
+					return res.json();
+				} else {
+					//
+				}
+			})
+			.then((data) => {
+				const newCustomColumns = data.columns.map((column) => {
+					return { field: toCamelCase(column), headerName: column };
+				});
+				setColumns((prevColumns) => {
+					return [...prevColumns, ...newCustomColumns];
+				});
+			});
+	};
+
 	return (
 		<GridToolbarContainer sx={{ justifyContent: 'space-between', px: 1 }}>
 			<Button
@@ -34,8 +67,32 @@ export default function EditToolbar(props: EditToolbarProps) {
 				onClick={throttledHandler}>
 				Add Job
 			</Button>
-
-			<GridToolbarExport />
+			<div className='flex items-center'>
+				<Button
+					color='primary'
+					startIcon={<ViewColumn />}
+					onClick={() => setAddingColumn(true)}>
+					Add Column
+				</Button>
+				<GridToolbarExport />
+			</div>
+			<Dialog open={addingColumn}>
+				<DialogTitle>New Column</DialogTitle>
+				<DialogContent>
+					<TextField
+						label='Column Title'
+						sx={{ my: 3 }}
+						value={newColumnTitle}
+						onChange={(e) => setNewColumnTitle(e.target.value)}
+					/>
+				</DialogContent>
+				<DialogActions>
+					<Button onClick={() => setAddingColumn(false)}>Cancel</Button>
+					<Button onClick={handleAddColumn} variant='contained'>
+						Add Column
+					</Button>
+				</DialogActions>
+			</Dialog>
 		</GridToolbarContainer>
 	);
 }

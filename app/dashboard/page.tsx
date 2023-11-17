@@ -15,10 +15,10 @@ export default async function Dashboard() {
 		return redirect('/');
 	}
 	// Check if user exists in the MongoDB cluster
-	const getUser = async (email: string): Promise<string | null> => {
+	const getUser = async (email: string): Promise<IUser | null> => {
 		await dbConnect();
 		const user: IUser | null = await userModel.findOne({ email });
-		return user ? user.userId : null;
+		return user ? user : null;
 	};
 
 	// Add new user to MongoDB cluster
@@ -40,10 +40,11 @@ export default async function Dashboard() {
 		return jobs;
 	};
 
-	const userId =
-		(await getUser(user.email)) || (await addUser(user.email)).userId;
+	const userData = (await getUser(user.email)) || (await addUser(user.email));
 
-	const data = await getJobs(userId);
+	const rows = await getJobs(userData.userId);
 
-	return <DashboardContainer stringifiedData={JSON.stringify(data)} />;
+	return (
+		<DashboardContainer stringifiedData={JSON.stringify({ rows, userData })} />
+	);
 }

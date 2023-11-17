@@ -14,7 +14,7 @@ import {
 import LinkCell from '@/app/components/table/cells/LinkCell';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 
-export const defaultColumns = (
+export const createDefaultColumns = (
 	handleRequestDelete: (id: GridRowId) => void
 ): GridColDef[] => {
 	return [
@@ -107,4 +107,4 @@ export const defaultColumns = (
 	];
 };
 
-export default defaultColumns
+export default createDefaultColumns

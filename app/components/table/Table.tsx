@@ -3,7 +3,7 @@
 import React from 'react';
 import { Row } from '@/types';
 import { Box, Snackbar, Alert } from '@mui/material';
-import defaultColumns from './defaultColumns';
+import createDefaultColumns from './defaultColumns';
 import {
 	GridRowModesModel,
 	GridRowModes,
@@ -18,15 +18,19 @@ import EditToolbar from './EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
 import StyledTable from './StyledDataGrid';
 import DeleteConfirm from '../DeleteConfirm';
+import { IUser } from '@/db/models/user';
+import toCamelCase from '@/utils/toCamelCase';
 
 export default function Table({
 	rows,
 	setRows,
 	setMounted,
+	userData,
 }: {
 	rows: Row[];
 	setRows: React.Dispatch<React.SetStateAction<Row[]>>;
 	setMounted: React.Dispatch<React.SetStateAction<boolean>>;
+	userData: IUser;
 }) {
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
@@ -52,8 +56,17 @@ export default function Table({
 		setDeleteConfirmOpen(true);
 	};
 
+	const withUserColumns = (columns: GridColDef[]) => {
+		const userColumns = userData.customColumns?.length
+			? (userData.customColumns?.map((column) => {
+					return { field: toCamelCase(column), headerName: column };
+			  }) as GridColDef[])
+			: [];
+		console.log([...columns, ...userColumns]);
+		return [...columns, ...userColumns];
+	};
 	const [columns, setColumns] = React.useState(
-		defaultColumns(handleRequestDelete)
+		withUserColumns(createDefaultColumns(handleRequestDelete))
 	);
 
 	const getColumnHeaderName = (seperator: SVGElement): string => {
@@ -330,6 +343,7 @@ export default function Table({
 							setRows,
 							setSortModel,
 							setRowModesModel,
+							setColumns,
 						},
 					}}
 					initialState={{

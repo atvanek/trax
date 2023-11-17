@@ -4,6 +4,7 @@ import {
 	GridRowsProp,
 	GridRowModesModel,
 	GridSortModel,
+	GridColDef,
 } from '@mui/x-data-grid';
 
 export interface Row extends IJob {
@@ -40,6 +41,7 @@ export interface EditToolbarProps {
 		newModel: (oldModel: GridRowModesModel) => GridRowModesModel
 	) => void;
 	setSortModel: (value: React.SetStateAction<GridSortModel>) => void;
+	setColumns: (value: React.SetStateAction<GridColDef[]>) => void;
 }
 
 export interface TabPanelProps {
