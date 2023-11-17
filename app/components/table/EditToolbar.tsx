@@ -11,7 +11,7 @@ import {
 	DialogTitle,
 	TextField,
 	Alert,
-	Snackbar,
+	Collapse,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { ViewColumn } from '@mui/icons-material';
@@ -50,6 +50,9 @@ export default function EditToolbar(props: EditToolbarProps) {
 					return res.json();
 				} else {
 					setError(true);
+					setTimeout(() => {
+						setError(false);
+					}, 6000);
 				}
 			})
 			.then((data) => {
@@ -58,7 +61,11 @@ export default function EditToolbar(props: EditToolbarProps) {
 					return [...prevColumns, ...newCustomColumns];
 				});
 			})
-			.catch((err) => setError(true));
+			.catch((err) =>
+				setTimeout(() => {
+					setError(false);
+				}, 6000)
+			);
 	};
 
 	return (
@@ -95,11 +102,11 @@ export default function EditToolbar(props: EditToolbarProps) {
 					</Button>
 				</DialogActions>
 			</Dialog>
-			<Snackbar open={error} autoHideDuration={6000}>
+			<Collapse in={error}>
 				<Alert severity='error'>
 					Error adding column. Please try again later.
 				</Alert>
-			</Snackbar>
+			</Collapse>
 		</GridToolbarContainer>
 	);
 }
