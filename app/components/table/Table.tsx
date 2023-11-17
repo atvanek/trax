@@ -341,6 +341,10 @@ export default function Table({
 		});
 	};
 
+	React.useEffect(() => {
+		console.log(columns);
+	}, [columns]);
+
 	return (
 		<>
 			<Box

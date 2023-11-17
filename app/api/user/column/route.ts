@@ -14,17 +14,16 @@ export const POST = async (req: Request) => {
 	}
 	try {
 		const newColumn = await req.json();
-		console.log(newColumn);
 
 		const newUserData = await userModel.findOneAndUpdate(
 			{ userId: user.sub },
-			{ $push: { customColumns: newColumn } },
+			{ $addToSet: { customColumns: newColumn } },
 			{
 				new: true,
 			}
 		);
-		console.log('new custom columns', newUserData.customColumns);
-		return NextResponse.json({ ok: true, columns: newUserData.customColumns });
+		console.log(newUserData);
+		return NextResponse.json({ ok: true, customColumns: newUserData.customColumns });
 	} catch (err) {
 		return NextResponse.json({ ok: false });
 	}

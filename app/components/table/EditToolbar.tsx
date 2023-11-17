@@ -18,6 +18,7 @@ import { ViewColumn } from '@mui/icons-material';
 import { GridToolbarExport, GridRowModes } from '@mui/x-data-grid';
 import useThrottledHandler from '@/hooks/useThrottledHandler';
 import createCustomColumns from '@/utils/createCustomColumns';
+import { set } from 'mongoose';
 
 export default function EditToolbar(props: EditToolbarProps) {
 	const { setRows, setSortModel, setRowModesModel, setColumns } = props;
@@ -40,12 +41,13 @@ export default function EditToolbar(props: EditToolbarProps) {
 
 	const { throttledHandler } = useThrottledHandler(handleClick);
 
-	const handleAddColumn = () => {
+	const handleAddColumn = React.useCallback(() => {
 		fetch('/api/user/column', {
 			method: 'POST',
 			body: JSON.stringify(newColumnTitle),
 		})
 			.then((res) => {
+				console.log(res.ok);
 				if (res.ok) {
 					return res.json();
 				} else {
@@ -53,20 +55,22 @@ export default function EditToolbar(props: EditToolbarProps) {
 					setTimeout(() => {
 						setError(false);
 					}, 6000);
+					return;
 				}
 			})
 			.then((data) => {
 				const newCustomColumns = createCustomColumns(data.customColumns);
-				setColumns((prevColumns) => {
-					return [...prevColumns, ...newCustomColumns];
+				setColumns((prev) => {
+					return [...prev, ...newCustomColumns];
 				});
+				setAddingColumn(false);
 			})
 			.catch((err) =>
 				setTimeout(() => {
 					setError(false);
 				}, 6000)
 			);
-	};
+	}, [newColumnTitle, setColumns]);
 
 	return (
 		<GridToolbarContainer sx={{ justifyContent: 'space-between', px: 1 }}>
@@ -85,7 +89,7 @@ export default function EditToolbar(props: EditToolbarProps) {
 				</Button>
 				<GridToolbarExport />
 			</div>
-			<Dialog open={addingColumn}>
+			<Dialog open={addingColumn} onClose={() => setAddingColumn(false)}>
 				<DialogTitle>New Column</DialogTitle>
 				<DialogContent>
 					<TextField
