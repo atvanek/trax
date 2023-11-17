@@ -101,12 +101,12 @@ export default function EditToolbar(props: EditToolbarProps) {
 						Add Column
 					</Button>
 				</DialogActions>
+				<Collapse in={error}>
+					<Alert severity='error'>
+						Error adding column. Please try again later.
+					</Alert>
+				</Collapse>
 			</Dialog>
-			<Collapse in={error}>
-				<Alert severity='error'>
-					Error adding column. Please try again later.
-				</Alert>
-			</Collapse>
 		</GridToolbarContainer>
 	);
 }
