@@ -14,10 +14,10 @@ import {
 	GridSortModel,
 	GridCellParams,
 } from '@mui/x-data-grid';
-import EditToolbar from './EditToolbar';
+import EditToolbar from '../toolbar/EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
 import StyledTable from './StyledDataGrid';
-import DeleteConfirm from '../DeleteConfirm';
+import DeleteConfirm from './DeleteConfirm';
 import { IUser } from '@/db/models/user';
 import createCustomColumns from '@/utils/createCustomColumns';
 
