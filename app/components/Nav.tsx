@@ -97,7 +97,7 @@ export default function Nav({ user }: { user: Claims }) {
 								display: { xs: 'block', md: 'none' },
 							}}>
 							{pages.map((page) => (
-								<Link href={page.href || ''} prefetch={false} key={page.label}>
+								<Link href={page.href || ''} key={page.label}>
 									<MenuItem onClick={handleCloseNavMenu}>
 										<Typography textAlign='center'>{page.label}</Typography>
 									</MenuItem>
@@ -125,7 +125,7 @@ export default function Nav({ user }: { user: Claims }) {
 					</Typography>
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 						{pages.map((page) => (
-							<Link href={page.href || ''} prefetch={false} key={page.label}>
+							<Link href={page.href || ''} key={page.label}>
 								<MenuItem onClick={handleCloseNavMenu}>
 									<Typography textAlign='center'>{page.label}</Typography>
 								</MenuItem>

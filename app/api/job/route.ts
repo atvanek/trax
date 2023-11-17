@@ -12,21 +12,25 @@ export const POST = async (req: Request) => {
 		return NextResponse.redirect('/');
 	}
 
-	const updatedJob = await req.json();
+	try {
+		const updatedJob = await req.json();
 
-	const { id } = updatedJob;
+		const { id } = updatedJob;
 
-	await jobModel.findOneAndUpdate(
-		{ userId: user.sub, id },
-		{
-			...updatedJob,
-		},
-		{ upsert: true, new: true }
-	);
+		await jobModel.findOneAndUpdate(
+			{ userId: user.sub, id },
+			{
+				...updatedJob,
+			},
+			{ upsert: true, new: true }
+		);
 
-	const rows = await jobModel.find({ userId: user.sub });
+		const rows = await jobModel.find({ userId: user.sub });
 
-	return NextResponse.json(createRows(rows));
+		return NextResponse.json({ ok: true, rows: createRows(rows) });
+	} catch (err) {
+		return NextResponse.json({ ok: false });
+	}
 };
 
 export const DELETE = async (req: Request) => {
@@ -37,12 +41,16 @@ export const DELETE = async (req: Request) => {
 		return NextResponse.redirect('/');
 	}
 
-	const jobToDelete = await req.json();
+	try {
+		const jobToDelete = await req.json();
 
-	const { id } = jobToDelete;
-	await jobModel.findOneAndDelete({ userId: user.sub, id });
+		const { id } = jobToDelete;
+		await jobModel.findOneAndDelete({ userId: user.sub, id });
 
-	const rows = await jobModel.find({ userId: user.sub });
+		const rows = await jobModel.find({ userId: user.sub });
 
-	return NextResponse.json(createRows(rows));
+		return NextResponse.json({ rows: createRows(rows), ok: true });
+	} catch (err) {
+		return NextResponse.json({ ok: false });
+	}
 };

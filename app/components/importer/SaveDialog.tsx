@@ -29,13 +29,18 @@ export default function SaveDialog({
 		fetch('/api/jobs', {
 			method: 'POST',
 			body: JSON.stringify(rows),
-		}).then((res) => {
-			if (res.ok) {
-				setSaveStatus('success');
-			} else {
-				setSaveStatus('error');
-			}
-		});
+		})
+			.then((res) => {
+				return res.json();
+			})
+			.then((parsed) => {
+				if (parsed.ok) {
+					setSaveStatus('success');
+				} else {
+					setSaveStatus('error');
+				}
+			})
+			.catch((err) => setSaveStatus('error'));
 	};
 
 	return (

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Row } from '@/types';
-import { Box } from '@mui/material';
+import { Box, Snackbar, Alert } from '@mui/material';
 import defaultColumns from './defaultColumns';
 import {
 	GridRowModesModel,
@@ -39,6 +39,7 @@ export default function Table({
 		React.useState<boolean>(false);
 	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null); //id of item requested to delete
 	const [columnsDraggable, setColumnsDraggable] = React.useState(false); //columns made draggable after client hydration
+	const [error, setError] = React.useState(false);
 
 	//notifies tab container that table is rendered
 	React.useLayoutEffect(() => {
@@ -196,10 +197,22 @@ export default function Table({
 			method: 'POST',
 			body: JSON.stringify(newRow),
 		})
-			.then((res) => res.json())
-			.then((rows: Row[]) => {
-				setRows(rows);
-			});
+			.then((res) => {
+				if (res.ok) {
+					return res.json();
+				} else {
+					setError(true);
+					return;
+				}
+			})
+			.then((data) => {
+				if (data.ok) {
+					setRows(data.rows);
+				} else {
+					setError(true);
+				}
+			})
+			.catch((err) => setError(true));
 
 		return updatedRow;
 	};
@@ -213,14 +226,22 @@ export default function Table({
 			method: 'DELETE',
 			body: JSON.stringify({ id: deleteId }),
 		})
-			.then((res) => res.json())
+			.then((res) => {
+				if (res.ok) {
+					return res.json();
+				} else {
+					setError(true);
+					return;
+				}
+			})
 			.then((rows: Row[]) => {
 				const newRows = rows.map((row) => ({
 					...row,
 					date: row.date ? new Date(row.date) : new Date(),
 				})) as Row[];
 				setRows(newRows);
-			});
+			})
+			.catch((err) => setError(true));
 	};
 
 	// const handleCancelClick = React.useCallback(
@@ -321,6 +342,14 @@ export default function Table({
 				setDeleteConfirmOpen={setDeleteConfirmOpen}
 				handleDeleteClick={handleDeleteClick}
 			/>
+			<Snackbar
+				open={error}
+				autoHideDuration={6000}
+				onClose={() => setError(false)}>
+				<Alert severity='error' sx={{ width: '100%' }}>
+					Error updating data. Please try again.
+				</Alert>
+			</Snackbar>
 		</>
 	);
 }

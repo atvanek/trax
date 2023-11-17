@@ -9,6 +9,7 @@ import React from 'react';
 import SaveDialog from './SaveDialog';
 import { useTheme } from '@mui/material/styles';
 import { IJob } from '@/db/models/job';
+import { Typography } from '@mui/material';
 export default function ImporterDialog({}: {}) {
 	// in your component code:
 	const [newRows, setNewRows] = React.useState<Omit<IJob, 'userId'>[]>([]);
@@ -95,14 +96,17 @@ export default function ImporterDialog({}: {}) {
 				))}
 			</Importer>
 			{completed && (
-				<StyledTable
-					loading={loading}
-					rows={newRows}
-					columns={defaultColumns(() => {})}
-					editMode='row'
-					density='compact'
-					height={400}
-				/>
+				<>
+					<Typography sx={{my: 3}}>Imported Data</Typography>
+					<StyledTable
+						loading={loading}
+						rows={newRows}
+						columns={defaultColumns(() => {})}
+						editMode='row'
+						density='compact'
+						height={400}
+					/>
+				</>
 			)}
 			<SaveDialog
 				saveStatus={saveStatus}

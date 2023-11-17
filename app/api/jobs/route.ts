@@ -10,13 +10,14 @@ export const POST = async (req: Request) => {
 	if (!user) {
 		return NextResponse.redirect('/');
 	}
-
-	const newJobs: Omit<IJob, 'userId'>[] = await req.json();
-	console.log(newJobs);
-	const newJobsWithIds = newJobs.map((job) => {
-		return { ...job, userId: user.sub };
-	}) as IJob[];
-	const newRows = await jobModel.insertMany(newJobsWithIds);
-	console.log(newRows);
-	return NextResponse.json('');
+	try {
+		const newJobs: Omit<IJob, 'userId'>[] = await req.json();
+		const newJobsWithIds = newJobs.map((job) => {
+			return { ...job, userId: user.sub };
+		}) as IJob[];
+		const newRows = await jobModel.insertMany(newJobsWithIds);
+		return NextResponse.json({ ok: true });
+	} catch (err) {
+		NextResponse.json({ ok: false });
+	}
 };
