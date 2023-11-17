@@ -10,18 +10,20 @@ import {
 	DialogContent,
 	DialogTitle,
 	TextField,
+	Alert,
+	Snackbar,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { ViewColumn } from '@mui/icons-material';
 import { GridToolbarExport, GridRowModes } from '@mui/x-data-grid';
 import useThrottledHandler from '@/hooks/useThrottledHandler';
-import toCamelCase from '@/utils/toCamelCase';
 import createCustomColumns from '@/utils/createCustomColumns';
 
 export default function EditToolbar(props: EditToolbarProps) {
 	const { setRows, setSortModel, setRowModesModel, setColumns } = props;
 	const [addingColumn, setAddingColumn] = React.useState(false);
 	const [newColumnTitle, setNewColumnTitle] = React.useState('');
+	const [error, setError] = React.useState(false);
 
 	const handleClick = React.useCallback(() => {
 		setSortModel([{ field: 'date', sort: 'desc' }]);
@@ -47,7 +49,7 @@ export default function EditToolbar(props: EditToolbarProps) {
 				if (res.ok) {
 					return res.json();
 				} else {
-					//
+					setError(true);
 				}
 			})
 			.then((data) => {
@@ -55,7 +57,8 @@ export default function EditToolbar(props: EditToolbarProps) {
 				setColumns((prevColumns) => {
 					return [...prevColumns, ...newCustomColumns];
 				});
-			});
+			})
+			.catch((err) => setError(true));
 	};
 
 	return (
@@ -92,6 +95,11 @@ export default function EditToolbar(props: EditToolbarProps) {
 					</Button>
 				</DialogActions>
 			</Dialog>
+			<Snackbar open={error} autoHideDuration={6000}>
+				<Alert severity='error'>
+					Error adding column. Please try again later.
+				</Alert>
+			</Snackbar>
 		</GridToolbarContainer>
 	);
 }
