@@ -252,17 +252,11 @@ export default function Table({
 		});
 	};
 
-	//updates row changes optimistically and to database
-	//fetches updated data from database and updates rows
-	const handleProcessRowUpdate = (updatedRow: Row) => {
-		//optimistic render
-		const newRow = { ...updatedRow, isNew: false } as Row;
-		setRows((prevRows) =>
-			prevRows.map((row) => (row.id === newRow.id ? newRow : row))
-		);
+	//updates single row in database
+	const updateRow = (updatedRow: Row) => {
 		fetch('/api/job', {
 			method: 'POST',
-			body: JSON.stringify(newRow),
+			body: JSON.stringify(updatedRow),
 		})
 			.then((res) => {
 				if (res.ok) {
@@ -276,6 +270,53 @@ export default function Table({
 				setRows(data.rows);
 			})
 			.catch((err) => setError(true));
+	};
+
+	const requestUpdateManyRows = (updatedRow: Row) => {
+		//check if there is currently a row being edited
+		const anyRowInEditMode = Object.values(rowModesModel).some(
+			(row) => row.mode === 'edit'
+		);
+
+		if (!anyRowInEditMode) {
+			//get all new rows plus the updated value of the current row
+			const newRows = rows
+				.filter((row) => row.isNew)
+				.map((row) => (row.id === updatedRow.id ? updatedRow : row));
+
+			//udpdate rows in databse
+			fetch('/api/jobs', {
+				method: 'POST',
+				body: JSON.stringify(newRows),
+			})
+				.then((res) => {
+					if (res.ok) {
+						return res.json();
+					} else {
+						setError(true);
+						return;
+					}
+				})
+				.then((data) => {
+					setRows(data.rows);
+				})
+				.catch((err) => setError(true));
+		}
+	};
+
+	const handleProcessRowUpdate = (updatedRow: Row) => {
+		//is there are other rows that haven't been updated, request to update multiple rows
+		if (rows.some((row) => row.isNew)) {
+			requestUpdateManyRows(updatedRow);
+		} else {
+			//otherwise just updated the single row
+			updateRow(updatedRow);
+		}
+		//optimistically update UI
+		const newRows = rows.map((row) =>
+			row.id === updatedRow.id ? updatedRow : row
+		);
+		setRows(newRows);
 		return updatedRow;
 	};
 

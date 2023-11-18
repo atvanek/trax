@@ -31,14 +31,9 @@ export default function EditToolbar(props: EditToolbarProps) {
 		}));
 	}, [setRowModesModel, setRows, setSortModel]);
 
-	const { throttledHandler } = useThrottledHandler(handleClick);
-
 	return (
 		<GridToolbarContainer sx={{ justifyContent: 'space-between', px: 1 }}>
-			<Button
-				color='primary'
-				startIcon={<AddIcon />}
-				onClick={throttledHandler}>
+			<Button color='primary' startIcon={<AddIcon />} onClick={handleClick}>
 				Add Job
 			</Button>
 			<div className='flex items-center'>

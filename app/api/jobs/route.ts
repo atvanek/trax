@@ -12,12 +12,14 @@ export const POST = async (req: Request) => {
 		return NextResponse.redirect('/');
 	}
 	try {
+		const userId = user.sub;
 		const newJobs: Omit<IJob, 'userId'>[] = await req.json();
 		const newJobsWithIds = newJobs.map((job) => {
-			return { ...job, userId: user.sub };
+			return { ...job, userId };
 		}) as IJob[];
-		const newRows = await jobModel.insertMany(newJobsWithIds);
-		return NextResponse.json({ newRows: createRows(newRows) });
+		await jobModel.insertMany(newJobsWithIds);
+		const rows = await jobModel.find({ userId });
+		return NextResponse.json({ rows: createRows(rows) });
 	} catch (error) {
 		NextResponse.json({ error });
 	}
