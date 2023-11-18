@@ -1,9 +1,5 @@
 import { getSession } from '@auth0/nextjs-auth0';
 import { redirect } from 'next/navigation';
-import dbConnect from '@/db/dbConnect';
-import userModel, { IUser } from '@/db/models/user';
-import jobModel, { IJob } from '@/db/models/job';
-import DashboardContainer from '../components/containers/DashboardContainer';
 import React from 'react';
 import Nav from '../components/Nav';
 

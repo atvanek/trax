@@ -32,7 +32,6 @@ export default function AddColumnDialog({
 			body: JSON.stringify(newColumnTitle),
 		})
 			.then((res) => {
-				console.log(res.ok);
 				if (res.ok) {
 					return res.json();
 				} else {

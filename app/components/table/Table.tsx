@@ -161,7 +161,6 @@ export default function Table({
 
 			// Return a cleanup function
 			return () => {
-				console.log('cleaning up');
 				separators.forEach((separator) => {
 					separator.removeEventListener('dragover', handleDragOver);
 					separator.removeEventListener('dragenter', handleDragEnter);
@@ -173,7 +172,6 @@ export default function Table({
 					header.removeEventListener('dragenter', handleDragEnterHeader);
 					header.removeEventListener('dragover', handleDragOverHeader);
 				});
-				console.log('removed all');
 			};
 		},
 
@@ -323,7 +321,7 @@ export default function Table({
 	);
 
 	const handleCellClick = (params: GridCellParams, event: React.MouseEvent) => {
-		console.log(params);
+
 		if (!params.isEditable) {
 			return;
 		}
@@ -338,10 +336,6 @@ export default function Table({
 			[params.id]: { mode: GridRowModes.Edit },
 		});
 	};
-
-	React.useEffect(() => {
-		console.log(error);
-	}, [error]);
 
 	return (
 		<>
