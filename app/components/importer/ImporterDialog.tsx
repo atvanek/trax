@@ -10,7 +10,7 @@ import SaveDialog from './SaveDialog';
 import { useTheme } from '@mui/material/styles';
 import { IJob } from '@/db/models/job';
 import { Typography } from '@mui/material';
-export default function ImporterDialog({}: {}) {
+export default function ImporterDialog() {
 	// in your component code:
 	const [newRows, setNewRows] = React.useState<Omit<IJob, 'userId'>[]>([]);
 	const [loading, setLoading] = React.useState(false);
@@ -97,7 +97,7 @@ export default function ImporterDialog({}: {}) {
 			</Importer>
 			{completed && (
 				<>
-					<Typography sx={{my: 3}}>Imported Data</Typography>
+					<Typography sx={{ my: 3 }}>Imported Data</Typography>
 					<StyledTable
 						loading={loading}
 						rows={newRows}

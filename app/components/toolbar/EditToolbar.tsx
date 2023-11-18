@@ -6,7 +6,11 @@ import { GridToolbarContainer } from '@mui/x-data-grid';
 import { Button } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { ViewColumn } from '@mui/icons-material';
-import { GridToolbarExport, GridRowModes } from '@mui/x-data-grid';
+import {
+	GridToolbarExport,
+	GridRowModes,
+	GridToolbarQuickFilter,
+} from '@mui/x-data-grid';
 import useThrottledHandler from '@/hooks/useThrottledHandler';
 import AddColumnDialog from './AddColumnDialog';
 
@@ -38,6 +42,7 @@ export default function EditToolbar(props: EditToolbarProps) {
 				Add Job
 			</Button>
 			<div className='flex items-center'>
+				<GridToolbarQuickFilter />
 				<Button
 					color='primary'
 					startIcon={<ViewColumn />}

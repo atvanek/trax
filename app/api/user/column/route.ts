@@ -1,9 +1,7 @@
 import dbConnect from '@/db/dbConnect';
 import userModel from '@/db/models/user';
-import jobModel from '@/db/models/job';
 import { getSession } from '@auth0/nextjs-auth0';
 import { NextResponse } from 'next/server';
-import { redirect } from 'next/navigation';
 
 export const POST = async (req: Request) => {
 	await dbConnect();
@@ -22,7 +20,6 @@ export const POST = async (req: Request) => {
 				new: true,
 			}
 		);
-		console.log(newUserData);
 		return NextResponse.json({ customColumns: newUserData.customColumns });
 	} catch (error) {
 		return NextResponse.json({ error });

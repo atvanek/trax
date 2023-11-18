@@ -321,7 +321,6 @@ export default function Table({
 	);
 
 	const handleCellClick = (params: GridCellParams, event: React.MouseEvent) => {
-
 		if (!params.isEditable) {
 			return;
 		}

@@ -2,6 +2,7 @@ import dbConnect from '@/db/dbConnect';
 import jobModel, { IJob } from '@/db/models/job';
 import { NextResponse } from 'next/server';
 import { getSession } from '@auth0/nextjs-auth0';
+import createRows from '@/utils/createRows';
 
 export const POST = async (req: Request) => {
 	await dbConnect();
@@ -16,8 +17,8 @@ export const POST = async (req: Request) => {
 			return { ...job, userId: user.sub };
 		}) as IJob[];
 		const newRows = await jobModel.insertMany(newJobsWithIds);
-		return NextResponse.json({ ok: true });
-	} catch (err) {
-		NextResponse.json({ ok: false });
+		return NextResponse.json({ newRows: createRows(newRows) });
+	} catch (error) {
+		NextResponse.json({ error });
 	}
 };

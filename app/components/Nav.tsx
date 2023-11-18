@@ -157,7 +157,7 @@ export default function Nav({ user }: { user: Claims }) {
 							onClose={handleCloseUserMenu}>
 							{settings.map((setting) =>
 								setting === 'Logout' ? (
-									<Link href={'api/auth/logout'} key={setting}>
+									<Link href={'/api/auth/logout'} key={setting}>
 										<MenuItem>
 											<Typography textAlign='center'>{setting}</Typography>
 										</MenuItem>

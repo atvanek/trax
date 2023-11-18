@@ -15,7 +15,6 @@ import Link from 'next/link';
 export default function SaveDialog({
 	saveStatus,
 	confirmFinish,
-	setConfirmFinish,
 	setSaveStatus,
 	rows,
 }: {
@@ -31,14 +30,14 @@ export default function SaveDialog({
 			body: JSON.stringify(rows),
 		})
 			.then((res) => {
-				return res.json();
-			})
-			.then((parsed) => {
-				if (parsed.ok) {
-					setSaveStatus('success');
+				if (res.ok) {
+					return res.json();
 				} else {
 					setSaveStatus('error');
 				}
+			})
+			.then((parsed) => {
+				setSaveStatus('success');
 			})
 			.catch((err) => setSaveStatus('error'));
 	};
@@ -58,7 +57,7 @@ export default function SaveDialog({
 			<DialogActions>
 				{!saveStatus ? (
 					<>
-						<Link href='/' passHref>
+						<Link href='/' passHref >
 							<Button variant='contained' color='secondary'>
 								Discard
 							</Button>
@@ -69,7 +68,7 @@ export default function SaveDialog({
 						</Button>
 					</>
 				) : (
-					<Link href='/dashboard' passHref>
+					<Link href='/dashboard'>
 						<Button variant='contained' color='primary'>
 							Return to Dashboard
 						</Button>
