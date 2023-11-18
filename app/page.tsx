@@ -8,16 +8,14 @@ export default async function Home() {
 	if (user) return redirect('/dashboard');
 	return (
 		<main className='flex min-h-screen flex-col items-center justify-center p-32'>
-			<Paper className='p-12'>
-				<div className=' w-full flex flex-nowrap items-center justify-center'>
-					<iframe
-						src='https://giphy.com/embed/WJZGlfRLpuv9cs6vAr'
-						width='30'
-						height='30'></iframe>
-					<h1>Trax</h1>
-				</div>
-				<LoginButton />
-			</Paper>
+			<div className=' w-full flex flex-nowrap items-center justify-center'>
+				<iframe
+					src='https://giphy.com/embed/WJZGlfRLpuv9cs6vAr'
+					width='30'
+					height='30'></iframe>
+				<h1>Trax</h1>
+			</div>
+			<LoginButton />
 		</main>
 	);
 }

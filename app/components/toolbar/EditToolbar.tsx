@@ -33,11 +33,10 @@ export default function EditToolbar(props: EditToolbarProps) {
 
 	return (
 		<GridToolbarContainer sx={{ justifyContent: 'space-between', px: 1 }}>
-			<Button color='primary' startIcon={<AddIcon />} onClick={handleClick}>
-				Add Job
-			</Button>
 			<div className='flex items-center'>
-				<GridToolbarQuickFilter />
+				<Button color='primary' startIcon={<AddIcon />} onClick={handleClick}>
+					Add Job
+				</Button>
 				<Button
 					color='primary'
 					startIcon={<ViewColumn />}
@@ -45,6 +44,9 @@ export default function EditToolbar(props: EditToolbarProps) {
 					Add Column
 				</Button>
 				<GridToolbarExport />
+			</div>
+			<div>
+				<GridToolbarQuickFilter />
 			</div>
 			<AddColumnDialog
 				addingColumn={addingColumn}
