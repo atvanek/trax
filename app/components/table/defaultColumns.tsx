@@ -13,6 +13,7 @@ import {
 } from '@mui/x-data-grid';
 import LinkCell from '@/app/components/table/cells/LinkCell';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
+import InputWithDebounce from './cells/InputWithDebounce';
 
 export const createDefaultColumns = (
 	handleRequestDelete: (id: GridRowId) => void
@@ -51,12 +52,18 @@ export const createDefaultColumns = (
 			headerName: 'Company',
 			editable: true,
 			headerClassName: 'table-header',
+			renderEditCell: (params: GridRenderEditCellParams) => (
+				<InputWithDebounce {...params} />
+			),
 		},
 		{
 			field: 'jobTitle',
 			headerName: 'Job Title',
 			editable: true,
 			headerClassName: 'table-header',
+			renderEditCell: (params: GridRenderEditCellParams) => (
+				<InputWithDebounce {...params} />
+			),
 		},
 		{
 			field: 'compensation',
@@ -64,12 +71,18 @@ export const createDefaultColumns = (
 			editable: true,
 			headerClassName: 'table-header',
 			width: 175,
+			renderEditCell: (params: GridRenderEditCellParams) => (
+				<InputWithDebounce {...params} />
+			),
 		},
 		{
 			field: 'location',
 			headerName: 'Location',
 			editable: true,
 			headerClassName: 'table-header',
+			renderEditCell: (params: GridRenderEditCellParams) => (
+				<InputWithDebounce {...params} />
+			),
 		},
 		{
 			field: 'jobStatus',
@@ -92,6 +105,9 @@ export const createDefaultColumns = (
 			editable: true,
 			headerClassName: 'table-header',
 			type: 'string',
+			renderEditCell: (params: GridRenderEditCellParams) => (
+				<InputWithDebounce {...params} />
+			),
 		},
 		{
 			field: 'notes',
@@ -107,4 +123,4 @@ export const createDefaultColumns = (
 	];
 };
 
-export default createDefaultColumns
+export default createDefaultColumns;

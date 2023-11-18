@@ -51,6 +51,7 @@ export default function theme(mode: 'light' | 'dark') {
 						'input[type="date"]::-webkit-calendar-picker-indicator': {
 							filter: mode === 'dark' ? 'invert(100%)' : '',
 						},
+						fontSize: '.875rem',
 					},
 				},
 			},
