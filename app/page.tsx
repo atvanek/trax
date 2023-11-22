@@ -1,7 +1,6 @@
 import { getSession } from '@auth0/nextjs-auth0';
 import { redirect } from 'next/navigation';
 import LoginButton from './components/LoginButton';
-import { Paper } from '@mui/material';
 
 export default async function Home() {
 	const { user } = (await getSession()) || {};

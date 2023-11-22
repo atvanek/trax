@@ -25,3 +25,29 @@ export const POST = async (req: Request) => {
 		return NextResponse.json({ error });
 	}
 };
+
+export const DELETE = async (req: Request) => {
+	await dbConnect();
+	const { user } = (await getSession()) || {};
+
+	if (!user) {
+		return NextResponse.redirect('/');
+	}
+	try {
+		const columnToDelete: { id: string } = await req.json();
+		console.log(columnToDelete);
+
+		const newUserData = await userModel.findOneAndUpdate(
+			{
+				userId: user.sub,
+			},
+			{
+				$pull: { customColumns: columnToDelete.id },
+			}
+		);
+
+		return NextResponse.json({});
+	} catch (error) {
+		return NextResponse.json({ error });
+	}
+};

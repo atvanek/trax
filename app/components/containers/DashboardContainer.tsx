@@ -30,6 +30,7 @@ export default function DashboardContainer({
 			fallbackProps={null}
 			key='Table View'
 		/>,
+
 		<AnimatedPieChart key='Metrics' data={rows} />,
 	];
 	const icons = [<ListAlt key='listAlt' />, <PieChart key='pieChart' />];

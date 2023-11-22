@@ -13,22 +13,10 @@ import Avatar from '@mui/material/Avatar';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AnalyticsIcon from '@mui/icons-material/Analytics';
-import { Delete, ExpandLess, ExpandMore, Logout } from '@mui/icons-material';
 import Link from 'next/link';
 import { Claims } from '@auth0/nextjs-auth0';
-import ColorModeSwitch from './ColorModeSwitch';
-import { useTheme } from '@mui/material';
-import {
-	Drawer,
-	List,
-	ListItem,
-	ListItemIcon,
-	ListItemButton,
-	ListItemText,
-	ListSubheader,
-	Collapse,
-} from '@mui/material';
-import { GridDeleteIcon } from '@mui/x-data-grid';
+import ColorModeSwitch from '../ColorModeSwitch';
+import UserDrawer from './UserDrawer';
 
 const pages = [
 	{ label: 'Import', href: '/dashboard/import' },
@@ -36,13 +24,7 @@ const pages = [
 	{ label: 'Contact', href: null },
 ];
 
-export default function Nav({
-	user,
-	userAccountData,
-}: {
-	user: Claims;
-	userAccountData: {};
-}) {
+export default function Nav({ user }: { user: Claims }) {
 	const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
 		null
 	);
@@ -56,8 +38,6 @@ export default function Nav({
 	};
 
 	const [userMenuOpen, setUserMenuOpen] = React.useState(false);
-	const [customColumnsOpen, setCustomColumnsOpen] = React.useState(false);
-	const theme = useTheme();
 
 	return (
 		<>
@@ -165,57 +145,12 @@ export default function Nav({
 					</Toolbar>
 				</Container>
 			</AppBar>
-			<Drawer
-				open={userMenuOpen}
-				anchor='right'
-				onClose={() => setUserMenuOpen(false)}
-				sx={{ p: 3 }}>
-				<Container
-					sx={{
-						display: 'flex',
-						flexFlow: 'column',
-						alignItems: 'center',
-						paddingY: '20px',
-						backgroundColor: theme.palette.action.hover,
-					}}>
-					<Avatar
-						alt='User Image'
-						src={user.picture}
-						rel='noreferrer'
-						sx={{ alignSelf: 'center', m: 1 }}
-					/>
-					<Typography sx={{ alignSelf: 'center' }}>{user.name}</Typography>
-					<Typography color='GrayText'>{user.email}</Typography>
-				</Container>
-				<List>
-					<ListItemButton onClick={() => setCustomColumnsOpen((prev) => !prev)}>
-						<ListItemIcon>
-							{customColumnsOpen ? <ExpandMore /> : <ExpandLess />}
-						</ListItemIcon>
-						<ListItemText>Custom Columns</ListItemText>
-					</ListItemButton>
-					<Collapse in={customColumnsOpen}>
-						<List>
-							{userAccountData.customColumns.map((column) => (
-								<ListItemButton key={column}>
-									<ListItemIcon>
-										<Delete sx={{ height: '15px' }} />
-									</ListItemIcon>
-									<ListItemText>{column}</ListItemText>
-								</ListItemButton>
-							))}
-						</List>
-					</Collapse>
-					<Link href={'/api/auth/logout'}>
-						<ListItemButton>
-							<ListItemIcon>
-								<Logout />
-							</ListItemIcon>
-							<ListItemText>Logout</ListItemText>
-						</ListItemButton>
-					</Link>
-				</List>
-			</Drawer>
+
+			<UserDrawer
+				userMenuOpen={userMenuOpen}
+				setUserMenuOpen={setUserMenuOpen}
+				user={user}
+			/>
 		</>
 	);
 }

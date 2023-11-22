@@ -1,10 +1,11 @@
 import { getSession } from '@auth0/nextjs-auth0';
 import { redirect } from 'next/navigation';
 import React from 'react';
-import Nav from '../components/Nav';
+import Nav from '../components/nav/Nav';
+import { ContextProvider } from '@/context/customColumnContext';
+import dbConnect from '@/db/dbConnect';
 import { IUser } from '@/db/models/user';
 import userModel from '@/db/models/user';
-import dbConnect from '@/db/dbConnect';
 
 export default async function DashboardLayout({
 	children,
@@ -25,12 +26,12 @@ export default async function DashboardLayout({
 		return user ? user : null;
 	};
 
-	const userAccountData = await getUser(user.email);
+	const fetchedUser = await getUser(user.email);
 
 	return (
-		<>
-			<Nav user={user} userAccountData={userAccountData || {}} />
+		<ContextProvider fetchedCustomColumns={fetchedUser?.customColumns || []}>
+			<Nav user={user} />
 			{children}
-		</>
+		</ContextProvider>
 	);
 }

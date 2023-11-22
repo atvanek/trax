@@ -11,18 +11,18 @@ export default function DeleteConfirm({
 	deleteConfirmOpen,
 	setDeleteConfirmOpen,
 	handleDeleteClick,
+	confirmationMessage,
 }: {
 	deleteConfirmOpen: boolean;
 	setDeleteConfirmOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	handleDeleteClick: () => void;
+	confirmationMessage: string;
 }) {
 	return (
 		<Dialog open={deleteConfirmOpen}>
-			<DialogTitle>Delete job listing?</DialogTitle>
+			<DialogTitle>Delete?</DialogTitle>
 			<DialogContent>
-				<DialogContentText>
-					All job details will be permanently lost.
-				</DialogContentText>
+				<DialogContentText>{confirmationMessage}</DialogContentText>
 			</DialogContent>
 			<DialogActions>
 				<Button

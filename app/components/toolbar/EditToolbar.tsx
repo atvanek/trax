@@ -11,7 +11,6 @@ import {
 	GridRowModes,
 	GridToolbarQuickFilter,
 } from '@mui/x-data-grid';
-import useThrottledHandler from '@/hooks/useThrottledHandler';
 import AddColumnDialog from './AddColumnDialog';
 
 export default function EditToolbar(props: EditToolbarProps) {
@@ -48,6 +47,7 @@ export default function EditToolbar(props: EditToolbarProps) {
 			<div>
 				<GridToolbarQuickFilter />
 			</div>
+
 			<AddColumnDialog
 				addingColumn={addingColumn}
 				setAddingColumn={setAddingColumn}

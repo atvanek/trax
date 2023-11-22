@@ -28,7 +28,6 @@ export default async function Dashboard() {
 			email,
 			userId: user.sub,
 		});
-		console.log('added user', addedUser);
 		return addedUser;
 	};
 
@@ -36,7 +35,6 @@ export default async function Dashboard() {
 	const getJobs = async (userId: string): Promise<IJob[]> => {
 		await dbConnect();
 		const jobs: IJob[] = await jobModel.find({ userId });
-		console.log('jobs:', jobs);
 		return jobs;
 	};
 

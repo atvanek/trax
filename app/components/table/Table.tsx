@@ -17,20 +17,18 @@ import {
 import EditToolbar from '../toolbar/EditToolbar';
 import ColumnResizeBar from './ColumnResizeBar';
 import StyledTable from './StyledDataGrid';
-import DeleteConfirm from './DeleteConfirm';
-import { IUser } from '@/db/models/user';
+import DeleteConfirm from '../DeleteConfirm';
 import createCustomColumns from '@/utils/createCustomColumns';
+import Context from '@/context/customColumnContext';
 
 export default function Table({
 	rows,
 	setRows,
 	setMounted,
-	userData,
 }: {
 	rows: Row[];
 	setRows: React.Dispatch<React.SetStateAction<Row[]>>;
 	setMounted: React.Dispatch<React.SetStateAction<boolean>>;
-	userData: IUser;
 }) {
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
@@ -46,6 +44,7 @@ export default function Table({
 	const [tableRendered, setTableRendered] = React.useState(false);
 
 	const observerRef = React.useRef<MutationObserver | null>(null);
+	const { customColumns, setCustomColumns } = React.useContext(Context);
 
 	//notifies parent container that table is rendered
 	React.useLayoutEffect(() => {
@@ -62,11 +61,15 @@ export default function Table({
 	const columnsWithCustomFields = React.useMemo(() => {
 		return [
 			...createDefaultColumns(handleRequestDelete),
-			...createCustomColumns(userData.customColumns),
+			...createCustomColumns(customColumns),
 		];
-	}, [userData.customColumns]);
+	}, [customColumns]);
 
 	const [columns, setColumns] = React.useState(columnsWithCustomFields);
+
+	React.useEffect(() => {
+		setColumns(columnsWithCustomFields);
+	}, [customColumns, columnsWithCustomFields]);
 
 	//redefines columns based on new order
 	const handleReorderColumns = React.useCallback(
@@ -434,6 +437,7 @@ export default function Table({
 				deleteConfirmOpen={deleteConfirmOpen}
 				setDeleteConfirmOpen={setDeleteConfirmOpen}
 				handleDeleteClick={handleDeleteClick}
+				confirmationMessage='All job details will be permanently lost.'
 			/>
 			<Snackbar
 				open={error}

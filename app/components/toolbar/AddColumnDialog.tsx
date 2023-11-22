@@ -13,6 +13,7 @@ import {
 } from '@mui/material';
 import createCustomColumns from '@/utils/createCustomColumns';
 import { GridColDef } from '@mui/x-data-grid';
+import Context from '@/context/customColumnContext';
 
 export default function AddColumnDialog({
 	addingColumn,
@@ -25,6 +26,7 @@ export default function AddColumnDialog({
 }) {
 	const [newColumnTitle, setNewColumnTitle] = React.useState('');
 	const [error, setError] = React.useState(false);
+	const { setCustomColumns } = React.useContext(Context);
 
 	const handleAddColumn = React.useCallback(() => {
 		fetch('/api/user/column', {
@@ -42,12 +44,13 @@ export default function AddColumnDialog({
 					return;
 				}
 			})
-			.then((data) => {
+			.then((data: { customColumns: string[] }) => {
 				const newCustomColumns = createCustomColumns(data.customColumns);
 				setColumns((prev) => {
 					return [...prev, ...newCustomColumns];
 				});
 				setAddingColumn(false);
+				setCustomColumns(data.customColumns);
 			})
 			.catch((err) =>
 				setTimeout(() => {
@@ -55,7 +58,7 @@ export default function AddColumnDialog({
 				}, 6000)
 			)
 			.finally(() => setNewColumnTitle(''));
-	}, [newColumnTitle, setColumns, setAddingColumn]);
+	}, [newColumnTitle, setColumns, setAddingColumn, setCustomColumns]);
 
 	return (
 		<Dialog open={addingColumn} onClose={() => setAddingColumn(false)}>
