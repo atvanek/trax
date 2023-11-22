@@ -5,7 +5,6 @@ import { GridRenderEditCellParams, useGridApiContext } from '@mui/x-data-grid';
 import { TextField } from '@mui/material';
 
 export default function InputWithDebounce(props: GridRenderEditCellParams) {
-	console.log(props);
 	const { id, value: valueProp, field, hasFocus } = props;
 	const [value, setValue] = React.useState(valueProp);
 	const apiRef = useGridApiContext();

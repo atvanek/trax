@@ -66,7 +66,7 @@ export default function UserDrawer({
 				setError(true);
 			});
 	};
-	console.log(customColumns);
+
 	return (
 		<Drawer
 			open={userMenuOpen}

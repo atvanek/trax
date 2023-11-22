@@ -17,7 +17,7 @@ export const POST = async (req: Request) => {
 
 		const { id } = updatedJob;
 
-		await jobModel.findOneAndUpdate(
+		const update = await jobModel.findOneAndUpdate(
 			{ userId: user.sub, id },
 			{
 				...updatedJob,
