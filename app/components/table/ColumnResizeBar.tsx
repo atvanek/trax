@@ -11,7 +11,7 @@ export default function ColumnResizeBar({
 	tableRendered: boolean;
 	resizing: boolean;
 	setResizing: React.Dispatch<React.SetStateAction<boolean>>;
-	setColumns: React.Dispatch<React.SetStateAction<GridColDef[]>>;
+	setColumns: React.Dispatch<React.SetStateAction<GridColDef[] | null>>;
 }) {
 	const [currentColumnRight, setCurrentColumnRight] = React.useState<number>(0);
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
@@ -34,13 +34,16 @@ export default function ColumnResizeBar({
 			if (field) {
 				setCurrentField(field);
 				setColumns((prevColumns) => {
-					return prevColumns.map((prevColumn) => {
-						if (prevColumn.field === field) {
-							return { ...prevColumn, width }; //sets width of current column to its current width to handle no default width
-						} else {
-							return prevColumn;
-						}
-					});
+					if (prevColumns) {
+						return prevColumns.map((prevColumn) => {
+							if (prevColumn.field === field) {
+								return { ...prevColumn, width }; //sets width of current column to its current width to handle no default width
+							} else {
+								return prevColumn;
+							}
+						});
+					}
+					return prevColumns;
 				});
 			}
 		},
@@ -62,13 +65,16 @@ export default function ColumnResizeBar({
 			const diff = e.clientX - currentColumnRight; //difference between initial x and current x
 			if (currentField) {
 				setColumns((prevColumns) => {
-					return prevColumns.map((prevColumn) => {
-						if (prevColumn.field === currentField) {
-							return { ...prevColumn, width: (prevColumn.width || 0) + diff }; //add difference to current column width
-						} else {
-							return prevColumn;
-						}
-					});
+					if (prevColumns) {
+						return prevColumns.map((prevColumn) => {
+							if (prevColumn.field === currentField) {
+								return { ...prevColumn, width: (prevColumn.width || 0) + diff }; //add difference to current column width
+							} else {
+								return prevColumn;
+							}
+						});
+					}
+					return prevColumns;
 				});
 			}
 			setResizing(false); //resizing over

@@ -46,9 +46,19 @@ export default function AddColumnDialog({
 			})
 			.then((data: { customColumns: string[] }) => {
 				const newCustomColumns = createCustomColumns(data.customColumns);
+
 				setColumns((prev) => {
-					return [...prev, ...newCustomColumns];
+					const oldColumns = prev.filter(
+						(column) => !data.customColumns.includes(column.field)
+					);
+					const newColumns = [...oldColumns, ...newCustomColumns];
+					localStorage.setItem(
+						'separatorsOrder',
+						JSON.stringify(newColumns.map((column) => column.field))
+					);
+					return newColumns;
 				});
+
 				setAddingColumn(false);
 				setCustomColumns(data.customColumns);
 			})

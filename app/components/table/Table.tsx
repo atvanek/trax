@@ -20,6 +20,7 @@ import StyledTable from './StyledDataGrid';
 import DeleteConfirm from '../DeleteConfirm';
 import createCustomColumns from '@/utils/createCustomColumns';
 import Context from '@/context/customColumnContext';
+import withUserOrder from '@/utils/withUserOrder';
 
 export default function Table({
 	rows,
@@ -42,20 +43,21 @@ export default function Table({
 	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null); //id of item requested to delete
 	const [error, setError] = React.useState(false);
 	const [tableRendered, setTableRendered] = React.useState(false);
-
 	const observerRef = React.useRef<MutationObserver | null>(null);
 	const { customColumns, setCustomColumns } = React.useContext(Context);
-
-	//notifies parent container that table is rendered
-	React.useLayoutEffect(() => {
-		setMounted(true);
-	}, [setMounted]);
 
 	//handles row delete and delete confirmation pop-up
 	const handleRequestDelete = (id: GridRowId): void => {
 		setDeleteId(id);
 		setDeleteConfirmOpen(true);
 	};
+
+	const [columns, setColumns] = React.useState<GridColDef[] | null>(null);
+
+	//notifies parent container that table is rendered with columns
+	React.useLayoutEffect(() => {
+		if (columns) setMounted(true);
+	}, [setMounted, columns]);
 
 	//adds user's custom columns to default columns
 	const columnsWithCustomFields = React.useMemo(() => {
@@ -65,51 +67,59 @@ export default function Table({
 		];
 	}, [customColumns]);
 
-	const [columns, setColumns] = React.useState(columnsWithCustomFields);
-
+	//get user order from localStorage and set columns with saved order
 	React.useEffect(() => {
-		setColumns(columnsWithCustomFields);
-	}, [customColumns, columnsWithCustomFields]);
+		const newColumns = withUserOrder(
+			columnsWithCustomFields,
+			localStorage.getItem('separatorsOrder')
+		);
+		setColumns(newColumns);
+	}, [customColumns, setColumns, columnsWithCustomFields]);
 
 	//redefines columns based on new order
 	const handleReorderColumns = React.useCallback(
-		(seperator: SVGElement) => {
-			const draggedField = localStorage.getItem('draggedField');
-			const draggedOverField = getField(seperator);
+		(separator: SVGElement) => {
+			if (columns) {
+				const draggedField = localStorage.getItem('draggedField');
+				const draggedOverField = getField(separator);
 
-			if (draggedField === draggedOverField) return; //do not reorder on dropping into own seperator to avoid flickering
+				if (draggedField === draggedOverField) return; //do not reorder on dropping into own separator to avoid flickering
 
-			const seperatorsOrder = localStorage.getItem('seperatorsOrder') as string; //should deal with localStorage being empty
-			const seperatorsOrderParsed = JSON.parse(seperatorsOrder);
-			const index = seperatorsOrderParsed.indexOf(draggedOverField);
+				const separatorsOrder = localStorage.getItem(
+					'separatorsOrder'
+				) as string;
+				const separatorsOrderParsed = separatorsOrder
+					? JSON.parse(separatorsOrder)
+					: [];
+				const index = separatorsOrderParsed.indexOf(draggedOverField);
 
-			if (index === 0) return; //actions column must always be first
+				if (index === 0) return; //actions column must always be first
 
-			const draggedColumn = columns.find(
-				(column) => column.field === draggedField
-			);
-			const restOfColumns = columns.filter(
-				(column) => column.field !== draggedField
-			);
+				const draggedColumn = columns.find(
+					(column) => column.field === draggedField
+				);
+				const restOfColumns = columns.filter(
+					(column) => column.field !== draggedField
+				);
 
-			const newColumns = [
-				...restOfColumns.slice(0, index),
-				draggedColumn,
-				...restOfColumns.slice(index),
-			] as GridColDef[];
+				const newColumns = [
+					...restOfColumns.slice(0, index),
+					draggedColumn,
+					...restOfColumns.slice(index),
+				] as GridColDef[];
 
-			const newSeperatorsOrder = newColumns.map((column) => column.field);
-
-			localStorage.setItem(
-				'seperatorsOrder',
-				JSON.stringify(newSeperatorsOrder)
-			);
-			setColumns(newColumns);
+				const newSeparatorsOrder = newColumns.map((column) => column?.field);
+				localStorage.setItem(
+					'separatorsOrder',
+					JSON.stringify(newSeparatorsOrder)
+				);
+				setColumns(newColumns);
+			}
 		},
 		[columns]
 	);
 
-	//adds event listeners to all column headers and seperators
+	//adds event listeners to all column headers and separators
 	const addDragEventListeners = React.useCallback(
 		(
 			headers: NodeListOf<HTMLDivElement>,
@@ -153,7 +163,12 @@ export default function Table({
 				separator.addEventListener('drop', handleDrop);
 			});
 
-			localStorage.setItem('separatorsOrder', JSON.stringify(separatorsOrder)); // save to localStorage
+			if (!localStorage.getItem('separatorsOrder')) {
+				localStorage.setItem(
+					'separatorsOrder',
+					JSON.stringify(separatorsOrder)
+				);
+			} // save to localStorage if order has not already been saved
 
 			headers.forEach((header) => {
 				header.setAttribute('draggable', 'true');
@@ -230,14 +245,15 @@ export default function Table({
 			cleanup = addDragEventListeners(headers, separators);
 		}
 		return () => {
-			cleanup;
+			console.log('cleaning up');
+			cleanup();
 		};
 	});
 
-	//helper that gets header name from column seperator svg
-	const getField = (seperator: SVGElement): string => {
-		const seperatorContainer = seperator.parentNode as HTMLDivElement; //type SVG container
-		const headerContainer = seperatorContainer.parentNode as HTMLDivElement; //type header container
+	//helper that gets header name from column separator svg
+	const getField = (separator: SVGElement): string => {
+		const separatorContainer = separator.parentNode as HTMLDivElement; //type SVG container
+		const headerContainer = separatorContainer.parentNode as HTMLDivElement; //type header container
 		const columnField = headerContainer.getAttribute('data-field') as string; //header field name
 		return columnField;
 	};
@@ -381,72 +397,74 @@ export default function Table({
 	};
 
 	return (
-		<>
-			<Box
-				sx={{
-					width: '100%',
-					'& .actions': {
-						color: 'text.secondary',
-					},
-					'& .textPrimary': {
-						color: 'text.primary',
-					},
-				}}>
-				<ColumnResizeBar
-					tableRendered={tableRendered}
-					setColumns={setColumns}
-					resizing={resizing}
-					setResizing={setResizing}
-				/>
-
-				<StyledTable
-					autoHeight
+		columns && (
+			<>
+				<Box
 					sx={{
-						pointerEvents: resizing ? 'none' : 'auto',
-					}}
-					processRowUpdate={handleProcessRowUpdate}
-					rows={rows}
-					columns={columns}
-					editMode='row'
-					density='compact'
-					rowModesModel={rowModesModel}
-					disableRowSelectionOnClick
-					onRowModesModelChange={handleRowModesModelChange}
-					onRowEditStop={handleRowEditStop}
-					onCellClick={handleCellClick}
-					sortModel={sortModel}
-					onSortModelChange={handleSortModelChange}
-					pageSizeOptions={[25, 50, 100]}
-					slots={{
-						toolbar: EditToolbar,
-					}}
-					slotProps={{
-						toolbar: {
-							setRows,
-							setSortModel,
-							setRowModesModel,
-							setColumns,
+						width: '100%',
+						'& .actions': {
+							color: 'text.secondary',
 						},
-					}}
-					initialState={{
-						sorting: { sortModel },
-					}}
+						'& .textPrimary': {
+							color: 'text.primary',
+						},
+					}}>
+					<ColumnResizeBar
+						tableRendered={tableRendered}
+						setColumns={setColumns}
+						resizing={resizing}
+						setResizing={setResizing}
+					/>
+
+					<StyledTable
+						autoHeight
+						sx={{
+							pointerEvents: resizing ? 'none' : 'auto',
+						}}
+						processRowUpdate={handleProcessRowUpdate}
+						rows={rows}
+						columns={columns}
+						editMode='row'
+						density='compact'
+						rowModesModel={rowModesModel}
+						disableRowSelectionOnClick
+						onRowModesModelChange={handleRowModesModelChange}
+						onRowEditStop={handleRowEditStop}
+						onCellClick={handleCellClick}
+						sortModel={sortModel}
+						onSortModelChange={handleSortModelChange}
+						pageSizeOptions={[25, 50, 100]}
+						slots={{
+							toolbar: EditToolbar,
+						}}
+						slotProps={{
+							toolbar: {
+								setRows,
+								setSortModel,
+								setRowModesModel,
+								setColumns,
+							},
+						}}
+						initialState={{
+							sorting: { sortModel },
+						}}
+					/>
+				</Box>
+				<DeleteConfirm
+					deleteConfirmOpen={deleteConfirmOpen}
+					setDeleteConfirmOpen={setDeleteConfirmOpen}
+					handleDeleteClick={handleDeleteClick}
+					confirmationMessage='All job details will be permanently lost.'
 				/>
-			</Box>
-			<DeleteConfirm
-				deleteConfirmOpen={deleteConfirmOpen}
-				setDeleteConfirmOpen={setDeleteConfirmOpen}
-				handleDeleteClick={handleDeleteClick}
-				confirmationMessage='All job details will be permanently lost.'
-			/>
-			<Snackbar
-				open={error}
-				autoHideDuration={6000}
-				onClose={() => setError(false)}>
-				<Alert severity='error' sx={{ width: '100%' }}>
-					Error updating data. Please try again.
-				</Alert>
-			</Snackbar>
-		</>
+				<Snackbar
+					open={error}
+					autoHideDuration={6000}
+					onClose={() => setError(false)}>
+					<Alert severity='error' sx={{ width: '100%' }}>
+						Error updating data. Please try again.
+					</Alert>
+				</Snackbar>
+			</>
+		)
 	);
 }
