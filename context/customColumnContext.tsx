@@ -17,9 +17,9 @@ const DefaultContextValues: ContextProps = {
 	setCustomColumns: () => {},
 };
 
-const Context = createContext<ContextProps>(DefaultContextValues);
+const CustomColumnContext = createContext<ContextProps>(DefaultContextValues);
 
-export const ContextProvider: React.FC<ContextProviderProps> = ({
+export const CustomColumnContextProvider: React.FC<ContextProviderProps> = ({
 	fetchedCustomColumns,
 	children,
 }): JSX.Element => {
@@ -27,10 +27,10 @@ export const ContextProvider: React.FC<ContextProviderProps> = ({
 		React.useState(fetchedCustomColumns);
 
 	return (
-		<Context.Provider value={{ customColumns, setCustomColumns }}>
+		<CustomColumnContext.Provider value={{ customColumns, setCustomColumns }}>
 			{children}
-		</Context.Provider>
+		</CustomColumnContext.Provider>
 	);
 };
 
-export default Context;
+export default CustomColumnContext;

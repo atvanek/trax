@@ -35,9 +35,8 @@ export const DELETE = async (req: Request) => {
 	}
 	try {
 		const columnToDelete: { id: string } = await req.json();
-		console.log(columnToDelete);
 
-		const newUserData = await userModel.findOneAndUpdate(
+		await userModel.findOneAndUpdate(
 			{
 				userId: user.sub,
 			},

@@ -18,7 +18,11 @@ export default function NotesEditor(params: GridRenderEditCellParams) {
 		setOpen(hasFocus);
 	}, [hasFocus]);
 
-	const handleSave = () => {
+	const handleSave = (
+		e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLDivElement>
+	) => {
+		e.preventDefault();
+		console.log(e);
 		setOpen(false);
 		api.setEditCellValue({ id, field, value });
 		api.stopRowEditMode({ id: row.id });
@@ -42,10 +46,16 @@ export default function NotesEditor(params: GridRenderEditCellParams) {
 							multiline
 							value={value}
 							onChange={(e) => setValue(e.target.value)}
+							onKeyDown={(e) => {
+								if (e.key === 'Enter' && !e.shiftKey) {
+									e.preventDefault();
+									handleSave(e);
+								}
+							}}
 						/>
 					</DialogContent>
 					<DialogActions>
-						<Button variant='contained' onClick={handleSave}>
+						<Button onClick={handleSave} variant='contained'>
 							Save
 						</Button>
 						<Button onClick={handleCancel}>Cancel</Button>
