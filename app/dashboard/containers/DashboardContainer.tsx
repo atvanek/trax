@@ -1,12 +1,12 @@
 'use client';
 
 import React from 'react';
-import WithUILoading from './WithUILoading';
-import Spinner from '../Spinner';
-import Table from '../table/Table';
-import AnimatedPieChart from '../metrics/AnimatedPieChart';
+import WithUILoading from '../../components/containers/WithUILoading';
+import Spinner from '../../components/Spinner';
+import TableContainer from '@/app/components/table/containers/TableContainer';
+import AnimatedPieChart from '../../components/metrics/AnimatedPieChart';
 import { ListAlt, PieChart } from '@mui/icons-material';
-import TabsContainer from '../tabs/TabsContainer';
+import TabsContainer from '../../components/tabs/TabsContainer';
 import { Row } from '@/types';
 import { IJob } from '@/db/models/job';
 import { IUser } from '@/db/models/user';
@@ -16,16 +16,16 @@ export default function DashboardContainer({
 }: {
 	stringifiedData: string;
 }) {
-	const parsedData = JSON.parse(stringifiedData) as {
+	const parsedData: {
 		rows: IJob[];
 		userData: IUser;
-	};
+	} = JSON.parse(stringifiedData);
 	const [rows, setRows] = React.useState<Row[]>(parsedData.rows);
 
 	const tabs = [
 		<WithUILoading
 			fallback={Spinner}
-			component={Table}
+			component={TableContainer}
 			componentProps={{ rows, setRows, userData: parsedData.userData }}
 			fallbackProps={null}
 			key='Table View'

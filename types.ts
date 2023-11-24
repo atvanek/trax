@@ -5,6 +5,8 @@ import {
 	GridRowModesModel,
 	GridSortModel,
 	GridColDef,
+	GridEventListener,
+	GridCellParams,
 } from '@mui/x-data-grid';
 
 export interface Row extends IJob {
@@ -56,4 +58,28 @@ export type ChartData = {
 	label: Status;
 	color: string;
 	visible: boolean;
+};
+
+export type TableProps = {
+	rows: Row[];
+	setRows: React.Dispatch<React.SetStateAction<Row[]>>;
+	columns: GridColDef[] | null;
+	setColumns: React.Dispatch<React.SetStateAction<GridColDef[] | null>>;
+	tableRendered: boolean;
+	resizing: boolean;
+	setResizing: React.Dispatch<React.SetStateAction<boolean>>;
+	handleProcessRowUpdate: (updatedRow: Row) => void;
+	rowModesModel: GridRowModesModel;
+	setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>;
+	handleRowModesModelChange: (newRowModesModel: GridRowModesModel) => void;
+	handleRowEditStop: GridEventListener<'rowEditStop'>;
+	handleCellClick: (params: GridCellParams, event: React.MouseEvent) => void;
+	sortModel: GridSortModel;
+	setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+	handleSortModelChange: (newSortModel: GridSortModel) => void;
+	deleteConfirmOpen: boolean;
+	setDeleteConfirmOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	handleDeleteClick: () => void;
+	error: boolean;
+	setError: React.Dispatch<React.SetStateAction<boolean>>;
 };

@@ -1,5 +1,5 @@
 'use client';
-import StyledTable from '../table/StyledDataGrid';
+import StyledTable from '../table/views/StyledDataGrid';
 import defaultColumnValues from '@/utils/defaultColumnValues';
 import toCamelCase from '@/utils/toCamelCase';
 import { Importer, ImporterField } from 'react-csv-importer';

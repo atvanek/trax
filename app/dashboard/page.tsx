@@ -4,7 +4,7 @@ import { getSession } from '@auth0/nextjs-auth0';
 import { redirect } from 'next/navigation';
 import userModel, { IUser } from '@/db/models/user';
 import jobModel, { IJob } from '@/db/models/job';
-import DashboardContainer from '../components/containers/DashboardContainer';
+import DashboardContainer from './containers/DashboardContainer';
 
 export default async function Dashboard() {
 	// Get user from server session
@@ -14,6 +14,7 @@ export default async function Dashboard() {
 	if (!user) {
 		return redirect('/');
 	}
+
 	// Check if user exists in the MongoDB cluster
 	const getUser = async (email: string): Promise<IUser | null> => {
 		await dbConnect();

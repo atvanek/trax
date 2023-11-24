@@ -1,8 +1,9 @@
 import { useTheme } from '@mui/material/styles';
 import React from 'react';
 import { GridColDef } from '@mui/x-data-grid';
+import ColumnResizeBar from '../views/ColumnResizeBar';
 
-export default function ColumnResizeBar({
+export default function ColumnResizeBarContainer({
 	tableRendered,
 	resizing,
 	setResizing,
@@ -17,8 +18,6 @@ export default function ColumnResizeBar({
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
 	const [barTop, setBarTop] = React.useState(0);
 	const [resizeBarX, setResizeBarX] = React.useState<number>(0);
-
-	const theme = useTheme();
 
 	const handleListenForResizeStart = React.useCallback(
 		(e: MouseEvent) => {
@@ -63,16 +62,34 @@ export default function ColumnResizeBar({
 		(e: MouseEvent) => {
 			if (!resizing) return;
 			const diff = e.clientX - currentColumnRight; //difference between initial x and current x
+
 			if (currentField) {
 				setColumns((prevColumns) => {
 					if (prevColumns) {
-						return prevColumns.map((prevColumn) => {
+						const newColumns = prevColumns.map((prevColumn) => {
 							if (prevColumn.field === currentField) {
 								return { ...prevColumn, width: (prevColumn.width || 0) + diff }; //add difference to current column width
 							} else {
 								return prevColumn;
 							}
 						});
+
+						const userColumnWidths =
+							localStorage.getItem('columnWidths') || '{}';
+
+						const parsedUserColumnWidths: {
+							[key: string]: number | undefined;
+						} = JSON.parse(userColumnWidths);
+
+						newColumns.forEach((column) => {
+							parsedUserColumnWidths[column.field] = column.width;
+						});
+						localStorage.setItem(
+							'columnWidths',
+							JSON.stringify(parsedUserColumnWidths)
+						);
+
+						return newColumns;
 					}
 					return prevColumns;
 				});
@@ -116,16 +133,10 @@ export default function ColumnResizeBar({
 		handleListenForResizeStart,
 	]);
 	return (
-		<div
-			id='column-resize-bar'
-			style={{
-				display: resizing ? 'inline' : 'none',
-				top: barTop,
-				left: resizeBarX,
-				position: 'absolute',
-				width: '1px',
-				backgroundColor: theme.palette.secondary.main,
-				height: '100%',
-			}}></div>
+		<ColumnResizeBar
+			resizing={resizing}
+			barTop={barTop}
+			resizeBarX={resizeBarX}
+		/>
 	);
 }

@@ -22,7 +22,6 @@ export default function NotesEditor(params: GridRenderEditCellParams) {
 		e: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLDivElement>
 	) => {
 		e.preventDefault();
-		console.log(e);
 		setOpen(false);
 		api.setEditCellValue({ id, field, value });
 		api.stopRowEditMode({ id: row.id });

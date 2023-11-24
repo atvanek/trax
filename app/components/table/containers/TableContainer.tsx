@@ -2,8 +2,7 @@
 
 import React from 'react';
 import { Row } from '@/types';
-import { Box, Snackbar, Alert } from '@mui/material';
-import createDefaultColumns from './defaultColumns';
+import createDefaultColumns from '../defaultColumns';
 import {
 	GridRowModesModel,
 	GridRowModes,
@@ -14,15 +13,12 @@ import {
 	GridSortModel,
 	GridCellParams,
 } from '@mui/x-data-grid';
-import EditToolbar from '../toolbar/EditToolbar';
-import ColumnResizeBar from './ColumnResizeBar';
-import StyledTable from './StyledDataGrid';
-import DeleteConfirm from '../DeleteConfirm';
 import createCustomColumns from '@/utils/createCustomColumns';
 import Context from '@/context/customColumnContext';
-import withUserOrder from '@/utils/withUserOrder';
+import withUserPrefs from '@/utils/withUserPrefs';
+import Table from '../views/Table';
 
-export default function Table({
+export default function TableContainer({
 	rows,
 	setRows,
 	setMounted,
@@ -69,9 +65,10 @@ export default function Table({
 
 	//get user order from localStorage and set columns with saved order
 	React.useEffect(() => {
-		const newColumns = withUserOrder(
+		const newColumns = withUserPrefs(
 			columnsWithCustomFields,
-			localStorage.getItem('separatorsOrder')
+			localStorage.getItem('separatorsOrder'),
+			localStorage.getItem('columnWidths')
 		);
 		setColumns(newColumns);
 	}, [customColumns, setColumns, columnsWithCustomFields]);
@@ -245,7 +242,6 @@ export default function Table({
 			cleanup = addDragEventListeners(headers, separators);
 		}
 		return () => {
-			console.log('cleaning up');
 			cleanup();
 		};
 	});
@@ -398,73 +394,29 @@ export default function Table({
 
 	return (
 		columns && (
-			<>
-				<Box
-					sx={{
-						width: '100%',
-						'& .actions': {
-							color: 'text.secondary',
-						},
-						'& .textPrimary': {
-							color: 'text.primary',
-						},
-					}}>
-					<ColumnResizeBar
-						tableRendered={tableRendered}
-						setColumns={setColumns}
-						resizing={resizing}
-						setResizing={setResizing}
-					/>
-
-					<StyledTable
-						autoHeight
-						sx={{
-							pointerEvents: resizing ? 'none' : 'auto',
-						}}
-						processRowUpdate={handleProcessRowUpdate}
-						rows={rows}
-						columns={columns}
-						editMode='row'
-						density='compact'
-						rowModesModel={rowModesModel}
-						disableRowSelectionOnClick
-						onRowModesModelChange={handleRowModesModelChange}
-						onRowEditStop={handleRowEditStop}
-						onCellClick={handleCellClick}
-						sortModel={sortModel}
-						onSortModelChange={handleSortModelChange}
-						pageSizeOptions={[25, 50, 100]}
-						slots={{
-							toolbar: EditToolbar,
-						}}
-						slotProps={{
-							toolbar: {
-								setRows,
-								setSortModel,
-								setRowModesModel,
-								setColumns,
-							},
-						}}
-						initialState={{
-							sorting: { sortModel },
-						}}
-					/>
-				</Box>
-				<DeleteConfirm
-					deleteConfirmOpen={deleteConfirmOpen}
-					setDeleteConfirmOpen={setDeleteConfirmOpen}
-					handleDeleteClick={handleDeleteClick}
-					confirmationMessage='All job details will be permanently lost.'
-				/>
-				<Snackbar
-					open={error}
-					autoHideDuration={6000}
-					onClose={() => setError(false)}>
-					<Alert severity='error' sx={{ width: '100%' }}>
-						Error updating data. Please try again.
-					</Alert>
-				</Snackbar>
-			</>
+			<Table
+				rows={rows}
+				setRows={setRows}
+				columns={columns}
+				setColumns={setColumns}
+				tableRendered={tableRendered}
+				resizing={resizing}
+				setResizing={setResizing}
+				handleProcessRowUpdate={handleProcessRowUpdate}
+				rowModesModel={rowModesModel}
+				setRowModesModel={setRowModesModel}
+				handleRowModesModelChange={handleRowModesModelChange}
+				handleRowEditStop={handleRowEditStop}
+				handleCellClick={handleCellClick}
+				sortModel={sortModel}
+				setSortModel={setSortModel}
+				handleSortModelChange={handleSortModelChange}
+				deleteConfirmOpen={deleteConfirmOpen}
+				setDeleteConfirmOpen={setDeleteConfirmOpen}
+				handleDeleteClick={handleDeleteClick}
+				error={error}
+				setError={setError}
+			/>
 		)
 	);
 }

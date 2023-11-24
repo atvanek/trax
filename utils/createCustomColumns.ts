@@ -1,4 +1,3 @@
-import toCamelCase from './toCamelCase';
 import { GridColDef } from '@mui/x-data-grid';
 
 export default function createCustomColumns(columns: string[]): GridColDef[] {
