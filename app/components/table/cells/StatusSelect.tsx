@@ -18,7 +18,8 @@ export default function StatusSelect(params: GridRenderEditCellParams) {
 	};
 
 	return (
-		<Select
+    <Select
+      fullWidth
 			label={field}
 			native
 			value={value}

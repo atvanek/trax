@@ -1,4 +1,3 @@
-import { useTheme } from '@mui/material/styles';
 import React from 'react';
 import { GridColDef } from '@mui/x-data-grid';
 import ColumnResizeBar from '../views/ColumnResizeBar';
@@ -12,7 +11,7 @@ export default function ColumnResizeBarContainer({
 	tableRendered: boolean;
 	resizing: boolean;
 	setResizing: React.Dispatch<React.SetStateAction<boolean>>;
-	setColumns: React.Dispatch<React.SetStateAction<GridColDef[] | null>>;
+	setColumns: React.Dispatch<React.SetStateAction<GridColDef[]>>;
 }) {
 	const [currentColumnRight, setCurrentColumnRight] = React.useState<number>(0);
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
@@ -87,38 +86,46 @@ export default function ColumnResizeBarContainer({
 		[currentColumnRight, currentField, resizing, setColumns, setResizing]
 	);
 
-	//add event handlers to window mousemove and mouseup event handlers to window
-	React.useEffect(() => {
-		if (tableRendered) {
+	const addResizeEventListeners = React.useCallback(() => {
+		const seperators: NodeListOf<SVGElement> = document.querySelectorAll(
+			'.MuiDataGrid-iconSeparator'
+		);
+		seperators.forEach((seperator) => {
+			seperator.addEventListener('mousedown', handleListenForResizeStart); //listener for initiating resizing event
+		});
+		addEventListener('mousemove', handleListenForResize);
+		addEventListener('mouseup', handleListenForResizeEnd);
+		return () => {
+			//clean up all event handlers
+			console.log('cleaning up');
+			removeEventListener('mousemove', handleListenForResize);
+			removeEventListener('mouseup', handleListenForResizeEnd);
 			const seperators: NodeListOf<SVGElement> = document.querySelectorAll(
 				'.MuiDataGrid-iconSeparator'
 			);
 			seperators.forEach((seperator) => {
-				seperator.addEventListener('mousedown', handleListenForResizeStart); //listener for initiating resizing event
+				seperator.removeEventListener('mousedown', handleListenForResizeStart);
 			});
-			addEventListener('mousemove', handleListenForResize);
-			addEventListener('mouseup', handleListenForResizeEnd);
-			return () => {
-				//clean up all event handlers
-				removeEventListener('mousemove', handleListenForResize);
-				removeEventListener('mouseup', handleListenForResizeEnd);
-				const seperators: NodeListOf<SVGElement> = document.querySelectorAll(
-					'.MuiDataGrid-iconSeparator'
-				);
-				seperators.forEach((seperator) => {
-					seperator.removeEventListener(
-						'mousedown',
-						handleListenForResizeStart
-					);
-				});
-			};
-		}
+		};
 	}, [
-		tableRendered,
 		handleListenForResize,
 		handleListenForResizeEnd,
 		handleListenForResizeStart,
 	]);
+
+	//calls addResizeEventHandlers once table is rendered
+	//and runs event listener cleanup on unmount
+	React.useEffect(() => {
+		//this will be the cleanup function once table is rendered
+		let cleanup: () => void = () => {};
+		if (tableRendered) {
+			cleanup = addResizeEventListeners();
+		}
+		return () => {
+			cleanup();
+		};
+	}, [addResizeEventListeners, tableRendered]);
+
 	return (
 		<ColumnResizeBar
 			resizing={resizing}

@@ -1,6 +1,5 @@
 'use client';
 
-import statuses from '@/utils/statuses';
 import NotesEditor from '@/app/components/table/cells/NotesEditor';
 import NotesCell from '@/app/components/table/cells/NotesCell';
 import {
@@ -15,6 +14,7 @@ import LinkCell from '@/app/components/table/cells/LinkCell';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import InputWithDebounce from './cells/InputWithDebounce';
 import StatusSelect from './cells/StatusSelect';
+
 
 export const createDefaultColumns = (
 	handleRequestDelete: (id: GridRowId) => void
@@ -53,6 +53,7 @@ export const createDefaultColumns = (
 			headerName: 'Company',
 			editable: true,
 			headerClassName: 'table-header',
+			type: 'string',
 			renderEditCell: (params: GridRenderEditCellParams) => (
 				<InputWithDebounce {...params} />
 			),
@@ -62,6 +63,7 @@ export const createDefaultColumns = (
 			headerName: 'Job Title',
 			editable: true,
 			headerClassName: 'table-header',
+			type: 'string',
 			renderEditCell: (params: GridRenderEditCellParams) => (
 				<InputWithDebounce {...params} />
 			),
@@ -72,6 +74,7 @@ export const createDefaultColumns = (
 			editable: true,
 			headerClassName: 'table-header',
 			width: 175,
+			type: 'string',
 			renderEditCell: (params: GridRenderEditCellParams) => (
 				<InputWithDebounce {...params} />
 			),
@@ -81,6 +84,7 @@ export const createDefaultColumns = (
 			headerName: 'Location',
 			editable: true,
 			headerClassName: 'table-header',
+			type: 'string',
 			renderEditCell: (params: GridRenderEditCellParams) => (
 				<InputWithDebounce {...params} />
 			),
@@ -100,6 +104,7 @@ export const createDefaultColumns = (
 			headerName: 'Job Posting URL',
 			editable: true,
 			headerClassName: 'table-header',
+			type: 'string',
 			renderCell: (params: GridRenderCellParams) => <LinkCell {...params} />,
 		},
 		{

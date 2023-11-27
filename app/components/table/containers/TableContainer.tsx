@@ -10,8 +10,9 @@ import {
 	GridEventListener,
 	GridRowId,
 	GridRowEditStopReasons,
-	GridSortModel,
 	GridCellParams,
+	useGridApiRef,
+	GridInitialState,
 } from '@mui/x-data-grid';
 import createCustomColumns from '@/utils/createCustomColumns';
 import Context from '@/context/customColumnContext';
@@ -31,9 +32,6 @@ export default function TableContainer({
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
 	);
-	const [sortModel, setSortModel] = React.useState<GridSortModel>([
-		{ field: 'date', sort: 'asc' },
-	]);
 	const [resizing, setResizing] = React.useState<boolean>(false); //column resizing event state
 	const [deleteConfirmOpen, setDeleteConfirmOpen] =
 		React.useState<boolean>(false);
@@ -42,20 +40,16 @@ export default function TableContainer({
 	const [tableRendered, setTableRendered] = React.useState(false);
 	const observerRef = React.useRef<MutationObserver | null>(null);
 	const { customColumns, setCustomColumns } = React.useContext(Context);
+	const [initialState, setInitialState] = React.useState<GridInitialState>();
+
 	const theme = useTheme();
+	const apiRef = useGridApiRef();
 
 	//handles row delete and delete confirmation pop-up
 	const handleRequestDelete = (id: GridRowId): void => {
 		setDeleteId(id);
 		setDeleteConfirmOpen(true);
 	};
-
-	const [columns, setColumns] = React.useState<GridColDef[] | null>(null);
-
-	//notifies parent container that table is rendered with columns
-	React.useLayoutEffect(() => {
-		if (columns) setMounted(true);
-	}, [setMounted, columns]);
 
 	//adds user's custom columns to default columns
 	const columnsWithCustomFields = React.useMemo(() => {
@@ -65,15 +59,39 @@ export default function TableContainer({
 		];
 	}, [customColumns]);
 
-	//get user order from localStorage and set columns with saved order
-	React.useEffect(() => {
-		const newColumns = withUserPrefs(
-			columnsWithCustomFields,
-			localStorage.getItem('separatorsOrder'),
-			localStorage.getItem('columnWidths')
+	const [columns, setColumns] = React.useState<GridColDef[]>(
+		columnsWithCustomFields
+	);
+
+	//notifies parent container that table is rendered with columns
+	React.useLayoutEffect(() => {
+		if (columns) setMounted(true);
+	}, [setMounted, columns]);
+
+	//saves current grid state to localStorage
+	const saveSnapshot = React.useCallback(() => {
+		if (apiRef?.current?.exportState && localStorage) {
+			const currentState = apiRef.current.exportState();
+			console.log(currentState);
+			localStorage.setItem('dataGridState', JSON.stringify(currentState));
+		}
+	}, [apiRef]);
+
+	React.useLayoutEffect(() => {
+		const stateFromLocalStorage = localStorage?.getItem('dataGridState');
+		setInitialState(
+			stateFromLocalStorage ? JSON.parse(stateFromLocalStorage) : {}
 		);
-		setColumns(newColumns);
-	}, [customColumns, setColumns, columnsWithCustomFields]);
+
+		// handle refresh and navigating away/refreshing
+		window.addEventListener('beforeunload', saveSnapshot);
+
+		return () => {
+			// in case of an SPA remove the event-listener
+			window.removeEventListener('beforeunload', saveSnapshot);
+			saveSnapshot();
+		};
+	}, [saveSnapshot]);
 
 	//redefines columns based on new order
 	const handleReorderColumns = React.useCallback(
@@ -256,7 +274,7 @@ export default function TableContainer({
 		return () => {
 			cleanup();
 		};
-	});
+	}, [addDragEventListeners, tableRendered]);
 
 	//helper that gets header name from column separator svg
 	const getField = (separator: SVGElement): string => {
@@ -381,23 +399,21 @@ export default function TableContainer({
 		setRowModesModel(newRowModesModel);
 	};
 
-	const handleSortModelChange = React.useCallback(
-		(newSortModel: GridSortModel) => {
-			setSortModel(newSortModel);
-		},
-		[]
-	);
+	// const handleSortModelChange = React.useCallback(
+	// 	(newSortModel: GridSortModel) => {
+	// 		setSortModel(newSortModel);
+	// 	},
+	// 	[]
+	// );
 
 	const handleCellClick = (params: GridCellParams, event: React.MouseEvent) => {
 		// if (!params.isEditable) {
 		// 	return;
 		// }
-
 		// // Ignore portal
 		// if (!event.currentTarget.contains(event.target as Element)) {
 		// 	return;
 		// }
-
 		// setRowModesModel({
 		// 	...rowModesModel,
 		// 	[params.id]: { mode: GridRowModes.Edit },
@@ -405,7 +421,8 @@ export default function TableContainer({
 	};
 
 	return (
-		columns && (
+		columns &&
+		initialState && (
 			<Table
 				rows={rows}
 				setRows={setRows}
@@ -420,14 +437,16 @@ export default function TableContainer({
 				handleRowModesModelChange={handleRowModesModelChange}
 				handleRowEditStop={handleRowEditStop}
 				handleCellClick={handleCellClick}
-				sortModel={sortModel}
-				setSortModel={setSortModel}
-				handleSortModelChange={handleSortModelChange}
+				// sortModel={sortModel}
+				// setSortModel={setSortModel}
+				// handleSortModelChange={handleSortModelChange}
 				deleteConfirmOpen={deleteConfirmOpen}
 				setDeleteConfirmOpen={setDeleteConfirmOpen}
 				handleDeleteClick={handleDeleteClick}
 				error={error}
 				setError={setError}
+				apiRef={apiRef}
+				initialState={initialState}
 			/>
 		)
 	);

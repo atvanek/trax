@@ -15,7 +15,7 @@ export default function ColumnResizeBar({
 		<div
 			id='column-resize-bar'
 			style={{
-				display: resizing ? 'inline' : 'none',
+				visibility: resizing ? 'visible' : 'hidden',
 				top: barTop,
 				left: resizeBarX,
 				position: 'absolute',

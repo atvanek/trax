@@ -7,7 +7,9 @@ import {
 	GridColDef,
 	GridEventListener,
 	GridCellParams,
+	GridInitialState,
 } from '@mui/x-data-grid';
+import { GridApiCommunity } from '@mui/x-data-grid/internals';
 
 export interface Row extends IJob {
 	isNew: boolean;
@@ -64,7 +66,7 @@ export type TableProps = {
 	rows: Row[];
 	setRows: React.Dispatch<React.SetStateAction<Row[]>>;
 	columns: GridColDef[] | null;
-	setColumns: React.Dispatch<React.SetStateAction<GridColDef[] | null>>;
+	setColumns: React.Dispatch<React.SetStateAction<GridColDef[]>>;
 	tableRendered: boolean;
 	resizing: boolean;
 	setResizing: React.Dispatch<React.SetStateAction<boolean>>;
@@ -74,14 +76,16 @@ export type TableProps = {
 	handleRowModesModelChange: (newRowModesModel: GridRowModesModel) => void;
 	handleRowEditStop: GridEventListener<'rowEditStop'>;
 	handleCellClick: (params: GridCellParams, event: React.MouseEvent) => void;
-	sortModel: GridSortModel;
-	setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
-	handleSortModelChange: (newSortModel: GridSortModel) => void;
+	// sortModel: GridSortModel;
+	// setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
+	// handleSortModelChange: (newSortModel: GridSortModel) => void;
 	deleteConfirmOpen: boolean;
 	setDeleteConfirmOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	handleDeleteClick: () => void;
 	error: boolean;
 	setError: React.Dispatch<React.SetStateAction<boolean>>;
+	apiRef: React.MutableRefObject<GridApiCommunity>;
+	initialState: GridInitialState;
 };
 
 export type SaveStatus = 'success' | 'error' | 'pending' | null;

@@ -22,14 +22,16 @@ export default function Table({
 	handleRowModesModelChange,
 	handleRowEditStop,
 	handleCellClick,
-	sortModel,
-	setSortModel,
-	handleSortModelChange,
+	// sortModel,
+	// setSortModel,
+	// handleSortModelChange,
 	deleteConfirmOpen,
 	setDeleteConfirmOpen,
 	handleDeleteClick,
 	error,
 	setError,
+	apiRef,
+	initialState,
 }: TableProps) {
 	return (
 		<>
@@ -52,6 +54,7 @@ export default function Table({
 
 				<StyledTable
 					autoHeight
+					apiRef={apiRef}
 					sx={{
 						pointerEvents: resizing ? 'none' : 'auto',
 					}}
@@ -65,8 +68,8 @@ export default function Table({
 					onRowModesModelChange={handleRowModesModelChange}
 					onRowEditStop={handleRowEditStop}
 					onCellClick={handleCellClick}
-					sortModel={sortModel}
-					onSortModelChange={handleSortModelChange}
+					// sortModel={sortModel}
+					// onSortModelChange={handleSortModelChange}
 					pageSizeOptions={[25, 50, 100]}
 					slots={{
 						toolbar: EditToolbar,
@@ -74,14 +77,12 @@ export default function Table({
 					slotProps={{
 						toolbar: {
 							setRows,
-							setSortModel,
+							// setSortModel,
 							setRowModesModel,
 							setColumns,
 						},
 					}}
-					initialState={{
-						sorting: { sortModel },
-					}}
+					initialState={initialState}
 				/>
 			</Box>
 			<DeleteConfirm
