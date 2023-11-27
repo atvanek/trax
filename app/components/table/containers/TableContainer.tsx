@@ -10,13 +10,11 @@ import {
 	GridEventListener,
 	GridRowId,
 	GridRowEditStopReasons,
-	GridCellParams,
 	useGridApiRef,
 	GridInitialState,
 } from '@mui/x-data-grid';
 import createCustomColumns from '@/utils/createCustomColumns';
 import Context from '@/context/customColumnContext';
-import withUserPrefs from '@/utils/withUserPrefs';
 import Table from '../views/Table';
 import { useTheme } from '@mui/material';
 
@@ -65,8 +63,8 @@ export default function TableContainer({
 
 	//notifies parent container that table is rendered with columns
 	React.useLayoutEffect(() => {
-		if (columns) setMounted(true);
-	}, [setMounted, columns]);
+		setMounted(true);
+	}, [setMounted]);
 
 	//saves current grid state to localStorage
 	const saveSnapshot = React.useCallback(() => {
@@ -87,7 +85,7 @@ export default function TableContainer({
 		window.addEventListener('beforeunload', saveSnapshot);
 
 		return () => {
-			// in case of an SPA remove the event-listener
+			// in case of a SPA remove the event-listener
 			window.removeEventListener('beforeunload', saveSnapshot);
 			saveSnapshot();
 		};
@@ -399,27 +397,6 @@ export default function TableContainer({
 		setRowModesModel(newRowModesModel);
 	};
 
-	// const handleSortModelChange = React.useCallback(
-	// 	(newSortModel: GridSortModel) => {
-	// 		setSortModel(newSortModel);
-	// 	},
-	// 	[]
-	// );
-
-	const handleCellClick = (params: GridCellParams, event: React.MouseEvent) => {
-		// if (!params.isEditable) {
-		// 	return;
-		// }
-		// // Ignore portal
-		// if (!event.currentTarget.contains(event.target as Element)) {
-		// 	return;
-		// }
-		// setRowModesModel({
-		// 	...rowModesModel,
-		// 	[params.id]: { mode: GridRowModes.Edit },
-		// });
-	};
-
 	return (
 		columns &&
 		initialState && (
@@ -436,10 +413,6 @@ export default function TableContainer({
 				setRowModesModel={setRowModesModel}
 				handleRowModesModelChange={handleRowModesModelChange}
 				handleRowEditStop={handleRowEditStop}
-				handleCellClick={handleCellClick}
-				// sortModel={sortModel}
-				// setSortModel={setSortModel}
-				// handleSortModelChange={handleSortModelChange}
 				deleteConfirmOpen={deleteConfirmOpen}
 				setDeleteConfirmOpen={setDeleteConfirmOpen}
 				handleDeleteClick={handleDeleteClick}

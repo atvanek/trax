@@ -21,10 +21,6 @@ export default function Table({
 	setRowModesModel,
 	handleRowModesModelChange,
 	handleRowEditStop,
-	handleCellClick,
-	// sortModel,
-	// setSortModel,
-	// handleSortModelChange,
 	deleteConfirmOpen,
 	setDeleteConfirmOpen,
 	handleDeleteClick,
@@ -47,9 +43,9 @@ export default function Table({
 				}}>
 				<ColumnResizeBarContainer
 					tableRendered={tableRendered}
-					setColumns={setColumns}
 					resizing={resizing}
 					setResizing={setResizing}
+					apiRef={apiRef}
 				/>
 
 				<StyledTable
@@ -67,9 +63,6 @@ export default function Table({
 					disableRowSelectionOnClick
 					onRowModesModelChange={handleRowModesModelChange}
 					onRowEditStop={handleRowEditStop}
-					onCellClick={handleCellClick}
-					// sortModel={sortModel}
-					// onSortModelChange={handleSortModelChange}
 					pageSizeOptions={[25, 50, 100]}
 					slots={{
 						toolbar: EditToolbar,
@@ -77,7 +70,6 @@ export default function Table({
 					slotProps={{
 						toolbar: {
 							setRows,
-							// setSortModel,
 							setRowModesModel,
 							setColumns,
 						},

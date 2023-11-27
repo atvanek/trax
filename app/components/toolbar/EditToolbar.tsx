@@ -14,11 +14,10 @@ import {
 import AddColumnDialog from './AddColumnDialog';
 
 export default function EditToolbar(props: EditToolbarProps) {
-	const { setRows, setSortModel, setRowModesModel, setColumns } = props;
+	const { setRows, setRowModesModel, setColumns } = props;
 	const [addingColumn, setAddingColumn] = React.useState(false);
 
 	const handleClick = React.useCallback(() => {
-		setSortModel([{ field: 'date', sort: 'desc' }]);
 		const newRowId = crypto.randomUUID();
 		setRows((oldRows) => [
 			{ id: newRowId, isNew: true, date: new Date() },
@@ -28,7 +27,7 @@ export default function EditToolbar(props: EditToolbarProps) {
 			[newRowId]: { mode: GridRowModes.Edit, fieldToFocus: 'date' },
 			...oldModel,
 		}));
-	}, [setRowModesModel, setRows, setSortModel]);
+	}, [setRowModesModel, setRows]);
 
 	return (
 		<GridToolbarContainer sx={{ justifyContent: 'space-between', px: 1 }}>

@@ -75,10 +75,6 @@ export type TableProps = {
 	setRowModesModel: React.Dispatch<React.SetStateAction<GridRowModesModel>>;
 	handleRowModesModelChange: (newRowModesModel: GridRowModesModel) => void;
 	handleRowEditStop: GridEventListener<'rowEditStop'>;
-	handleCellClick: (params: GridCellParams, event: React.MouseEvent) => void;
-	// sortModel: GridSortModel;
-	// setSortModel: React.Dispatch<React.SetStateAction<GridSortModel>>;
-	// handleSortModelChange: (newSortModel: GridSortModel) => void;
 	deleteConfirmOpen: boolean;
 	setDeleteConfirmOpen: React.Dispatch<React.SetStateAction<boolean>>;
 	handleDeleteClick: () => void;

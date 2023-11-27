@@ -18,13 +18,13 @@ export default function StatusSelect(params: GridRenderEditCellParams) {
 	};
 
 	return (
-    <Select
-      fullWidth
+		<Select
+			fullWidth
 			label={field}
 			native
-			value={value}
+			value={value || ''}
 			onChange={handleChange}
-			className={toCamelCase(value) + '-select'}>
+			className={value ? toCamelCase(value) + '-select' : ''}>
 			{field}
 			{statuses.map((status) => {
 				return <option key={status}>{status}</option>;

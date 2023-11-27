@@ -1,22 +1,23 @@
 import React from 'react';
-import { GridColDef } from '@mui/x-data-grid';
 import ColumnResizeBar from '../views/ColumnResizeBar';
+import { GridApiCommunity } from '@mui/x-data-grid/internals';
 
 export default function ColumnResizeBarContainer({
 	tableRendered,
 	resizing,
 	setResizing,
-	setColumns,
+	apiRef,
 }: {
 	tableRendered: boolean;
 	resizing: boolean;
 	setResizing: React.Dispatch<React.SetStateAction<boolean>>;
-	setColumns: React.Dispatch<React.SetStateAction<GridColDef[]>>;
+	apiRef: React.MutableRefObject<GridApiCommunity>;
 }) {
 	const [currentColumnRight, setCurrentColumnRight] = React.useState<number>(0);
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
 	const [barTop, setBarTop] = React.useState(0);
 	const [resizeBarX, setResizeBarX] = React.useState<number>(0);
+	const [currentWidth, setCurrentWidth] = React.useState(0);
 
 	const handleListenForResizeStart = React.useCallback(
 		(e: MouseEvent) => {
@@ -28,11 +29,13 @@ export default function ColumnResizeBarContainer({
 			setCurrentColumnRight(e.clientX); //x coordinate of selected column seperator
 			setResizeBarX(e.clientX); //sets current x coordinate of column resizing bar indicator
 			setBarTop(column.getBoundingClientRect().height + 2); //sets top coordinate of column resizing bar indicator
+			const { width } = column.getBoundingClientRect();
 			if (field) {
 				setCurrentField(field);
+				setCurrentWidth(width);
 			}
 		},
-		[setResizing]
+		[setResizing, setCurrentWidth]
 	);
 
 	//resize column resizing bar indicator on mouse move when resizing event is occuring
@@ -50,40 +53,19 @@ export default function ColumnResizeBarContainer({
 			const diff = e.clientX - currentColumnRight; //difference between initial x and current x
 
 			if (currentField) {
-				setColumns((prevColumns) => {
-					if (prevColumns) {
-						const newColumns = prevColumns.map((prevColumn) => {
-							if (prevColumn.field === currentField) {
-								return { ...prevColumn, width: (prevColumn.width || 0) + diff }; //add difference to current column width
-							} else {
-								return prevColumn;
-							}
-						});
-
-						const userColumnWidths =
-							localStorage.getItem('columnWidths') || '{}';
-
-						const parsedUserColumnWidths: {
-							[key: string]: number | undefined;
-						} = JSON.parse(userColumnWidths);
-
-						newColumns.forEach((column) => {
-							parsedUserColumnWidths[column.field] = column.width;
-						});
-						localStorage.setItem(
-							'columnWidths',
-							JSON.stringify(parsedUserColumnWidths)
-						);
-
-						return newColumns;
-					}
-					return prevColumns;
-				});
+				apiRef.current.setColumnWidth(currentField, currentWidth + diff);
 			}
 			setResizing(false); //resizing over
 			setCurrentColumnRight(0);
 		},
-		[currentColumnRight, currentField, resizing, setColumns, setResizing]
+		[
+			currentColumnRight,
+			currentField,
+			resizing,
+			setResizing,
+			currentWidth,
+			apiRef,
+		]
 	);
 
 	const addResizeEventListeners = React.useCallback(() => {
@@ -97,7 +79,6 @@ export default function ColumnResizeBarContainer({
 		addEventListener('mouseup', handleListenForResizeEnd);
 		return () => {
 			//clean up all event handlers
-			console.log('cleaning up');
 			removeEventListener('mousemove', handleListenForResize);
 			removeEventListener('mouseup', handleListenForResizeEnd);
 			const seperators: NodeListOf<SVGElement> = document.querySelectorAll(
