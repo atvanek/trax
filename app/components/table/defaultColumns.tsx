@@ -14,6 +14,7 @@ import {
 import LinkCell from '@/app/components/table/cells/LinkCell';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import InputWithDebounce from './cells/InputWithDebounce';
+import StatusSelect from './cells/StatusSelect';
 
 export const createDefaultColumns = (
 	handleRequestDelete: (id: GridRowId) => void
@@ -90,7 +91,9 @@ export const createDefaultColumns = (
 			editable: true,
 			headerClassName: 'table-header',
 			type: 'singleSelect',
-			valueOptions: statuses,
+			renderEditCell: (params: GridRenderCellParams) => (
+				<StatusSelect {...params} />
+			),
 		},
 		{
 			field: 'jobURL',

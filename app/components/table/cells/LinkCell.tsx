@@ -5,11 +5,11 @@ export default function LinkCell(params: GridRenderCellParams) {
 	return (
 		<Tooltip
 			title={
-				<a href={'//' + params.value} target='_blank'>
+				<a href={params.value} target='_blank'>
 					Open Link in New Window
 				</a>
 			}>
-			{params.formattedValue}
+			<span className='underline'>{params.formattedValue}</span>
 		</Tooltip>
 	);
 }

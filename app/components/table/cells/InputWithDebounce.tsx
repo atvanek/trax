@@ -32,6 +32,7 @@ export default function InputWithDebounce(props: GridRenderEditCellParams) {
 			type='text'
 			value={value}
 			onChange={handleChange}
+			fullWidth
 		/>
 	);
 }

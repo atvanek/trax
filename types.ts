@@ -83,3 +83,5 @@ export type TableProps = {
 	error: boolean;
 	setError: React.Dispatch<React.SetStateAction<boolean>>;
 };
+
+export type SaveStatus = 'success' | 'error' | 'pending' | null;

@@ -3,6 +3,7 @@ import { styled, Theme } from '@mui/material/styles';
 import { mangoFusionPalette } from '@mui/x-charts';
 import statuses from '@/utils/statuses';
 import { GridCellParams } from '@mui/x-data-grid';
+import toCamelCase from '@/utils/toCamelCase';
 
 const getColors = (mode: 'light' | 'dark') => mangoFusionPalette(mode);
 const getCellClassName = (string: string) =>
@@ -13,6 +14,10 @@ const colorToStatusMap = (theme: Theme) => {
 		const color = colors[index % colors.length];
 		return {
 			[`.${getCellClassName(status)}`]: {
+				backgroundColor: color,
+				color: theme.palette.getContrastText(color),
+			},
+			[`.${toCamelCase(status)}-select`]: {
 				backgroundColor: color,
 				color: theme.palette.getContrastText(color),
 			},
@@ -35,8 +40,7 @@ export default function StyledTable(props: any) {
 				if (statuses.includes(params.value)) {
 					return getCellClassName(params.value);
 				} else return '';
-			}
-			}
+			}}
 		/>
 	);
 }

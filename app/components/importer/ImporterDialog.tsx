@@ -10,18 +10,22 @@ import SaveDialog from './SaveDialog';
 import { useTheme } from '@mui/material/styles';
 import { IJob } from '@/db/models/job';
 import { Typography } from '@mui/material';
+import CustomColumnContext from '@/context/customColumnContext';
+import createCustomColumns from '@/utils/createCustomColumns';
+import { SaveStatus } from '@/types';
+
 export default function ImporterDialog() {
-	// in your component code:
-	const [newRows, setNewRows] = React.useState<Omit<IJob, 'userId'>[]>([]);
+	const [newRows, setNewRows] = React.useState<Omit<IJob, 'userId'>[]>([]); //rows that will be rendered in preview data table after import and saved to database
 	const [loading, setLoading] = React.useState(false);
 	const [started, setStarted] = React.useState(false);
 	const [completed, setCompleted] = React.useState(false);
 	const [confirmFinish, setConfirmFinish] = React.useState(false);
-	const [saveStatus, setSaveStatus] = React.useState<
-		'success' | 'error' | null
-	>(null);
+	const [saveStatus, setSaveStatus] = React.useState<SaveStatus>(null);
+
+	const { customColumns } = React.useContext(CustomColumnContext);
 
 	const theme = useTheme();
+
 	const resetImporter = () => {
 		setNewRows([]);
 		setLoading(false);
@@ -30,6 +34,7 @@ export default function ImporterDialog() {
 		setConfirmFinish(false);
 		setSaveStatus(null);
 	};
+
 	React.useEffect(() => {
 		resetImporter();
 		return () => {
@@ -46,11 +51,17 @@ export default function ImporterDialog() {
 					for (const row of rows) {
 						if (Object.values(row).every((value) => value === '')) return; //ignore empty rows
 						setNewRows((prev) => {
-							const newRowWithId = { ...row, id: crypto.randomUUID() } as Omit<
-								IJob,
-								'userId'
-							>;
-							return [...prev, newRowWithId];
+							//
+							const rowWithTransformedFieldNames = {
+								...row,
+								jobStatus:
+									typeof row.status === 'string'
+										? row.status.toLowerCase()
+										: row.status,
+								jobURL: row.jobPostingURL,
+								id: crypto.randomUUID(),
+							} as Omit<IJob, 'userId'>;
+							return [...prev, rowWithTransformedFieldNames];
 						});
 					}
 				}}
@@ -65,6 +76,7 @@ export default function ImporterDialog() {
 				onComplete={({ file, preview, fields, columnFields }) => {
 					// optional, invoked right after import is done (but user did not dismiss/reset the widget yet)
 					// showMyAppToastNotification();
+					console.log(newRows)
 					setCompleted(true);
 					setLoading(false);
 				}}
@@ -86,7 +98,11 @@ export default function ImporterDialog() {
 				// chunkSize={...} // defaults to 10000
 				// encoding={...} // defaults to utf-8, see FileReader API
 			>
-				{defaultColumnValues.map((field) => (
+				{
+					//create column mapping options for default column values and custom columns
+				}
+
+				{[...defaultColumnValues, ...customColumns].map((field) => (
 					<ImporterField
 						name={toCamelCase(field)}
 						label={field}
@@ -101,7 +117,10 @@ export default function ImporterDialog() {
 					<StyledTable
 						loading={loading}
 						rows={newRows}
-						columns={defaultColumns(() => {})}
+						columns={[
+							...defaultColumns(() => {}),
+							...createCustomColumns(customColumns),
+						]}
 						editMode='row'
 						density='compact'
 						height={400}

@@ -28,25 +28,12 @@ export default function ColumnResizeBarContainer({
 			const { field } = column.dataset; //name of column field currently being resized
 			setCurrentColumnRight(e.clientX); //x coordinate of selected column seperator
 			setResizeBarX(e.clientX); //sets current x coordinate of column resizing bar indicator
-			const { width } = column.getBoundingClientRect();
 			setBarTop(column.getBoundingClientRect().height + 2); //sets top coordinate of column resizing bar indicator
 			if (field) {
 				setCurrentField(field);
-				setColumns((prevColumns) => {
-					if (prevColumns) {
-						return prevColumns.map((prevColumn) => {
-							if (prevColumn.field === field) {
-								return { ...prevColumn, width }; //sets width of current column to its current width to handle no default width
-							} else {
-								return prevColumn;
-							}
-						});
-					}
-					return prevColumns;
-				});
 			}
 		},
-		[setColumns, setResizing]
+		[setResizing]
 	);
 
 	//resize column resizing bar indicator on mouse move when resizing event is occuring

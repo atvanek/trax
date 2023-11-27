@@ -11,6 +11,7 @@ import {
 import React, { Dispatch, SetStateAction } from 'react';
 import { IJob } from '@/db/models/job';
 import Link from 'next/link';
+import { SaveStatus } from '@/types';
 
 export default function SaveDialog({
 	saveStatus,
@@ -18,10 +19,10 @@ export default function SaveDialog({
 	setSaveStatus,
 	rows,
 }: {
-	saveStatus: 'success' | 'error' | null;
+	saveStatus: SaveStatus;
 	confirmFinish: boolean;
 	setConfirmFinish: Dispatch<SetStateAction<boolean>>;
-	setSaveStatus: Dispatch<SetStateAction<'success' | 'error' | null>>;
+	setSaveStatus: Dispatch<SetStateAction<SaveStatus>>;
 	rows: Omit<IJob, 'userId'>[];
 }) {
 	const handleSave = () => {
@@ -57,26 +58,38 @@ export default function SaveDialog({
 			<DialogActions>
 				{!saveStatus ? (
 					<>
-						<Link href='/' passHref >
+						<Link href='/' passHref>
 							<Button variant='contained' color='secondary'>
 								Discard
 							</Button>
 						</Link>
 
-						<Button variant='contained' color='primary' onClick={handleSave}>
+						<Button
+							variant='contained'
+							color='primary'
+							onClick={handleSave}
+							disabled={saveStatus === 'pending'}>
 							Save
 						</Button>
 					</>
 				) : (
 					<Link href='/dashboard'>
-						<Button variant='contained' color='primary'>
+						<Button
+							variant='contained'
+							color='primary'
+							disabled={saveStatus === 'pending'}>
 							Return to Dashboard
 						</Button>
 					</Link>
 				)}
 			</DialogActions>
 			<Collapse in={!!saveStatus}>
-				<Alert severity={saveStatus || undefined}>
+				<Alert
+					severity={
+						saveStatus === 'success' || saveStatus === 'error'
+							? saveStatus
+							: undefined
+					}>
 					{saveStatus === 'success'
 						? `Data successfully added.`
 						: `Error while saving data. Please try again later.`}

@@ -17,6 +17,7 @@ import createCustomColumns from '@/utils/createCustomColumns';
 import Context from '@/context/customColumnContext';
 import withUserPrefs from '@/utils/withUserPrefs';
 import Table from '../views/Table';
+import { useTheme } from '@mui/material';
 
 export default function TableContainer({
 	rows,
@@ -41,6 +42,7 @@ export default function TableContainer({
 	const [tableRendered, setTableRendered] = React.useState(false);
 	const observerRef = React.useRef<MutationObserver | null>(null);
 	const { customColumns, setCustomColumns } = React.useContext(Context);
+	const theme = useTheme();
 
 	//handles row delete and delete confirmation pop-up
 	const handleRequestDelete = (id: GridRowId): void => {
@@ -137,10 +139,15 @@ export default function TableContainer({
 			};
 			const handleDragStart = function (this: HTMLDivElement) {
 				const headerContainer = this.parentNode as HTMLDivElement;
+				headerContainer.style.backgroundColor = theme.palette.action.selected;
 				const draggedField = headerContainer.getAttribute(
 					'data-field'
 				) as string;
 				localStorage.setItem('draggedField', draggedField); // persist dragged item field to use on dragenter event
+			};
+			const handleDragEnd = function (this: HTMLDivElement) {
+				const headerContainer = this.parentNode as HTMLDivElement;
+				headerContainer.style.backgroundColor = 'inherit';
 			};
 
 			const handleDragEnterHeader = (event: Event) => {
@@ -167,11 +174,15 @@ export default function TableContainer({
 				);
 			} // save to localStorage if order has not already been saved
 
-			headers.forEach((header) => {
-				header.setAttribute('draggable', 'true');
-				header.addEventListener('dragstart', handleDragStart);
-				header.addEventListener('dragenter', handleDragEnterHeader);
-				header.addEventListener('dragover', handleDragOverHeader);
+			headers.forEach((header, index) => {
+				if (index > 0) {
+					//prevents actions columns from being reordered
+					header.setAttribute('draggable', 'true');
+					header.addEventListener('dragstart', handleDragStart);
+					header.addEventListener('dragenter', handleDragEnterHeader);
+					header.addEventListener('dragover', handleDragOverHeader);
+					header.addEventListener('dragend', handleDragEnd);
+				}
 			});
 
 			// Return a cleanup function
@@ -186,11 +197,12 @@ export default function TableContainer({
 					header.removeEventListener('dragstart', handleDragStart);
 					header.removeEventListener('dragenter', handleDragEnterHeader);
 					header.removeEventListener('dragover', handleDragOverHeader);
+					header.removeEventListener('dragend', handleDragEnd);
 				});
 			};
 		},
 
-		[handleReorderColumns]
+		[handleReorderColumns, theme.palette.action.selected]
 	);
 
 	//add mutation observer to check when data grid has been rendered
@@ -377,19 +389,19 @@ export default function TableContainer({
 	);
 
 	const handleCellClick = (params: GridCellParams, event: React.MouseEvent) => {
-		if (!params.isEditable) {
-			return;
-		}
+		// if (!params.isEditable) {
+		// 	return;
+		// }
 
-		// Ignore portal
-		if (!event.currentTarget.contains(event.target as Element)) {
-			return;
-		}
+		// // Ignore portal
+		// if (!event.currentTarget.contains(event.target as Element)) {
+		// 	return;
+		// }
 
-		setRowModesModel({
-			...rowModesModel,
-			[params.id]: { mode: GridRowModes.Edit },
-		});
+		// setRowModesModel({
+		// 	...rowModesModel,
+		// 	[params.id]: { mode: GridRowModes.Edit },
+		// });
 	};
 
 	return (

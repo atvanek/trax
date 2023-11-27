@@ -26,9 +26,7 @@ export default function AnimatedPieChart({ data }: { data: Row[] }) {
 	const defaultData = React.useMemo(() => {
 		return statuses.map((status, index) => ({
 			id: index,
-			value:
-				(data.filter((job) => job.jobStatus === status).length / data.length) *
-				100,
+			value: data.filter((job) => job.jobStatus === status).length,
 			label: status,
 			color: colors[index % colors.length],
 			visible: true,
