@@ -9,7 +9,7 @@ export default function WithUILoading({
 	componentProps,
 	fallbackProps,
 }: {
-	component: (props: any) => JSX.Element | null;
+	component: (props: any) => JSX.Element | null | undefined;
 	fallback: (props: any) => JSX.Element | null;
 	componentProps: any;
 	fallbackProps: any;

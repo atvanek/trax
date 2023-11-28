@@ -37,7 +37,8 @@ export default function NotesEditor(params: GridRenderEditCellParams) {
 				<Dialog
 					open={open}
 					transitionDuration={0}
-					onClose={() => setOpen(false)}>
+					onClose={() => setOpen(false)}
+					fullWidth>
 					<DialogTitle>Notes</DialogTitle>
 					<DialogContent>
 						<TextField

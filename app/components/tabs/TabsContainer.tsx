@@ -1,7 +1,7 @@
 'use client';
 
 import * as React from 'react';
-import { Tab, Tabs, Box } from '@mui/material';
+import { Tab, Tabs, Box, Drawer } from '@mui/material';
 import TabPanel from './TabPanel';
 
 function a11yProps(index: number) {

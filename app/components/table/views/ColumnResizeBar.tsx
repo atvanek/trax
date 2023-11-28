@@ -19,9 +19,10 @@ export default function ColumnResizeBar({
 				top: barTop,
 				left: resizeBarX,
 				position: 'absolute',
-				width: '1px',
+				width: '3px',
 				backgroundColor: theme.palette.secondary.main,
 				height: '100%',
+				zIndex: '3'
 			}}></div>
 	);
 }

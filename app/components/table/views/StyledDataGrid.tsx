@@ -8,7 +8,8 @@ import toCamelCase from '@/utils/toCamelCase';
 const getColors = (mode: 'light' | 'dark') => mangoFusionPalette(mode);
 const getCellClassName = (string: string) =>
 	string.replaceAll(/\/| /g, '') + '-cell';
-const colorToStatusMap = (theme: Theme) => {
+
+const styles = (theme: Theme) => {
 	const colors = getColors(theme.palette.mode);
 	return statuses.map((status, index) => {
 		const color = colors[index % colors.length];
@@ -25,12 +26,15 @@ const colorToStatusMap = (theme: Theme) => {
 				backgroundColor: color,
 				color: theme.palette.getContrastText(color),
 			},
+			'.MuiDataGrid-columnHeaders': {
+				backgroundColor: theme.palette.action.selected,
+			},
 		};
 	});
 };
 
 const StyledDataGrid = styled(DataGrid)(({ theme }) => {
-	return colorToStatusMap(theme);
+	return styles(theme);
 });
 export default function StyledTable(props: any) {
 	return (

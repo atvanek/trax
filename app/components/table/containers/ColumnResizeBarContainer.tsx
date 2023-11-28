@@ -17,7 +17,6 @@ export default function ColumnResizeBarContainer({
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
 	const [barTop, setBarTop] = React.useState(0);
 	const [resizeBarX, setResizeBarX] = React.useState<number>(0);
-	const [currentWidth, setCurrentWidth] = React.useState(0);
 
 	const handleListenForResizeStart = React.useCallback(
 		(e: MouseEvent) => {
@@ -32,10 +31,10 @@ export default function ColumnResizeBarContainer({
 			const { width } = column.getBoundingClientRect();
 			if (field) {
 				setCurrentField(field);
-				setCurrentWidth(width);
+				apiRef.current.setColumnWidth(field, width);
 			}
 		},
-		[setResizing, setCurrentWidth]
+		[setResizing, apiRef]
 	);
 
 	//resize column resizing bar indicator on mouse move when resizing event is occuring
@@ -53,19 +52,17 @@ export default function ColumnResizeBarContainer({
 			const diff = e.clientX - currentColumnRight; //difference between initial x and current x
 
 			if (currentField) {
-				apiRef.current.setColumnWidth(currentField, currentWidth + diff);
+				const currentColumnWidth = apiRef.current.getColumn(currentField).width;
+				currentColumnWidth &&
+					apiRef.current.setColumnWidth(
+						currentField,
+						currentColumnWidth + diff
+					);
 			}
 			setResizing(false); //resizing over
 			setCurrentColumnRight(0);
 		},
-		[
-			currentColumnRight,
-			currentField,
-			resizing,
-			setResizing,
-			currentWidth,
-			apiRef,
-		]
+		[currentColumnRight, currentField, resizing, setResizing, apiRef]
 	);
 
 	const addResizeEventListeners = React.useCallback(() => {

@@ -20,25 +20,31 @@ export default function theme(mode: 'light' | 'dark') {
 			mode,
 			...(mode === 'light'
 				? {
-						// palette values for light mode
 						primary: {
 							main: '#763DF0',
 							dark: '#522AA8',
 							light: '#9163F3',
 						},
-						// ... other palette values
+						action: {
+							hover: '#BB9EF80A',
+							selected: '#763DF014',
+							focus: '#BB9EF81F',
+						},
 				  }
 				: {
 						primary: {
 							main: '#c57fff',
 						},
-						// ... other palette values
 				  }),
 		},
 		components: {
 			MuiDataGrid: {
 				styleOverrides: {
 					columnHeader: {
+						'.MuiDataGrid-columnHeaderTitle': {
+							'font-weight': '600 !important',
+						},
+
 						':hover': {
 							cursor: 'grab',
 						},
