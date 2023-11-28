@@ -1,6 +1,7 @@
 import { createTheme, Theme, Components } from '@mui/material/styles';
 
 interface CustomTheme extends Theme {
+	navHeight?: number;
 	components?: Components & {
 		MuiDataGrid?: {
 			styleOverrides?: {
@@ -13,7 +14,7 @@ interface CustomTheme extends Theme {
 		};
 	};
 }
-
+const navHeight = 64
 export default function theme(mode: 'light' | 'dark') {
 	return createTheme({
 		palette: {
@@ -37,6 +38,7 @@ export default function theme(mode: 'light' | 'dark') {
 						},
 				  }),
 		},
+
 		components: {
 			MuiDataGrid: {
 				styleOverrides: {
@@ -68,6 +70,23 @@ export default function theme(mode: 'light' | 'dark') {
 					},
 				},
 			},
+			MuiAppBar: {
+				styleOverrides: {
+					root: {
+						position: 'fixed',
+						zIndex: 3
+					},
+				},
+			},
+			MuiDrawer: {
+				styleOverrides: {
+					paper: {
+						paddingTop: navHeight,
+						zIndex: 1,
+					},
+				},
+			},
+
 		} as CustomTheme['components'], // Cast to CustomTheme['components']
 	});
 }

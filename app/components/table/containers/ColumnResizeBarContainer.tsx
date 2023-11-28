@@ -3,15 +3,15 @@ import ColumnResizeBar from '../views/ColumnResizeBar';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 
 export default function ColumnResizeBarContainer({
-	tableRendered,
 	resizing,
 	setResizing,
 	apiRef,
+	newNodesRendered,
 }: {
-	tableRendered: boolean;
 	resizing: boolean;
 	setResizing: React.Dispatch<React.SetStateAction<boolean>>;
-	apiRef: React.MutableRefObject<GridApiCommunity>;
+	apiRef: React.MutableRefObject<GridApiCommunity> | null;
+	newNodesRendered: boolean;
 }) {
 	const [currentColumnRight, setCurrentColumnRight] = React.useState<number>(0);
 	const [currentField, setCurrentField] = React.useState<null | string>(null);
@@ -27,11 +27,11 @@ export default function ColumnResizeBarContainer({
 			const { field } = column.dataset; //name of column field currently being resized
 			setCurrentColumnRight(e.clientX); //x coordinate of selected column seperator
 			setResizeBarX(e.clientX); //sets current x coordinate of column resizing bar indicator
-			setBarTop(column.getBoundingClientRect().height + 2); //sets top coordinate of column resizing bar indicator
+			setBarTop(column.getBoundingClientRect().top); //sets top coordinate of column resizing bar indicator
 			const { width } = column.getBoundingClientRect();
 			if (field) {
 				setCurrentField(field);
-				apiRef.current.setColumnWidth(field, width);
+				apiRef?.current.setColumnWidth(field, width);
 			}
 		},
 		[setResizing, apiRef]
@@ -52,9 +52,10 @@ export default function ColumnResizeBarContainer({
 			const diff = e.clientX - currentColumnRight; //difference between initial x and current x
 
 			if (currentField) {
-				const currentColumnWidth = apiRef.current.getColumn(currentField).width;
+				const currentColumnWidth =
+					apiRef?.current.getColumn(currentField).width;
 				currentColumnWidth &&
-					apiRef.current.setColumnWidth(
+					apiRef?.current.setColumnWidth(
 						currentField,
 						currentColumnWidth + diff
 					);
@@ -91,18 +92,17 @@ export default function ColumnResizeBarContainer({
 		handleListenForResizeStart,
 	]);
 
-	//calls addResizeEventHandlers once table is rendered
+	//calls addResizeEventHandlers
 	//and runs event listener cleanup on unmount
 	React.useEffect(() => {
 		//this will be the cleanup function once table is rendered
-		let cleanup: () => void = () => {};
-		if (tableRendered) {
-			cleanup = addResizeEventListeners();
-		}
+
+		const cleanup = addResizeEventListeners();
+
 		return () => {
 			cleanup();
 		};
-	}, [addResizeEventListeners, tableRendered]);
+	}, [addResizeEventListeners, newNodesRendered]);
 
 	return (
 		<ColumnResizeBar

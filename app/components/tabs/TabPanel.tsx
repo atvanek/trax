@@ -3,7 +3,7 @@ import { TabPanelProps } from '@/types';
 import { useTheme } from '@mui/material/styles';
 
 export default function TabPanel(props: TabPanelProps) {
-	const { children, value, index, ...other } = props;
+	const { children, currentTabIndex, index, ...other } = props;
 	const theme = useTheme();
 
 	return (
@@ -13,8 +13,10 @@ export default function TabPanel(props: TabPanelProps) {
 				position: 'absolute',
 				width: '100%',
 				height: '100%',
-				visibility: value === index ? 'visible' : 'hidden',
+				visibility: currentTabIndex === index ? 'visible' : 'hidden',
 				backgroundColor: theme.palette.background.paper,
+				paddingTop: 64,
+				paddingLeft: 80,
 			}}
 			role='tabpanel'
 			id={`simple-tabpanel-${index}`}

@@ -2,7 +2,7 @@ import { getSession } from '@auth0/nextjs-auth0';
 import { redirect } from 'next/navigation';
 import React from 'react';
 import Nav from '../components/nav/Nav';
-import { CustomColumnContextProvider } from '@/context/customColumnContext';
+import { GridContextProvider } from '@/context/GridContext';
 import dbConnect from '@/db/dbConnect';
 import { IUser } from '@/db/models/user';
 import userModel from '@/db/models/user';
@@ -29,10 +29,10 @@ export default async function DashboardLayout({
 	const fetchedUser = await getUser(user.email);
 
 	return (
-		<CustomColumnContextProvider
+		<GridContextProvider
 			fetchedCustomColumns={fetchedUser?.customColumns || []}>
 			<Nav user={user} />
 			{children}
-		</CustomColumnContextProvider>
+		</GridContextProvider>
 	);
 }

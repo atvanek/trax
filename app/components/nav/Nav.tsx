@@ -91,13 +91,13 @@ export default function Nav({ user }: { user: Claims }) {
 								sx={{
 									display: { xs: 'block', md: 'none' },
 								}}>
-								{pages.map((page) => (
+								{/* {pages.map((page) => (
 									<Link href={page.href || ''} key={page.label}>
 										<MenuItem onClick={handleCloseNavMenu}>
 											<Typography textAlign='center'>{page.label}</Typography>
 										</MenuItem>
 									</Link>
-								))}
+								))} */}
 							</Menu>
 						</Box>
 						<AnalyticsIcon

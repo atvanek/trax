@@ -39,19 +39,10 @@ export type Status =
 
 export type Order = 'asc' | 'desc';
 
-export interface EditToolbarProps {
-	setRows: (newRows: (oldRows: GridRowsProp) => GridRowsProp) => void;
-	setRowModesModel: (
-		newModel: (oldModel: GridRowModesModel) => GridRowModesModel
-	) => void;
-	setSortModel: (value: React.SetStateAction<GridSortModel>) => void;
-	setColumns: (value: React.SetStateAction<GridColDef[]>) => void;
-}
-
 export interface TabPanelProps {
 	children?: React.ReactNode;
 	index: number;
-	value: number;
+	currentTabIndex: number;
 }
 
 export type ChartData = {
@@ -67,7 +58,6 @@ export type TableProps = {
 	setRows: React.Dispatch<React.SetStateAction<Row[]>>;
 	columns: GridColDef[] | null;
 	setColumns: React.Dispatch<React.SetStateAction<GridColDef[]>>;
-	tableRendered: boolean;
 	resizing: boolean;
 	setResizing: React.Dispatch<React.SetStateAction<boolean>>;
 	handleProcessRowUpdate: (updatedRow: Row) => void;
@@ -80,8 +70,9 @@ export type TableProps = {
 	handleDeleteClick: () => void;
 	error: boolean;
 	setError: React.Dispatch<React.SetStateAction<boolean>>;
-	apiRef: React.MutableRefObject<GridApiCommunity>;
+	apiRef: React.MutableRefObject<GridApiCommunity> | null;
 	initialState: GridInitialState;
+	newNodesRendered: boolean;
 };
 
 export type SaveStatus = 'success' | 'error' | 'pending' | null;

@@ -28,7 +28,6 @@ export default function InputWithDebounce(props: GridRenderEditCellParams) {
 	return (
 		<TextField
 			autoFocus={hasFocus}
-			sx={{ fontSize: 'inherit', border: 'none', outline: 'none' }}
 			type='text'
 			value={value}
 			onChange={handleChange}

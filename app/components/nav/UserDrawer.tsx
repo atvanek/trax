@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { Claims } from '@auth0/nextjs-auth0';
 import DeleteConfirm from '../DeleteConfirm';
 import { MouseEventHandler } from 'react';
-import Context from '@/context/customColumnContext';
+import GridContext from '@/context/GridContext';
 
 export default function UserDrawer({
 	userMenuOpen,
@@ -29,23 +29,25 @@ export default function UserDrawer({
 }) {
 	const [customColumnsOpen, setCustomColumnsOpen] = React.useState(false);
 	const [deleteConfirmOpen, setDeleteConfirmOpen] = React.useState(false);
-	const [deleteId, setDeleteId] = React.useState<string | null>(null);
+	const [deleteField, setDeleteField] = React.useState<string | null>(null);
 	const [error, setError] = React.useState(false);
 	const theme = useTheme();
-	const { customColumns, setCustomColumns } = React.useContext(Context);
+	const { customColumns, setCustomColumns, apiRef } =
+		React.useContext(GridContext);
 
 	const handleRequestDeleteColumn: MouseEventHandler<SVGElement> = (e) => {
 		const currentTarget = e.currentTarget as SVGElement;
 		setDeleteConfirmOpen(true);
-		setDeleteId(currentTarget.id);
+		setDeleteField(currentTarget.id);
 	};
 
 	const handleDeleteClick = () => {
-		setCustomColumns(customColumns.filter((column) => column !== deleteId));
+		setCustomColumns(customColumns.filter((column) => column !== deleteField));
 		setDeleteConfirmOpen(false);
+
 		fetch('/api/user/column', {
 			method: 'DELETE',
-			body: JSON.stringify({ id: deleteId }),
+			body: JSON.stringify({ id: deleteField }),
 		})
 			.then((res) => {
 				if (res.ok) {
@@ -54,13 +56,6 @@ export default function UserDrawer({
 					setError(true);
 				}
 			})
-			// .then((data: { rows: Row[] }) => {
-			// 	const newRows = data.rows.map((row) => ({
-			// 		...row,
-			// 		date: row.date ? new Date(row.date) : new Date(),
-			// 	})) as Row[];
-			// 	setRows(newRows);
-			// })
 			.catch((err) => {
 				console.log(err);
 				setError(true);
@@ -97,22 +92,7 @@ export default function UserDrawer({
 					</ListItemIcon>
 					<ListItemText>Custom Columns</ListItemText>
 				</ListItemButton>
-				<Collapse in={customColumnsOpen}>
-					<List>
-						{customColumns.map((column) => (
-							<ListItemButton key={column}>
-								<ListItemIcon>
-									<Delete
-										sx={{ height: '15px' }}
-										onClick={handleRequestDeleteColumn}
-										id={column}
-									/>
-								</ListItemIcon>
-								<ListItemText>{column}</ListItemText>
-							</ListItemButton>
-						))}
-					</List>
-				</Collapse>
+
 				<Link href={'/api/auth/logout'}>
 					<ListItemButton>
 						<ListItemIcon>

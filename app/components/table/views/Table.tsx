@@ -7,18 +7,16 @@ import StyledTable from './StyledDataGrid';
 import DeleteConfirm from '../../DeleteConfirm';
 import { TableProps } from '@/types';
 import ColumnResizeBarContainer from '../containers/ColumnResizeBarContainer';
+import AddColumnDialog from './AddColumnDialog';
 
 export default function Table({
 	rows,
-	setRows,
 	columns,
 	setColumns,
-	tableRendered,
 	resizing,
 	setResizing,
 	handleProcessRowUpdate,
 	rowModesModel,
-	setRowModesModel,
 	handleRowModesModelChange,
 	handleRowEditStop,
 	deleteConfirmOpen,
@@ -28,6 +26,7 @@ export default function Table({
 	setError,
 	apiRef,
 	initialState,
+	newNodesRendered
 }: TableProps) {
 	return (
 		<>
@@ -42,10 +41,10 @@ export default function Table({
 					},
 				}}>
 				<ColumnResizeBarContainer
-					tableRendered={tableRendered}
 					resizing={resizing}
 					setResizing={setResizing}
 					apiRef={apiRef}
+					newNodesRendered={newNodesRendered}
 				/>
 
 				<StyledTable
@@ -67,13 +66,6 @@ export default function Table({
 					slots={{
 						toolbar: EditToolbar,
 					}}
-					slotProps={{
-						toolbar: {
-							setRows,
-							setRowModesModel,
-							setColumns,
-						},
-					}}
 					initialState={initialState}
 				/>
 			</Box>
@@ -83,6 +75,7 @@ export default function Table({
 				handleDeleteClick={handleDeleteClick}
 				confirmationMessage='All job details will be permanently lost.'
 			/>
+			<AddColumnDialog setColumns={setColumns} />
 			<Snackbar
 				open={error}
 				autoHideDuration={6000}

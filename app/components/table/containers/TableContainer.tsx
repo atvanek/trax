@@ -10,11 +10,10 @@ import {
 	GridEventListener,
 	GridRowId,
 	GridRowEditStopReasons,
-	useGridApiRef,
 	GridInitialState,
 } from '@mui/x-data-grid';
 import createCustomColumns from '@/utils/createCustomColumns';
-import Context from '@/context/customColumnContext';
+import Context from '@/context/GridContext';
 import Table from '../views/Table';
 import { useTheme } from '@mui/material';
 
@@ -35,13 +34,11 @@ export default function TableContainer({
 		React.useState<boolean>(false);
 	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null); //id of item requested to delete
 	const [error, setError] = React.useState(false);
-	const [tableRendered, setTableRendered] = React.useState(false);
 	const observerRef = React.useRef<MutationObserver | null>(null);
-	const { customColumns, setCustomColumns } = React.useContext(Context);
+	const { customColumns, apiRef, setAddingColumn } = React.useContext(Context);
 	const [initialState, setInitialState] = React.useState<GridInitialState>();
-
 	const theme = useTheme();
-	const apiRef = useGridApiRef();
+	const [newNodesRendered, setNewNodesRendered] = React.useState(false);
 
 	//handles row delete and delete confirmation pop-up
 	const handleRequestDelete = (id: GridRowId): void => {
@@ -52,10 +49,10 @@ export default function TableContainer({
 	//adds user's custom columns to default columns
 	const columnsWithCustomFields = React.useMemo(() => {
 		return [
-			...createDefaultColumns(handleRequestDelete),
+			...createDefaultColumns(handleRequestDelete, setAddingColumn),
 			...createCustomColumns(customColumns),
 		];
-	}, [customColumns]);
+	}, [customColumns, setAddingColumn]);
 
 	const [columns, setColumns] = React.useState<GridColDef[]>(
 		columnsWithCustomFields
@@ -70,11 +67,11 @@ export default function TableContainer({
 	const saveSnapshot = React.useCallback(() => {
 		if (apiRef?.current?.exportState && localStorage) {
 			const currentState = apiRef.current.exportState();
-			console.log(currentState);
 			localStorage.setItem('dataGridState', JSON.stringify(currentState));
 		}
 	}, [apiRef]);
 
+	//gets previous grid state from localStorage
 	React.useLayoutEffect(() => {
 		const stateFromLocalStorage = localStorage?.getItem('dataGridState');
 		setInitialState(
@@ -94,135 +91,129 @@ export default function TableContainer({
 	//redefines columns based on new order
 	const handleReorderColumns = React.useCallback(
 		(separator: SVGElement) => {
-			if (columns) {
-				const draggedField = localStorage.getItem('draggedField');
-				const draggedOverField = getField(separator);
+			const draggedField = localStorage.getItem('draggedField');
+			const draggedOverField = getField(separator);
 
-				if (draggedField === draggedOverField) return; //do not reorder on dropping into own separator to avoid flickering
+			if (draggedField === draggedOverField) return; //do not reorder on dropping into own separator to avoid flickering
 
-				const separatorsOrder = localStorage.getItem(
-					'separatorsOrder'
-				) as string;
-				const separatorsOrderParsed = separatorsOrder
-					? JSON.parse(separatorsOrder)
-					: [];
-				const index = separatorsOrderParsed.indexOf(draggedOverField);
+			const separatorsOrder = localStorage.getItem('separatorsOrder') as string;
+			const separatorsOrderParsed = separatorsOrder
+				? JSON.parse(separatorsOrder)
+				: [];
+			const index = separatorsOrderParsed.indexOf(draggedOverField);
 
-				if (index === 0) return; //actions column must always be first
+			if (index === 0) return; //actions column must always be first
 
-				const draggedColumn = columns.find(
-					(column) => column.field === draggedField
-				);
-				const restOfColumns = columns.filter(
-					(column) => column.field !== draggedField
-				);
+			const draggedColumn = columns.find(
+				(column) => column.field === draggedField
+			);
+			const restOfColumns = columns.filter(
+				(column) => column.field !== draggedField
+			);
 
-				const newColumns = [
-					...restOfColumns.slice(0, index),
-					draggedColumn,
-					...restOfColumns.slice(index),
-				] as GridColDef[];
+			const newColumns = [
+				...restOfColumns.slice(0, index),
+				draggedColumn,
+				...restOfColumns.slice(index),
+			] as GridColDef[];
 
-				const newSeparatorsOrder = newColumns.map((column) => column?.field);
-				localStorage.setItem(
-					'separatorsOrder',
-					JSON.stringify(newSeparatorsOrder)
-				);
-				setColumns(newColumns);
-			}
+			const newSeparatorsOrder = newColumns.map((column) => column.field);
+			localStorage.setItem(
+				'separatorsOrder',
+				JSON.stringify(newSeparatorsOrder)
+			);
+			setColumns(newColumns);
 		},
 		[columns]
 	);
 
 	//adds event listeners to all column headers and separators
-	const addDragEventListeners = React.useCallback(
-		(
-			headers: NodeListOf<HTMLDivElement>,
-			separators: NodeListOf<SVGElement>
-		) => {
-			const separatorsOrder: string[] = []; // initial order to persist in localStorage
+	const addDragEventListeners = React.useCallback(() => {
+		const headers: NodeListOf<HTMLDivElement> = document.querySelectorAll(
+			'.MuiDataGrid-columnHeaderDraggableContainer'
+		);
+		const separators: NodeListOf<SVGElement> = document.querySelectorAll(
+			'.MuiDataGrid-iconSeparator'
+		);
 
-			const handleDragOver = (event: Event) => {
-				event.preventDefault();
-			};
+		const separatorsOrder: string[] = []; // initial order to persist in localStorage
 
-			const handleDragEnter = function (this: SVGElement) {
-				handleReorderColumns(this); // reorders columns as the user drags to a new position
-			};
+		const handleDragOver = (event: Event) => {
+			event.preventDefault();
+		};
 
-			const handleDrop = function (this: SVGElement) {
-				handleReorderColumns(this); // reorders columns on drop
-			};
-			const handleDragStart = function (this: HTMLDivElement) {
-				const headerContainer = this.parentNode as HTMLDivElement;
-				headerContainer.style.backgroundColor = theme.palette.action.selected;
-				const draggedField = headerContainer.getAttribute(
-					'data-field'
-				) as string;
-				localStorage.setItem('draggedField', draggedField); // persist dragged item field to use on dragenter event
-			};
-			const handleDragEnd = function (this: HTMLDivElement) {
-				const headerContainer = this.parentNode as HTMLDivElement;
-				headerContainer.style.backgroundColor = 'inherit';
-			};
+		const handleDragEnter = function (this: SVGElement) {
+			handleReorderColumns(this); // reorders columns as the user drags to a new position
+		};
 
-			const handleDragEnterHeader = (event: Event) => {
-				event.preventDefault();
-			};
+		const handleDrop = function (this: SVGElement) {
+			handleReorderColumns(this); // reorders columns on drop
+		};
+		const handleDragStart = function (this: HTMLDivElement) {
+			const headerContainer = this.parentNode as HTMLDivElement;
+			headerContainer.style.backgroundColor = theme.palette.action.selected;
+			const draggedField = headerContainer.getAttribute('data-field') as string;
+			localStorage.setItem('draggedField', draggedField); // persist dragged item field to use on dragenter event
+		};
+		const handleDragEnd = function (this: HTMLDivElement) {
+			const headerContainer = this.parentNode as HTMLDivElement;
+			headerContainer.style.backgroundColor = 'inherit';
+		};
 
-			const handleDragOverHeader = (event: Event) => {
-				event.preventDefault();
-			};
+		const handleDragEnterHeader = (event: Event) => {
+			event.preventDefault();
+		};
 
+		const handleDragOverHeader = (event: Event) => {
+			event.preventDefault();
+		};
+
+		separators.forEach((separator) => {
+			const draggedOverField = getField(separator);
+			separatorsOrder.push(draggedOverField);
+			separator.setAttribute('droppable', 'true');
+			separator.addEventListener('dragover', handleDragOver);
+			separator.addEventListener('dragenter', handleDragEnter);
+			separator.addEventListener('drop', handleDrop);
+		});
+
+		if (!localStorage.getItem('separatorsOrder')) {
+			localStorage.setItem('separatorsOrder', JSON.stringify(separatorsOrder));
+		} // save to localStorage if order has not already been saved
+
+		headers.forEach((header, index) => {
+			if (index > 0) {
+				//prevents actions columns from being reordered
+				header.setAttribute('draggable', 'true');
+				header.addEventListener('dragstart', handleDragStart);
+				header.addEventListener('dragenter', handleDragEnterHeader);
+				header.addEventListener('dragover', handleDragOverHeader);
+				header.addEventListener('dragend', handleDragEnd);
+			}
+		});
+
+		// Return a cleanup function
+		return () => {
 			separators.forEach((separator) => {
-				const draggedOverField = getField(separator);
-				separatorsOrder.push(draggedOverField);
-				separator.setAttribute('droppable', 'true');
-				separator.addEventListener('dragover', handleDragOver);
-				separator.addEventListener('dragenter', handleDragEnter);
-				separator.addEventListener('drop', handleDrop);
+				separator.removeEventListener('dragover', handleDragOver);
+				separator.removeEventListener('dragenter', handleDragEnter);
+				separator.removeEventListener('drop', handleDrop);
 			});
 
-			if (!localStorage.getItem('separatorsOrder')) {
-				localStorage.setItem(
-					'separatorsOrder',
-					JSON.stringify(separatorsOrder)
-				);
-			} // save to localStorage if order has not already been saved
-
-			headers.forEach((header, index) => {
-				if (index > 0) {
-					//prevents actions columns from being reordered
-					header.setAttribute('draggable', 'true');
-					header.addEventListener('dragstart', handleDragStart);
-					header.addEventListener('dragenter', handleDragEnterHeader);
-					header.addEventListener('dragover', handleDragOverHeader);
-					header.addEventListener('dragend', handleDragEnd);
-				}
+			headers.forEach((header) => {
+				header.removeEventListener('dragstart', handleDragStart);
+				header.removeEventListener('dragenter', handleDragEnterHeader);
+				header.removeEventListener('dragover', handleDragOverHeader);
+				header.removeEventListener('dragend', handleDragEnd);
 			});
-
-			// Return a cleanup function
-			return () => {
-				separators.forEach((separator) => {
-					separator.removeEventListener('dragover', handleDragOver);
-					separator.removeEventListener('dragenter', handleDragEnter);
-					separator.removeEventListener('drop', handleDrop);
-				});
-
-				headers.forEach((header) => {
-					header.removeEventListener('dragstart', handleDragStart);
-					header.removeEventListener('dragenter', handleDragEnterHeader);
-					header.removeEventListener('dragover', handleDragOverHeader);
-					header.removeEventListener('dragend', handleDragEnd);
-				});
-			};
-		},
-
-		[handleReorderColumns, theme.palette.action.selected]
-	);
+		};
+	}, [handleReorderColumns, theme.palette.action.selected]);
 
 	//add mutation observer to check when data grid has been rendered
+	//or when new columns have been added
 	React.useEffect(() => {
+		//this will be the cleanup function to remove listeners
+		let cleanup: () => void = () => {};
 		//runs on every mutation of the document body
 		const handleElementAdded = (mutationsList: MutationRecord[]) => {
 			for (const mutation of mutationsList) {
@@ -231,9 +222,13 @@ export default function TableContainer({
 					// Check if the added node is the data grid
 					if (
 						addedNode instanceof Element &&
-						addedNode.classList.contains('MuiDataGrid-root')
+						(addedNode.classList.contains('MuiDataGrid-root') || //if the mutation is the table being initially rendered
+							addedNode.classList.contains('MuiDataGrid-columnHeader')) // or a new column being added
 					) {
-						setTableRendered(true);
+						//add all event listeners and save cleanup function definition to 'cleanup'
+						cleanup = addDragEventListeners();
+						//toggles value so that column resize event listeners are cleaned up and added again
+						setNewNodesRendered((prev) => !prev);
 					}
 				}
 			}
@@ -250,29 +245,10 @@ export default function TableContainer({
 
 		// Clean up the observer on component unmount
 		return () => {
+			cleanup();
 			observer.disconnect();
 		};
 	}, [addDragEventListeners]);
-
-	//calls addDragEventHandlers once table is rendered
-	//and runs event listener cleanup on unmount
-	React.useEffect(() => {
-		//this will be the cleanup function once table is rendered
-		let cleanup: () => void = () => {};
-		if (tableRendered) {
-			//grab all headers and column separators to add event listeners
-			const headers: NodeListOf<HTMLDivElement> = document.querySelectorAll(
-				'.MuiDataGrid-columnHeaderDraggableContainer'
-			);
-			const separators: NodeListOf<SVGElement> = document.querySelectorAll(
-				'.MuiDataGrid-iconSeparator'
-			);
-			cleanup = addDragEventListeners(headers, separators);
-		}
-		return () => {
-			cleanup();
-		};
-	}, [addDragEventListeners, tableRendered]);
 
 	//helper that gets header name from column separator svg
 	const getField = (separator: SVGElement): string => {
@@ -398,14 +374,12 @@ export default function TableContainer({
 	};
 
 	return (
-		columns &&
 		initialState && (
 			<Table
 				rows={rows}
 				setRows={setRows}
 				columns={columns}
 				setColumns={setColumns}
-				tableRendered={tableRendered}
 				resizing={resizing}
 				setResizing={setResizing}
 				handleProcessRowUpdate={handleProcessRowUpdate}
@@ -420,6 +394,7 @@ export default function TableContainer({
 				setError={setError}
 				apiRef={apiRef}
 				initialState={initialState}
+				newNodesRendered={newNodesRendered}
 			/>
 		)
 	);

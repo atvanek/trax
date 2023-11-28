@@ -10,21 +10,25 @@ import {
 } from '@mui/material';
 import React, { Dispatch, SetStateAction } from 'react';
 import { IJob } from '@/db/models/job';
-import Link from 'next/link';
 import { SaveStatus } from '@/types';
+import GridContext from '@/context/GridContext';
 
 export default function SaveDialog({
 	saveStatus,
 	confirmFinish,
 	setSaveStatus,
 	rows,
+	resetImporter,
 }: {
 	saveStatus: SaveStatus;
 	confirmFinish: boolean;
 	setConfirmFinish: Dispatch<SetStateAction<boolean>>;
 	setSaveStatus: Dispatch<SetStateAction<SaveStatus>>;
 	rows: Omit<IJob, 'userId'>[];
+	resetImporter: () => void;
 }) {
+	const { setCurrentTabIndex } = React.useContext(GridContext);
+
 	const handleSave = () => {
 		fetch('/api/jobs', {
 			method: 'POST',
@@ -43,6 +47,11 @@ export default function SaveDialog({
 			.catch((err) => setSaveStatus('error'));
 	};
 
+	const handleReset = () => {
+		resetImporter();
+		setCurrentTabIndex(0);
+	};
+
 	return (
 		<Dialog open={confirmFinish}>
 			<DialogTitle>Save Imported Data</DialogTitle>
@@ -58,11 +67,9 @@ export default function SaveDialog({
 			<DialogActions>
 				{!saveStatus ? (
 					<>
-						<Link href='/' passHref>
-							<Button variant='contained' color='secondary'>
-								Discard
-							</Button>
-						</Link>
+						<Button variant='contained' color='secondary' onClick={handleReset}>
+							Discard
+						</Button>
 
 						<Button
 							variant='contained'
@@ -73,14 +80,13 @@ export default function SaveDialog({
 						</Button>
 					</>
 				) : (
-					<Link href='/dashboard'>
-						<Button
-							variant='contained'
-							color='primary'
-							disabled={saveStatus === 'pending'}>
-							Return to Dashboard
-						</Button>
-					</Link>
+					<Button
+						onClick={handleReset}
+						variant='contained'
+						color='primary'
+						disabled={saveStatus === 'pending'}>
+						Return to Dashboard
+					</Button>
 				)}
 			</DialogActions>
 			<Collapse in={!!saveStatus}>

@@ -14,10 +14,12 @@ import LinkCell from '@/app/components/table/cells/LinkCell';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import InputWithDebounce from './cells/InputWithDebounce';
 import StatusSelect from './cells/StatusSelect';
-
+import { Add } from '@mui/icons-material';
+import { SetStateAction } from 'react';
 
 export const createDefaultColumns = (
-	handleRequestDelete: (id: GridRowId) => void
+	handleRequestDelete: (id: GridRowId) => void,
+	setAddingColumn: React.Dispatch<SetStateAction<boolean>>
 ): GridColDef[] => {
 	return [
 		{
@@ -26,6 +28,13 @@ export const createDefaultColumns = (
 			width: 50,
 			cellClassName: 'actions',
 			headerClassName: 'table-header',
+			renderHeader: () => (
+				<Add
+					color='secondary'
+					onClick={() => setAddingColumn(true)}
+					sx={{ ':hover': { cursor: 'pointer' } }}
+				/>
+			),
 			getActions: ({ id }) => {
 				return [
 					<GridActionsCellItem

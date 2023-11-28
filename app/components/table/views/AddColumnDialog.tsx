@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { SetStateAction } from 'react';
 import {
 	Dialog,
 	DialogTitle,
@@ -12,21 +12,18 @@ import {
 	Button,
 } from '@mui/material';
 import createCustomColumns from '@/utils/createCustomColumns';
+import GridContext from '@/context/GridContext';
 import { GridColDef } from '@mui/x-data-grid';
-import Context from '@/context/customColumnContext';
 
 export default function AddColumnDialog({
-	addingColumn,
-	setAddingColumn,
 	setColumns,
 }: {
-	addingColumn: boolean;
-	setAddingColumn: React.Dispatch<React.SetStateAction<boolean>>;
-	setColumns: React.Dispatch<React.SetStateAction<GridColDef[]>>;
+	setColumns: React.Dispatch<SetStateAction<GridColDef[]>>;
 }) {
 	const [newColumnTitle, setNewColumnTitle] = React.useState('');
 	const [error, setError] = React.useState(false);
-	const { setCustomColumns } = React.useContext(Context);
+	const { setCustomColumns, addingColumn, setAddingColumn } =
+		React.useContext(GridContext);
 
 	const handleAddColumn = React.useCallback(() => {
 		fetch('/api/user/column', {
@@ -68,7 +65,7 @@ export default function AddColumnDialog({
 				}, 6000)
 			)
 			.finally(() => setNewColumnTitle(''));
-	}, [newColumnTitle, setColumns, setAddingColumn, setCustomColumns]);
+	}, [newColumnTitle, setAddingColumn, setCustomColumns, setColumns]);
 
 	return (
 		<Dialog open={addingColumn} onClose={() => setAddingColumn(false)}>
