@@ -16,6 +16,7 @@ import InputWithDebounce from './cells/InputWithDebounce';
 import StatusSelect from './cells/StatusSelect';
 import { Add } from '@mui/icons-material';
 import { SetStateAction } from 'react';
+import { Tooltip } from '@mui/material';
 
 export const createDefaultColumns = (
 	handleRequestDelete: (id: GridRowId) => void,
@@ -29,11 +30,13 @@ export const createDefaultColumns = (
 			cellClassName: 'actions',
 			headerClassName: 'table-header',
 			renderHeader: () => (
-				<Add
-					color='secondary'
-					onClick={() => setAddingColumn(true)}
-					sx={{ ':hover': { cursor: 'pointer' } }}
-				/>
+				<Tooltip title='Add Column'>
+					<Add
+						color='secondary'
+						onClick={() => setAddingColumn(true)}
+						sx={{ ':hover': { cursor: 'pointer' } }}
+					/>
+				</Tooltip>
 			),
 			getActions: ({ id }) => {
 				return [

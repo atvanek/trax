@@ -25,12 +25,12 @@ export default function CustomColumnMenu(props: CustomColumnMenuProps) {
 		e
 	) => {
 		setDeleteConfirmOpen(true);
-		setDeleteField(colDef.field);
+		setDeleteField(colDef.headerName || '');
 	};
 	const { colDef, setColumns } = props;
 	const handleDeleteClick = () => {
 		setColumns((prev) => {
-			return prev.filter((column) => column.field !== deleteField);
+			return prev.filter((column) => column.headerName !== deleteField);
 		});
 		setCustomColumns(customColumns.filter((column) => column !== deleteField));
 		setDeleteConfirmOpen(false);
@@ -68,7 +68,7 @@ export default function CustomColumnMenu(props: CustomColumnMenuProps) {
 			<GridColumnMenu
 				{...props}
 				slots={
-					customColumns.includes(colDef.headerName)
+					colDef.headerName && customColumns.includes(colDef.headerName)
 						? {
 								// Add new item
 								columnMenuUserItem: CustomUserItem,
