@@ -14,7 +14,7 @@ import LinkCell from '@/app/components/table/cells/LinkCell';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import InputWithDebounce from './cells/InputWithDebounce';
 import StatusSelect from './cells/StatusSelect';
-import { Add } from '@mui/icons-material';
+import { Addchart } from '@mui/icons-material';
 import { SetStateAction } from 'react';
 import { Tooltip } from '@mui/material';
 
@@ -31,8 +31,8 @@ export const createDefaultColumns = (
 			headerClassName: 'table-header',
 			renderHeader: () => (
 				<Tooltip title='Add Column'>
-					<Add
-						color='secondary'
+					<Addchart
+						color='primary'
 						onClick={() => setAddingColumn(true)}
 						sx={{ ':hover': { cursor: 'pointer' } }}
 					/>

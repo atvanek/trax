@@ -19,7 +19,7 @@ import ColorModeSwitch from '../ColorModeSwitch';
 import UserDrawer from './UserDrawer';
 
 const pages = [
-	{ label: 'FAQ', href: 'null' },
+	{ label: 'FAQ', href: null },
 	{ label: 'Documentation', href: null },
 	{ label: 'Contact', href: null },
 ];
@@ -91,13 +91,13 @@ export default function Nav({ user }: { user: Claims }) {
 								sx={{
 									display: { xs: 'block', md: 'none' },
 								}}>
-								{/* {pages.map((page) => (
+								{pages.map((page) => (
 									<Link href={page.href || ''} key={page.label}>
 										<MenuItem onClick={handleCloseNavMenu}>
 											<Typography textAlign='center'>{page.label}</Typography>
 										</MenuItem>
 									</Link>
-								))} */}
+								))}
 							</Menu>
 						</Box>
 						<AnalyticsIcon

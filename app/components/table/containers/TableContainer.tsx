@@ -231,6 +231,7 @@ export default function TableContainer({
 							addedNode.classList.contains('MuiDataGrid-columnHeader')) // or a new column being added
 					) {
 						//add all event listeners and save cleanup function definition to 'cleanup'
+						cleanup();
 						cleanup = addDragEventListeners();
 						//toggles value so that column resize event listeners are cleaned up and added again
 						setNewNodesRendered((prev) => !prev);
@@ -330,17 +331,19 @@ export default function TableContainer({
 
 	const handleProcessRowUpdate = (updatedRow: Row) => {
 		//is there are other rows that haven't been updated, request to update multiple rows
+		console.log('processing');
 		if (rows.some((row) => row.isNew)) {
 			requestUpdateManyRows(updatedRow);
 		} else {
 			//otherwise just updated the single row
 			updateRow(updatedRow);
 		}
+		console.log(updatedRow);
 		//optimistically update UI
 		const newRows = rows.map((row) =>
 			row.id === updatedRow.id ? updatedRow : row
 		);
-		setRows(newRows);
+		apiRef?.current.updateRows(newRows);
 		return updatedRow;
 	};
 
@@ -348,7 +351,7 @@ export default function TableContainer({
 	//fetches updated data from database and updates rows
 	const handleDeleteClick = () => {
 		setError(false);
-		setRows(rows.filter((row) => row.id !== deleteId));
+		apiRef?.current.updateRows(rows.filter((row) => row.id !== deleteId));
 		setDeleteConfirmOpen(false);
 		fetch('/api/job', {
 			method: 'DELETE',

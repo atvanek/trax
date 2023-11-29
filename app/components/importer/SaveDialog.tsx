@@ -27,9 +27,13 @@ export default function SaveDialog({
 	rows: Omit<IJob, 'userId'>[];
 	resetImporter: () => void;
 }) {
-	const { setCurrentTabIndex } = React.useContext(GridContext);
+	const { setCurrentTabIndex, apiRef } = React.useContext(GridContext);
 
 	const handleSave = () => {
+		rows.forEach((row) => {
+			apiRef?.current.updateRows([row]);
+		});
+
 		fetch('/api/jobs', {
 			method: 'POST',
 			body: JSON.stringify(rows),

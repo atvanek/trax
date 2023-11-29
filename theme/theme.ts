@@ -57,6 +57,9 @@ export default function theme(mode: 'light' | 'dark') {
 						'.MuiDataGrid-columnHeaderTitle': {
 							'font-weight': '600 !important',
 						},
+						'.MuiDataGrid-columnSeparator svg': {
+							fontSize: '1.75em !important',
+						},
 
 						':hover': {
 							cursor: 'grab',
