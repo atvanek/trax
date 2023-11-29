@@ -1,8 +1,13 @@
 import { createTheme, Theme, Components } from '@mui/material/styles';
 
-interface CustomTheme extends Theme {
-	navHeight?: number;
+export interface CustomTheme extends Theme {
 	components?: Components & {
+		nav?: {
+			height?: number;
+		};
+		drawer?: {
+			width?: number;
+		};
 		MuiDataGrid?: {
 			styleOverrides?: {
 				columnHeader?: {
@@ -14,7 +19,7 @@ interface CustomTheme extends Theme {
 		};
 	};
 }
-const navHeight = 64
+const navHeight = 64;
 export default function theme(mode: 'light' | 'dark') {
 	return createTheme({
 		palette: {
@@ -40,6 +45,12 @@ export default function theme(mode: 'light' | 'dark') {
 		},
 
 		components: {
+			nav: {
+				height: 64,
+			},
+			drawer: {
+				width: 90,
+			},
 			MuiDataGrid: {
 				styleOverrides: {
 					columnHeader: {
@@ -74,7 +85,7 @@ export default function theme(mode: 'light' | 'dark') {
 				styleOverrides: {
 					root: {
 						position: 'fixed',
-						zIndex: 3
+						zIndex: 3,
 					},
 				},
 			},
@@ -86,7 +97,6 @@ export default function theme(mode: 'light' | 'dark') {
 					},
 				},
 			},
-
 		} as CustomTheme['components'], // Cast to CustomTheme['components']
 	});
 }

@@ -56,7 +56,7 @@ export type ChartData = {
 export type TableProps = {
 	rows: Row[];
 	setRows: React.Dispatch<React.SetStateAction<Row[]>>;
-	columns: GridColDef[] | null;
+	columns: GridColDef[];
 	setColumns: React.Dispatch<React.SetStateAction<GridColDef[]>>;
 	resizing: boolean;
 	setResizing: React.Dispatch<React.SetStateAction<boolean>>;

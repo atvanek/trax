@@ -10,22 +10,39 @@ import {
 	Collapse,
 	Alert,
 	Button,
+	AlertTitle,
 } from '@mui/material';
 import createCustomColumns from '@/utils/createCustomColumns';
 import GridContext from '@/context/GridContext';
 import { GridColDef } from '@mui/x-data-grid';
+import toCamelCase from '@/utils/toCamelCase';
 
 export default function AddColumnDialog({
+	columns,
 	setColumns,
 }: {
+	columns: GridColDef[];
 	setColumns: React.Dispatch<SetStateAction<GridColDef[]>>;
 }) {
 	const [newColumnTitle, setNewColumnTitle] = React.useState('');
-	const [error, setError] = React.useState(false);
+	const [error, setError] = React.useState({ status: false, message: '' });
 	const { setCustomColumns, addingColumn, setAddingColumn } =
 		React.useContext(GridContext);
 
 	const handleAddColumn = React.useCallback(() => {
+		if (
+			columns.some((column) => column.field === toCamelCase(newColumnTitle))
+		) {
+			setError({
+				status: true,
+				message: `<span>Column with name <strong>${newColumnTitle}</strong> already exists</span>. <br>
+				\n Please choose unique column name.`,
+			});
+			setTimeout(() => {
+				setError({ status: false, message: '' });
+			}, 6000);
+			return;
+		}
 		fetch('/api/user/column', {
 			method: 'POST',
 			body: JSON.stringify(newColumnTitle),
@@ -34,9 +51,12 @@ export default function AddColumnDialog({
 				if (res.ok) {
 					return res.json();
 				} else {
-					setError(true);
+					setError({
+						status: true,
+						message: `Error adding column. Please try again.`,
+					});
 					setTimeout(() => {
-						setError(false);
+						setError({ status: false, message: '' });
 					}, 6000);
 					return;
 				}
@@ -64,19 +84,29 @@ export default function AddColumnDialog({
 				setAddingColumn(false);
 				setCustomColumns(data.customColumns);
 			})
-			.catch((err) =>
+			.catch((err) => {
+				setError({
+					status: true,
+					message: `Error adding column. Please try again.`,
+				});
 				setTimeout(() => {
-					setError(false);
-				}, 6000)
-			)
+					setError({ status: false, message: '' });
+				}, 6000);
+				return;
+			})
 			.finally(() => setNewColumnTitle(''));
-	}, [newColumnTitle, setAddingColumn, setCustomColumns, setColumns]);
+	}, [newColumnTitle, setAddingColumn, setCustomColumns, setColumns, columns]);
 
 	return (
-		<Dialog open={addingColumn} onClose={() => setAddingColumn(false)}>
+		<Dialog
+			open={addingColumn}
+			onClose={() => setAddingColumn(false)}
+			fullWidth
+			maxWidth='xs'>
 			<DialogTitle>New Column</DialogTitle>
 			<DialogContent>
 				<TextField
+					fullWidth
 					label='Column Title'
 					sx={{ my: 3 }}
 					value={newColumnTitle}
@@ -89,8 +119,11 @@ export default function AddColumnDialog({
 					Add Column
 				</Button>
 			</DialogActions>
-			<Collapse in={error}>
-				<Alert severity='error'>Add column error.</Alert>
+			<Collapse in={error.status}>
+				<Alert severity='error' sx={{ width: 'inherit' }}>
+					<AlertTitle>Error</AlertTitle>
+					<p dangerouslySetInnerHTML={{ __html: error.message }}></p>
+				</Alert>
 			</Collapse>
 		</Dialog>
 	);

@@ -78,7 +78,7 @@ export default function Table({
 				handleDeleteClick={handleDeleteClick}
 				confirmationMessage='All job details will be permanently lost.'
 			/>
-			<AddColumnDialog setColumns={setColumns} />
+			<AddColumnDialog columns={columns} setColumns={setColumns} />
 			<Snackbar
 				open={error}
 				autoHideDuration={6000}

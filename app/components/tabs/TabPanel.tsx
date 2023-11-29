@@ -1,10 +1,11 @@
 import { Box } from '@mui/material';
 import { TabPanelProps } from '@/types';
 import { useTheme } from '@mui/material/styles';
+import { CustomTheme } from '@/theme/theme';
 
 export default function TabPanel(props: TabPanelProps) {
 	const { children, currentTabIndex, index, ...other } = props;
-	const theme = useTheme();
+	const theme = useTheme() as CustomTheme;
 
 	return (
 		<div
@@ -15,8 +16,8 @@ export default function TabPanel(props: TabPanelProps) {
 				height: '100%',
 				visibility: currentTabIndex === index ? 'visible' : 'hidden',
 				backgroundColor: theme.palette.background.paper,
-				paddingTop: 64,
-				paddingLeft: 80,
+				paddingTop: theme.components?.nav?.height,
+				paddingLeft: theme.components?.drawer?.width,
 			}}
 			role='tabpanel'
 			id={`simple-tabpanel-${index}`}
