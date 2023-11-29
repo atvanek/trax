@@ -8,6 +8,7 @@ import DeleteConfirm from '../../DeleteConfirm';
 import { TableProps } from '@/types';
 import ColumnResizeBarContainer from '../containers/ColumnResizeBarContainer';
 import AddColumnDialog from './AddColumnDialog';
+import CustomColumnMenu from './CustomColumnMenu';
 
 export default function Table({
 	rows,
@@ -26,7 +27,7 @@ export default function Table({
 	setError,
 	apiRef,
 	initialState,
-	newNodesRendered
+	newNodesRendered,
 }: TableProps) {
 	return (
 		<>
@@ -65,7 +66,9 @@ export default function Table({
 					pageSizeOptions={[25, 50, 100]}
 					slots={{
 						toolbar: EditToolbar,
+						columnMenu: CustomColumnMenu,
 					}}
+					slotProps={{ columnMenu: { setColumns } }}
 					initialState={initialState}
 				/>
 			</Box>
