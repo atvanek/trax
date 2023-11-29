@@ -28,17 +28,17 @@ export default function TableContainer({
 }) {
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
-	);
-	const [resizing, setResizing] = React.useState<boolean>(false); //column resizing event state
+	); //dictates whether rows are currently being viewed or edited
+	const [resizing, setResizing] = React.useState<boolean>(false); //reflects whether column is currently being resized
 	const [deleteConfirmOpen, setDeleteConfirmOpen] =
-		React.useState<boolean>(false);
+		React.useState<boolean>(false); //row delete confirmation diaglog
 	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null); //id of item requested to delete
-	const [error, setError] = React.useState(false);
-	const observerRef = React.useRef<MutationObserver | null>(null);
+	const [error, setError] = React.useState(false); //error snackbar open state
+	const observerRef = React.useRef<MutationObserver | null>(null); //observer ref that watches for mutation in the DOM to add event listeners
 	const { customColumns, apiRef, setAddingColumn } = React.useContext(Context);
-	const [initialState, setInitialState] = React.useState<GridInitialState>();
+	const [initialState, setInitialState] = React.useState<GridInitialState>(); //initial state retrieved from localStorage
 	const theme = useTheme();
-	const [newNodesRendered, setNewNodesRendered] = React.useState(false);
+	const [newNodesRendered, setNewNodesRendered] = React.useState(false); //toggles value to indicate to resize bar to cleanup and add event listeners
 
 	//handles row delete and delete confirmation pop-up
 	const handleRequestDelete = (id: GridRowId): void => {
@@ -102,6 +102,7 @@ export default function TableContainer({
 		const index = separatorsOrderParsed.indexOf(draggedOverField);
 
 		if (index === 0) return; //actions column must always be first
+
 		setColumns((prev) => {
 			const draggedColumn = prev.find(
 				(column) => column.field === draggedField
@@ -110,17 +111,21 @@ export default function TableContainer({
 				(column) => column.field !== draggedField
 			);
 
+			//define new order of columns
 			const newColumns = [
 				...restOfColumns.slice(0, index),
 				draggedColumn,
 				...restOfColumns.slice(index),
 			] as GridColDef[];
 
+			//update order in localStorage
 			const newSeparatorsOrder = newColumns.map((column) => column.field);
 			localStorage.setItem(
 				'separatorsOrder',
 				JSON.stringify(newSeparatorsOrder)
 			);
+
+			//update state
 			return newColumns;
 		});
 	}, []);
