@@ -89,25 +89,24 @@ export default function TableContainer({
 	}, [saveSnapshot]);
 
 	//redefines columns based on new order
-	const handleReorderColumns = React.useCallback(
-		(separator: SVGElement) => {
-			const draggedField = localStorage.getItem('draggedField');
-			const draggedOverField = getField(separator);
+	const handleReorderColumns = React.useCallback((separator: SVGElement) => {
+		const draggedField = localStorage.getItem('draggedField');
+		const draggedOverField = getField(separator);
 
-			if (draggedField === draggedOverField) return; //do not reorder on dropping into own separator to avoid flickering
+		if (draggedField === draggedOverField) return; //do not reorder on dropping into own separator to avoid flickering
 
-			const separatorsOrder = localStorage.getItem('separatorsOrder') as string;
-			const separatorsOrderParsed = separatorsOrder
-				? JSON.parse(separatorsOrder)
-				: [];
-			const index = separatorsOrderParsed.indexOf(draggedOverField);
+		const separatorsOrder = localStorage.getItem('separatorsOrder') as string;
+		const separatorsOrderParsed = separatorsOrder
+			? JSON.parse(separatorsOrder)
+			: [];
+		const index = separatorsOrderParsed.indexOf(draggedOverField);
 
-			if (index === 0) return; //actions column must always be first
-
-			const draggedColumn = columns.find(
+		if (index === 0) return; //actions column must always be first
+		setColumns((prev) => {
+			const draggedColumn = prev.find(
 				(column) => column.field === draggedField
 			);
-			const restOfColumns = columns.filter(
+			const restOfColumns = prev.filter(
 				(column) => column.field !== draggedField
 			);
 
@@ -122,10 +121,9 @@ export default function TableContainer({
 				'separatorsOrder',
 				JSON.stringify(newSeparatorsOrder)
 			);
-			setColumns(newColumns);
-		},
-		[columns]
-	);
+			return newColumns;
+		});
+	}, []);
 
 	//adds event listeners to all column headers and separators
 	const addDragEventListeners = React.useCallback(() => {
@@ -152,7 +150,9 @@ export default function TableContainer({
 		const handleDragStart = function (this: HTMLDivElement) {
 			const headerContainer = this.parentNode as HTMLDivElement;
 			headerContainer.style.backgroundColor = theme.palette.action.selected;
+
 			const draggedField = headerContainer.getAttribute('data-field') as string;
+
 			localStorage.setItem('draggedField', draggedField); // persist dragged item field to use on dragenter event
 		};
 		const handleDragEnd = function (this: HTMLDivElement) {

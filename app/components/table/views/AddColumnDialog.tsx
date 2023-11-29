@@ -45,9 +45,14 @@ export default function AddColumnDialog({
 				const newCustomColumns = createCustomColumns(data.customColumns);
 
 				setColumns((prev) => {
-					const oldColumns = prev.filter(
-						(column) => !data.customColumns.includes(column.field)
-					);
+					//filter out all previous custom columns
+					const oldColumns = prev.filter((column) => {
+						if (column.headerName) {
+							return !data.customColumns.includes(column.headerName);
+						}
+						return true;
+					});
+					//replace with new customColumns
 					const newColumns = [...oldColumns, ...newCustomColumns];
 					localStorage.setItem(
 						'separatorsOrder',
