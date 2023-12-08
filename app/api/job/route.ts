@@ -26,7 +26,6 @@ export const POST = async (req: Request) => {
 		);
 
 		const rows = await jobModel.find({ userId: user.sub });
-
 		return NextResponse.json({ rows: createRows(rows) });
 	} catch (error) {
 		return NextResponse.json({ error });
@@ -48,7 +47,7 @@ export const DELETE = async (req: Request) => {
 		await jobModel.findOneAndDelete({ userId: user.sub, id });
 
 		const rows = await jobModel.find({ userId: user.sub });
-
+		console.log(rows);
 		return NextResponse.json({ rows: createRows(rows) });
 	} catch (error) {
 		return NextResponse.json({ error });

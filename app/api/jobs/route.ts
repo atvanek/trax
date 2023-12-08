@@ -14,13 +14,14 @@ export const POST = async (req: Request) => {
 	try {
 		const userId = user.sub;
 		const newJobs: Omit<IJob, 'userId'>[] = await req.json();
-		const newJobsWithIds = newJobs.map((job) => {
+		const newJobsWithUserIds = newJobs.map((job) => {
 			return { ...job, userId };
 		}) as IJob[];
-		await jobModel.insertMany(newJobsWithIds);
+		const addedJobs = await jobModel.insertMany(newJobsWithUserIds);
 		const rows = await jobModel.find({ userId });
 		return NextResponse.json({ rows: createRows(rows) });
 	} catch (error) {
-		NextResponse.json({ error });
+		console.log(error);
+		return NextResponse.json({ error });
 	}
 };

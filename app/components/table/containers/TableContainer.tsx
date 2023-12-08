@@ -28,19 +28,24 @@ export default function TableContainer({
 }) {
 	const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>(
 		{}
-	); //dictates whether rows are currently being viewed or edited
-	const [resizing, setResizing] = React.useState<boolean>(false); //reflects whether column is currently being resized
+	); //reflects all rows' view/edit state
+	const [resizing, setResizing] = React.useState<boolean>(false); //reflects whether a column is currently being resized
 	const [deleteConfirmOpen, setDeleteConfirmOpen] =
-		React.useState<boolean>(false); //row delete confirmation diaglog
+		React.useState<boolean>(false); //row delete confirmation dialog
 	const [deleteId, setDeleteId] = React.useState<GridRowId | null>(null); //id of item requested to delete
 	const [error, setError] = React.useState(false); //error snackbar open state
 	const observerRef = React.useRef<MutationObserver | null>(null); //observer ref that watches for mutation in the DOM to add event listeners
 	const { customColumns, apiRef, setAddingColumn } = React.useContext(Context);
-	const [initialState, setInitialState] = React.useState<GridInitialState>(); //initial state retrieved from localStorage
+	const [initialState, setInitialState] = React.useState<GridInitialState>(); //initial table state retrieved from localStorage
 	const theme = useTheme();
 	const [newNodesRendered, setNewNodesRendered] = React.useState(false); //toggles value to indicate to resize bar to cleanup and add event listeners
 
-	//handles row delete and delete confirmation pop-up
+	//notifies parent container that table is rendered
+	React.useLayoutEffect(() => {
+		setMounted(true);
+	}, [setMounted]);
+
+	//sets delete id and open delete confirmation dialog
 	const handleRequestDelete = (id: GridRowId): void => {
 		setDeleteId(id);
 		setDeleteConfirmOpen(true);
@@ -57,11 +62,6 @@ export default function TableContainer({
 	const [columns, setColumns] = React.useState<GridColDef[]>(
 		columnsWithCustomFields
 	);
-
-	//notifies parent container that table is rendered with columns
-	React.useLayoutEffect(() => {
-		setMounted(true);
-	}, [setMounted]);
 
 	//saves current grid state to localStorage
 	const saveSnapshot = React.useCallback(() => {
@@ -264,6 +264,7 @@ export default function TableContainer({
 		return columnField;
 	};
 
+	//changes row with 'rowEditStop' event from 'edit' mode to 'view' mode in rowModesModel
 	const handleRowEditStop: GridEventListener<'rowEditStop'> = (
 		params,
 		event
@@ -275,6 +276,28 @@ export default function TableContainer({
 			...rowModesModel,
 			[params.id]: { mode: GridRowModes.View },
 		});
+	};
+
+	//delegates updating to updateRow if there is only one unsynced row
+	//or requestUpdateManyRows if multiple rows need to be synced
+	const handleProcessRowUpdate = (updatedRow: Row) => {
+		//get current rows
+		const currentRows =
+			apiRef?.current?.getRowModels &&
+			Array.from(apiRef?.current.getRowModels().values());
+		//if there are more than one rows that haven't been synced to db
+		if (
+			currentRows &&
+			Array.from(currentRows).filter((row) => row.isNew).length > 1
+		) {
+			//sync all new rows to db
+			requestUpdateManyRows(updatedRow);
+		} else {
+			//otherwise just update the single row
+			updateRow(updatedRow);
+		}
+		return updatedRow;
+		//return updated row to update rows model
 	};
 
 	//updates single row in database
@@ -298,18 +321,23 @@ export default function TableContainer({
 	};
 
 	const requestUpdateManyRows = (updatedRow: Row) => {
-		//check if there is currently a row being edited
+		//get current rows
+		const currentRows =
+			apiRef?.current && Array.from(apiRef?.current.getRowModels().values());
+
+		//check if any row is in 'edit' mode
 		const anyRowInEditMode = Object.values(rowModesModel).some(
 			(row) => row.mode === 'edit'
 		);
 
+		//if there are no rows being edited
 		if (!anyRowInEditMode) {
 			//get all new rows plus the updated value of the current row
-			const newRows = rows
-				.filter((row) => row.isNew)
+			const newRows = currentRows
+				?.filter((row) => row.isNew)
 				.map((row) => (row.id === updatedRow.id ? updatedRow : row));
 
-			//udpdate rows in databse
+			//update rows in database
 			fetch('/api/jobs', {
 				method: 'POST',
 				body: JSON.stringify(newRows),
@@ -327,32 +355,18 @@ export default function TableContainer({
 				})
 				.catch((err) => setError(true));
 		}
-	};
-
-	const handleProcessRowUpdate = (updatedRow: Row) => {
-		//is there are other rows that haven't been updated, request to update multiple rows
-		console.log('processing');
-		if (rows.some((row) => row.isNew)) {
-			requestUpdateManyRows(updatedRow);
-		} else {
-			//otherwise just updated the single row
-			updateRow(updatedRow);
-		}
-		console.log(updatedRow);
-		//optimistically update UI
-		const newRows = rows.map((row) =>
-			row.id === updatedRow.id ? updatedRow : row
-		);
-		apiRef?.current.updateRows(newRows);
-		return updatedRow;
+		//else wait until user is done editing to sync to db
 	};
 
 	//deletes row optimistically and in database
 	//fetches updated data from database and updates rows
 	const handleDeleteClick = () => {
 		setError(false);
-		apiRef?.current.updateRows(rows.filter((row) => row.id !== deleteId));
+		//delete row from table state
+		apiRef?.current.updateRows([{ id: deleteId, _action: 'delete' }]);
+		//close delete confirm dialog
 		setDeleteConfirmOpen(false);
+		//sync to db
 		fetch('/api/job', {
 			method: 'DELETE',
 			body: JSON.stringify({ id: deleteId }),
@@ -365,11 +379,7 @@ export default function TableContainer({
 				}
 			})
 			.then((data: { rows: Row[] }) => {
-				const newRows = data.rows.map((row) => ({
-					...row,
-					date: row.date ? new Date(row.date) : new Date(),
-				})) as Row[];
-				setRows(newRows);
+				setRows(data.rows);
 			})
 			.catch((err) => {
 				console.log(err);

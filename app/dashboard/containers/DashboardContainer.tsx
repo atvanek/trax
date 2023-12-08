@@ -6,7 +6,7 @@ import Spinner from '../../components/Spinner';
 import TableContainer from '@/app/components/table/containers/TableContainer';
 import AnimatedPieChart from '../../components/metrics/AnimatedPieChart';
 import { ListAlt, PieChart, CloudUpload } from '@mui/icons-material';
-import TabsContainer from '../../components/tabs/TabsContainer';
+import Sidebar from '../../components/sidebar/Sidebar';
 import { Row } from '@/types';
 import { IJob } from '@/db/models/job';
 import { IUser } from '@/db/models/user';
@@ -21,9 +21,10 @@ export default function DashboardContainer({
 		rows: IJob[];
 		userData: IUser;
 	} = JSON.parse(stringifiedData);
+
 	const [rows, setRows] = React.useState<Row[]>(parsedData.rows);
 
-	const tabs = [
+	const views = [
 		<WithUILoading
 			fallback={Spinner}
 			component={TableContainer}
@@ -40,5 +41,5 @@ export default function DashboardContainer({
 		<CloudUpload key='cloudUpload' />,
 	];
 
-	return <TabsContainer tabs={tabs} icons={icons} />;
+	return <Sidebar tabs={views} icons={icons} setRows={setRows} />;
 }

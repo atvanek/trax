@@ -15,7 +15,6 @@ export default function AnimatedPieChart({ data }: { data: Row[] }) {
 	);
 
 	const currentStatuses: Set<string> = new Set(); //all status currently present in table
-
 	data.forEach((row) => {
 		if (row.jobStatus) {
 			currentStatuses.add(row.jobStatus);

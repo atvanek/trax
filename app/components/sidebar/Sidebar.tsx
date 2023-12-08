@@ -5,6 +5,8 @@ import { Tab, Tabs, Box, Drawer, Tooltip, Button } from '@mui/material';
 import TabPanel from './TabPanel';
 import { Add, FileDownload } from '@mui/icons-material';
 import GridContext from '@/context/GridContext';
+import { GridRowModelUpdate } from '@mui/x-data-grid';
+import { Row } from '@/types';
 
 function a11yProps(index: number) {
 	return {
@@ -13,12 +15,14 @@ function a11yProps(index: number) {
 	};
 }
 
-export default function TabsContainer({
+export default function Sidebar({
 	tabs,
 	icons,
+	setRows,
 }: {
 	tabs: JSX.Element[];
 	icons: JSX.Element[];
+	setRows: React.Dispatch<React.SetStateAction<Row[]>>;
 }) {
 	const handleChange = (event: React.SyntheticEvent, newTabIndex: number) => {
 		setCurrentTabIndex(newTabIndex);
@@ -30,9 +34,13 @@ export default function TabsContainer({
 		const newRowId = crypto.randomUUID();
 		setCurrentTabIndex(0);
 		apiRef?.current.setSortModel([{ field: 'date', sort: 'desc' }]);
-		apiRef?.current.updateRows([
-			{ id: newRowId, isNew: true, date: new Date() },
-		]);
+		const newRow: GridRowModelUpdate = {
+			id: newRowId,
+			isNew: true,
+			date: new Date(),
+			jobStatus: 'ready to apply',
+		};
+		apiRef?.current.updateRows([newRow]);
 		apiRef?.current.setPage(0);
 		apiRef?.current.startRowEditMode({ id: newRowId });
 		apiRef?.current.startCellEditMode({ id: newRowId, field: 'date' });
