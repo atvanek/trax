@@ -43,6 +43,11 @@ export default function theme(mode: 'light' | 'dark') {
 						},
 				  }),
 		},
+		typography: {
+			allVariants: {
+				fontFamily: 'inherit',
+			},
+		},
 
 		components: {
 			nav: {

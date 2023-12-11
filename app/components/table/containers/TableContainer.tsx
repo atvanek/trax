@@ -173,6 +173,7 @@ export default function TableContainer({
 			event.preventDefault();
 		};
 
+
 		separators.forEach((separator) => {
 			const draggedOverField = getField(separator);
 			separatorsOrder.push(draggedOverField);
@@ -180,6 +181,7 @@ export default function TableContainer({
 			separator.addEventListener('dragover', handleDragOver);
 			separator.addEventListener('dragenter', handleDragEnter);
 			separator.addEventListener('drop', handleDrop);
+	
 		});
 
 		if (!localStorage.getItem('separatorsOrder')) {
@@ -203,6 +205,7 @@ export default function TableContainer({
 				separator.removeEventListener('dragover', handleDragOver);
 				separator.removeEventListener('dragenter', handleDragEnter);
 				separator.removeEventListener('drop', handleDrop);
+
 			});
 
 			headers.forEach((header) => {
